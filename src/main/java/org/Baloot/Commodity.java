@@ -1,14 +1,13 @@
 package org.Baloot;
 
 public class Commodity {
-    int id;
-    String name;
-
-    String providerId;
-    double price;
-    String categories;
-    double rating;
-    int inStock;
+    private int id;
+    private String name;
+    private String providerId;
+    private double price;
+    private String categories;
+    private double rating;
+    private int inStock;
 
     public Commodity(int _id, String _name, String _providerId, double _price,
                      String _categories, double _rating, int _inStock) {

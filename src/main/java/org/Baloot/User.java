@@ -1,13 +1,13 @@
 package org.Baloot;
 public class User {
-    private String username;
-    private String password;
+    private static String username;
+    private static String password;
 
-    private String email;
-    private String birthDate;
-    private String address;
+    private static String email;
+    private static String birthDate;
+    private static String address;
 
-    private double credit;
+    private static double credit;
 
     public User(String _username, String _password, String _email, String _birthDate,
                 String _address, double _credit) {
@@ -18,5 +18,9 @@ public class User {
 
         address = _address;
         credit = _credit;
+    }
+
+    public void print() {
+        System.out.println(username + password + email + birthDate + address + credit);
     }
 }

@@ -15,21 +15,30 @@ public class CommandHandler {
     public static Set<Provider> providers = new HashSet<Provider>();
     public static Set<Commodity> commodities = new HashSet<Commodity>();
 
-    private static User addUserParser;
     public static void main(String args[]) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String line;
+        Parser parser = new Parser();
         while ((line = reader.readLine()) != null) {
-            String[] seperatedLine = line.split(" ");
+            String[] seperatedLine = line.split(" ", 2);
+//            seperatedLine[1] = seperatedLine[1].replaceAll("\"", "\\'");
             String command = seperatedLine[0];
             System.out.println(command);
             switch (command) {
-                case "adduser":
-
+                case "addUser":
+                    User user = parser.addUserParser(seperatedLine[1]);
+                    users.add(user);
+                    user.print();
                     break;
                 case "addProvider":
+                    Provider provider = parser.addProviderParser(seperatedLine[1]);
+                    providers.add(provider);
+                    provider.print();
                     break;
                 case "addCommodity":
+                    Commodity commodity = parser.addCommodityParser(seperatedLine[1]);
+                    commodities.add(commodity);
+                    commodity.print();
                     break;
                 default:
                     //TODO Exception

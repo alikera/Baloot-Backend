@@ -1,26 +1,29 @@
 package org.Baloot;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class User {
-    private static String username;
-    private static String password;
 
-    private static String email;
-    private static String birthDate;
-    private static String address;
+    private String username;
+    private String password;
+    private String email;
+    private String birthDate;
+    private String address;
+    private double credit;
 
-    private static double credit;
-
-    public User(String _username, String _password, String _email, String _birthDate,
-                String _address, double _credit) {
+    public User(@JsonProperty("username") String _username, @JsonProperty("password") String _password,
+                @JsonProperty("email") String _email, @JsonProperty("birthDate") String _birthDate,
+                @JsonProperty("address") String _address, @JsonProperty("credit") double _credit) {
         username = _username;
         password = _password;
         email = _email;
         birthDate = _birthDate;
-
         address = _address;
         credit = _credit;
     }
 
     public void print() {
-        System.out.println(username + password + email + birthDate + address + credit);
+        System.out.println(username + " " + password + " " + email + " " + birthDate + " " + address + " " + credit);
     }
 }

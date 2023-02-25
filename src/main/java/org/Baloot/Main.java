@@ -1,14 +1,22 @@
 package org.Baloot;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class Main {
-    public static void main(String[] args) {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
-        System.out.println("Hello world2!");
-//        ObjectMapper mapper = new ObjectMapper();
-//        String user = mapper.readValue("{\"name\": \"John\"}", );
-//
-//        System.out.println(user.name); //John
+import static org.Baloot.CommandHandler.executeCommands;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+        Parser parser = new Parser();
+        while ((line = reader.readLine()) != null) {
+            String[] seperatedLine = line.split(" ", 2);
+            System.out.println(seperatedLine[1]);
+            executeCommands(seperatedLine);
+        }
     }
 }
 

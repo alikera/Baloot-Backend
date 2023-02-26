@@ -55,7 +55,6 @@ public class Parser {
     public int getCommodityByIdParser(String data) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> map = objectMapper.readValue(data, new TypeReference<>() {});
-        ObjectNode node = objectMapper.createObjectNode();
         int id = (int) map.get("id");
 
         return id;
@@ -73,10 +72,17 @@ public class Parser {
     public String getCommodityByCategoryParser(String data) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> map = objectMapper.readValue(data, new TypeReference<>() {});
-        ObjectNode node = objectMapper.createObjectNode();
         String category = (String) map.get("category");
 
         return category;
+    }
+
+    public String getBuyListParser(String data) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> map = objectMapper.readValue(data, new TypeReference<>() {});
+        String username = (String) map.get("username");
+
+        return username;
     }
 
     public void main(String args[]) throws JsonProcessingException {

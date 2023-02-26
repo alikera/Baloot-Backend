@@ -99,6 +99,7 @@ public class CommandHandler {
                 getCommodityByCategory(parser.getCommodityByCategoryParser(command[1]));
                 break;
             case "getBuyList":
+                getBuyList(parser.getBuyListParser(command[1]));
                 break;
             default:
                 //TODO Exception
@@ -168,6 +169,29 @@ public class CommandHandler {
         }
         ObjectNode mainNode = mapper.createObjectNode();
         mainNode.putPOJO("commoditiesListByCategory", commodityNodes);
+        String jsonString = mapper.writeValueAsString(mainNode);
+
+        ObjectNode newNode = mapper.createObjectNode();
+        newNode.put("data", mapper.readTree(jsonString));
+
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newNode));
+    }
+
+    public void getBuyList(String username) throws JsonProcessingException {
+        User user = findByUsername(username);
+        if (user == null)
+            return;
+        Set<Integer> buyListIds = user.getBuyList();
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<ObjectNode> commodityNodes = new ArrayList<>();
+        for (int commodityId : buyListIds) {
+            Commodity commodity = findByCommodityId(commodityId);
+            commodityNodes.add(commodity.toJson());
+        }
+
+        ObjectNode mainNode = mapper.createObjectNode();
+        mainNode.putPOJO("buyList", commodityNodes);
         String jsonString = mapper.writeValueAsString(mainNode);
 
         ObjectNode newNode = mapper.createObjectNode();

@@ -16,6 +16,9 @@ public class User {
     public String getUsername() {
         return username;
     }
+    public Set<Integer> getBuyList() {
+        return buyList;
+    }
 
     public User(@JsonProperty("username") String _username, @JsonProperty("password") String _password,
                 @JsonProperty("email") String _email, @JsonProperty("birthDate") String _birthDate,

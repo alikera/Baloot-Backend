@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.*;
 
@@ -30,6 +31,18 @@ public class CommandHandler {
         System.out.println("Error: Couldn't find user with the given Username!");
         return null;
     }
+
+    private List<Commodity> findCommoditiesByCategory(String category){
+        List<Commodity> foundedCommodities = new ArrayList<>();
+        for (Commodity commodity : commodities) {
+            Set<String> categories = commodity.getCategories();
+            if (categories.contains(category)) {
+                foundedCommodities.add(commodity);
+            }
+        }
+        return foundedCommodities;
+    }
+
     public void executeCommands(String[] command) throws IOException {
         Parser parser = new Parser();
         System.out.println(command[0]);
@@ -80,7 +93,8 @@ public class CommandHandler {
             case "getCommodityById":
                 getCommodityById(parser.getCommodityByIdParser(command[1]));
                 break;
-            case "getCommodityByCategory":
+            case "getCommoditiesByCategory":
+                getCommodityByCategory(parser.getCommodityByCategoryParser(command[1]));
                 break;
             case "getBuyList":
                 break;
@@ -116,6 +130,24 @@ public class CommandHandler {
             mainNode.put("data", mapper.readTree(commodityInfo));
             System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainNode));
         }
+    }
+
+    public void getCommodityByCategory(String category) throws JsonProcessingException {
+        List<Commodity> foundedCommodities = findCommoditiesByCategory(category);
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<ObjectNode> commodityNodes = new ArrayList<>();
+        for(Commodity commodity : foundedCommodities) {
+            commodityNodes.add(commodity.toJson());
+        }
+        ObjectNode mainNode = mapper.createObjectNode();
+        mainNode.putPOJO("commoditiesListByCategory", commodityNodes);
+        String jsonString = mapper.writeValueAsString(mainNode);
+
+        ObjectNode newNode = mapper.createObjectNode();
+        newNode.put("data", mapper.readTree(jsonString));
+
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newNode));
     }
 
 }

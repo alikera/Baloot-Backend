@@ -60,6 +60,16 @@ public class Parser {
 
         return id;
     }
+
+    public String getCommodityByCategoryParser(String data) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> map = objectMapper.readValue(data, new TypeReference<>() {});
+        ObjectNode node = objectMapper.createObjectNode();
+        String category = (String) map.get("category");
+
+        return category;
+    }
+
     public void main(String args[]) throws JsonProcessingException {
         String data = "{“username”: “user1”, “password”: “1234”, “email”: “user@gmail.com”, “birthDate”:“1977-09-15”, “address”: “address1”, “credit”: 1500}";
         addUserParser(data);

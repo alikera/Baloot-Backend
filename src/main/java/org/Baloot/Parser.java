@@ -1,10 +1,11 @@
 package org.Baloot;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Map;
 
 public class Parser {
 
@@ -27,6 +28,29 @@ public class Parser {
         return commodity;
     }
 
+
+    public ObjectNode rateCommodityParser(String data) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+//        String tempData = objectMapper.writeValueAsString(data);
+//        System.out.println(tempData);
+        Map<String, Object> map = objectMapper.readValue(data, new TypeReference<>() {});
+        ObjectNode node = objectMapper.createObjectNode();
+
+        String username = (String) map.get("username");
+        int commodityId = (int) map.get("commodityId");
+        int score;
+        try {
+            score = (int) map.get("score");
+            node.put("score", score);
+            node.put("username", username);
+            node.put("commodityId", commodityId);
+        }
+        catch (RuntimeException e){
+            throw e;
+        }
+
+        return node;
+    }
     public void main(String args[]) throws JsonProcessingException {
         String data = "{“username”: “user1”, “password”: “1234”, “email”: “user@gmail.com”, “birthDate”:“1977-09-15”, “address”: “address1”, “credit”: 1500}";
         addUserParser(data);

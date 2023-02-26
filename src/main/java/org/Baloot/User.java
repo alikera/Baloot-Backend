@@ -1,6 +1,5 @@
 package org.Baloot;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class User {
@@ -11,6 +10,10 @@ public class User {
     private String birthDate;
     private String address;
     private double credit;
+
+    public String getUsername() {
+        return username;
+    }
 
     public User(@JsonProperty("username") String _username, @JsonProperty("password") String _password,
                 @JsonProperty("email") String _email, @JsonProperty("birthDate") String _birthDate,

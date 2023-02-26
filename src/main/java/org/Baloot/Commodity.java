@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class Commodity {
+    HashMap<String, Integer> Ratings;
 
     private int id;
     private String name;
@@ -16,6 +16,10 @@ public class Commodity {
     private String categories;
     private double rating;
     private int inStock;
+
+    public int getId() {
+        return id;
+    }
 
     public Commodity(@JsonProperty ("id") int _id, @JsonProperty ("name") String _name,
                      @JsonProperty ("providerId") String _providerId, @JsonProperty ("price") double _price,
@@ -28,8 +32,14 @@ public class Commodity {
         categories = _categories;
         rating = _rating;
         inStock = _inStock;
+
+        Ratings = new HashMap<>();
     }
 
+    public void rateMovie(String username, int score) {
+        Ratings.put(username, score);
+        Ratings.forEach((key, value) -> System.out.println(key + " " + value));
+    }
     public void print() {
         System.out.println(this.id + " " + this.name + " " + this.providerId + " " + this.price + " " + this.categories
         + " " + this.rating + " " + this.inStock);

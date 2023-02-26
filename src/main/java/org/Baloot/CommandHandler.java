@@ -1,21 +1,32 @@
 package org.Baloot;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 
 public class CommandHandler {
     public List<User> users = new ArrayList<>();
     public List<Provider> providers = new ArrayList<>();
-    public List<Commodity> commodities = new ArrayList<>();
-    
+    public  List<Commodity> commodities = new ArrayList<>();
+
+    private Commodity findByCommodityId(int commodityId){
+        for (Commodity commodity : commodities) {
+            if (commodity.getId() == commodityId) {
+                return commodity;
+            }
+        }
+        return null;
+    }
+    private User findByUsername(String username){
+        for (User user : users) {
+            if (Objects.equals(user.getUsername(), username)) {
+                return user;
+            }
+        }
+        return null;
+    }
     public void executeCommands(String[] command) throws IOException {
         Parser parser = new Parser();
         System.out.println(command[0]);
@@ -40,6 +51,26 @@ public class CommandHandler {
                 getCommoditiesList();
                 break;
             case "rateCommodity":
+                try {
+                    ObjectNode node = parser.rateCommodityParser(command[1]);
+                    if(node.get("score").asInt() < 0 || node.get("score").asInt() > 10) {
+                        System.out.println("Invalid Rating");
+                        return;
+                    }
+                    ObjectMapper mapper = new ObjectMapper();
+                    System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
+                    Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
+                    User userFound = findByUsername(node.get("username").asText());
+
+                    if (commodityFound != null && userFound != null) {
+                        commodityFound.rateMovie(node.get("username").asText(), node.get("score").asInt());
+                    } else {
+                        System.out.println("Commodity Not Found!");
+                    }
+                }
+                catch (RuntimeException e){
+                    System.out.println("Invalid Rating");
+                }
                 break;
             case "addToBuyList":
                 break;

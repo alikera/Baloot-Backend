@@ -70,9 +70,6 @@ public class Parser {
         node.put("commodityId", commodityId);
         return node;
     }
-
-        public void main(String args[]) throws JsonProcessingException {
-
     public String getCommodityByCategoryParser(String data) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> map = objectMapper.readValue(data, new TypeReference<>() {});

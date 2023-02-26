@@ -11,12 +11,11 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class Commodity {
-    HashMap<String, Integer> Ratings;
-
+    HashMap<String, Double> Ratings;
 
     private int id;
     private String name;
-    private String providerId;
+    private int providerId;
     private double price;
     private Set<String> categories;
     private double rating;
@@ -29,12 +28,31 @@ public class Commodity {
         return categories;
     }
 
+    public int getProviderId() {
+        return providerId;
+    }
+
     public int getInStock() {
         return inStock;
     }
 
+    public double getRating() {
+        return rating;
+    }
+
+    public void decreaseInStock(){
+        inStock--;
+    }
+    private double calculateAverageOfRatings(){
+        double sum = 0.0;
+        for (Double value : Ratings.values()) {
+            sum += value;
+        }
+
+        return sum / Ratings.size();
+    }
     public Commodity(@JsonProperty ("id") int _id, @JsonProperty ("name") String _name,
-                     @JsonProperty ("providerId") String _providerId, @JsonProperty ("price") double _price,
+                     @JsonProperty ("providerId") int _providerId, @JsonProperty ("price") double _price,
                      @JsonProperty ("categories") String _categories, @JsonProperty ("rating") double _rating,
                      @JsonProperty ("inStock") int _inStock) {
         id = _id;
@@ -48,11 +66,14 @@ public class Commodity {
         rating = _rating;
         inStock = _inStock;
         Ratings = new HashMap<>();
+        Ratings.put("@", _rating);
     }
 
+
     public void rateCommodity(String username, int score) {
-        Ratings.put(username, score);
+        Ratings.put(username, (double) score);
         Ratings.forEach((key, value) -> System.out.println(key + " " + value));
+        rating = calculateAverageOfRatings();
     }
     public void print() {
         System.out.println(this.id + " " + this.name + " " + this.providerId + " " + this.price + " " + this.rating + " " + this.inStock);

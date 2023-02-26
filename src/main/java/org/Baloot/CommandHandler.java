@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import org.Baloot.Exception.*;
 public class CommandHandler {
     public List<User> users = new ArrayList<>();
     public List<Provider> providers = new ArrayList<>();
@@ -32,16 +32,27 @@ public class CommandHandler {
         throw new UserNotFoundException("Error: Couldn't find user with the given Username!");
     }
 
-    private void processAddUser(User user){
-        for (User current : users) {
-            if (Objects.equals(current.getUsername(), user.getUsername())) {
-                current.modifyFields(user);
+    private void addToProviderCommodityList(Commodity commodity) throws ProviderNotFoundException {
+        for(Provider provider : providers){
+            if(Objects.equals(provider.getId(), commodity.getProviderId())){
+                System.out.println("here");
+                provider.addToCommodities(commodity);
                 return;
             }
         }
 
-        users.add(user);
+        throw new ProviderNotFoundException("Error: Couldn't find provider with the given Id!");
     }
+//    private void processAddUser(User user){
+//        for (User current : users) {
+//            if (Objects.equals(current.getUsername(), user.getUsername())) {
+//                current.modifyFields(user);
+//                return;
+//            }
+//        }
+//
+//        users.add(user);
+//    }
 
     private List<Commodity> findCommoditiesByCategory(String category){
         List<Commodity> foundedCommodities = new ArrayList<>();
@@ -63,17 +74,21 @@ public class CommandHandler {
                 User user = parser.addUserParser(command[1]);
                 Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");
                 Matcher matcher = pattern.matcher(user.getUsername());
-                if(matcher.matches()) {
-                    processAddUser(user);
+                try {
+                    if (matcher.matches()) {
+                        User foundUser = findByUsername(user.getUsername());
+                        foundUser.modifyFields(user);
+                    } else {
+                        throw new InvalidUsernameException("Error: Invalid Username!");
+                    }
                 }
-                else{
-                    System.out.println("eeeeeeeee");
+                catch (UserNotFoundException e){
+                    users.add(user);
+                }
+                catch (InvalidUsernameException e){
+                    System.out.println(e.getMessage());
+                }
 
-                }
-                System.out.println(users.size());
-                for (User current : users) {
-                    current.print();
-                }
             }
             case "addProvider" -> {
                 Provider provider = parser.addProviderParser(command[1]);
@@ -82,8 +97,13 @@ public class CommandHandler {
             }
             case "addCommodity" -> {
                 Commodity commodity = parser.addCommodityParser(command[1]);
-                commodities.add(commodity);
-                commodity.print();
+                try {
+                    addToProviderCommodityList(commodity);
+                    commodities.add(commodity);
+                }
+                catch (ProviderNotFoundException e){
+                    System.out.println(e.getMessage());
+                }
             }
             case "getCommoditiesList" -> getCommoditiesList();
             case "rateCommodity" -> {
@@ -92,11 +112,8 @@ public class CommandHandler {
                     if (node.get("score").asInt() < 0 || node.get("score").asInt() > 10) {
                         throw new InvalidRatingException("Error: Invalid Score");
                     }
-                    ObjectMapper mapper = new ObjectMapper();
-                    System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
                     Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
                     User userFound = findByUsername(node.get("username").asText());
-
                     commodityFound.rateCommodity(node.get("username").asText(), node.get("score").asInt());
                 } catch (ExceptionHandler e) {
                     System.out.println(e.getMessage());
@@ -115,12 +132,17 @@ public class CommandHandler {
     public void addToUserBuyList(String command) throws JsonProcessingException, ExceptionHandler {
         ObjectNode node = parser.modifyBuyListParser(command);
         Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
-        if (commodityFound.getInStock() == 0) {
-            System.out.println("Error: Commodity out of stock");
-            return;
+        try {
+            if (commodityFound.getInStock() == 0) {
+                throw new OutOfStockException("Error: Commodity out of stock");
+            }
+            commodityFound.decreaseInStock();
+            User userFound = findByUsername(node.get("username").asText());
+            userFound.addToBuyList(node.get("commodityId").asInt());
         }
-        User userFound = findByUsername(node.get("username").asText());
-        userFound.addToBuyList(node.get("commodityId").asInt());
+        catch (OutOfStockException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public void removeFromUserBuyList(String command) throws JsonProcessingException, ExceptionHandler {

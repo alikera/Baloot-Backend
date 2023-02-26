@@ -29,7 +29,7 @@ public class Parser {
     }
 
 
-    public ObjectNode rateCommodityParser(String data) throws JsonProcessingException {
+    public ObjectNode rateCommodityParser(String data) throws JsonProcessingException, InvalidRatingException {
         ObjectMapper objectMapper = new ObjectMapper();
 //        String tempData = objectMapper.writeValueAsString(data);
 //        System.out.println(tempData);
@@ -46,7 +46,7 @@ public class Parser {
             node.put("commodityId", commodityId);
         }
         catch (RuntimeException e){
-            throw e;
+            throw new InvalidRatingException("Error: Invalid Score");
         }
 
         return node;

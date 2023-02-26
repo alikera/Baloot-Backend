@@ -16,6 +16,27 @@ public class User {
     public String getUsername() {
         return username;
     }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getBirthDate() {
+        return birthDate;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public double getCredit() {
+        return credit;
+    }
+
     public Set<Integer> getBuyList() {
         return buyList;
     }
@@ -31,6 +52,13 @@ public class User {
         credit = _credit;
     }
 
+    public void modifyFields(User user) {
+        password = user.getPassword();
+        email = user.getEmail();
+        birthDate = user.getBirthDate();
+        address = user.getAddress();
+        credit = user.getCredit();
+    }
     public void addToBuyList(int commodityId){
         if(buyList.contains(commodityId)){
             System.out.println("Error: Commodity already exists in your BuyList!");

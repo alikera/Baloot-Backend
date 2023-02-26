@@ -7,29 +7,40 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import javax.swing.*;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandHandler {
     public List<User> users = new ArrayList<>();
     public List<Provider> providers = new ArrayList<>();
     public  List<Commodity> commodities = new ArrayList<>();
     private Parser parser;
-    private Commodity findByCommodityId(int commodityId){
+    private Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException {
         for (Commodity commodity : commodities) {
             if (commodity.getId() == commodityId) {
                 return commodity;
             }
         }
-        System.out.println("Error: Couldn't find commodity with the given Id!");
-        return null;
+        throw new CommodityNotFoundException("Error: Couldn't find commodity with the given Id!");
     }
-    private User findByUsername(String username){
+    private User findByUsername(String username) throws UserNotFoundException {
         for (User user : users) {
             if (Objects.equals(user.getUsername(), username)) {
                 return user;
             }
         }
-        System.out.println("Error: Couldn't find user with the given Username!");
-        return null;
+        throw new UserNotFoundException("Error: Couldn't find user with the given Username!");
+    }
+
+    private void processAddUser(User user){
+        for (User current : users) {
+            if (Objects.equals(current.getUsername(), user.getUsername())) {
+                current.modifyFields(user);
+                return;
+            }
+        }
+
+        users.add(user);
     }
 
     private List<Commodity> findCommoditiesByCategory(String category){
@@ -43,92 +54,80 @@ public class CommandHandler {
         return foundedCommodities;
     }
 
-    public void executeCommands(String[] command) throws IOException {
+    public void executeCommands(String[] command) throws IOException, ExceptionHandler {
         parser = new Parser();
         System.out.println(command[0]);
 
         switch (command[0]) {
-            case "addUser":
+            case "addUser" -> {
                 User user = parser.addUserParser(command[1]);
-                users.add(user);
-                user.print();
-                break;
-            case "addProvider":
+                Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");
+                Matcher matcher = pattern.matcher(user.getUsername());
+                if(matcher.matches()) {
+                    processAddUser(user);
+                }
+                else{
+                    System.out.println("eeeeeeeee");
+
+                }
+                System.out.println(users.size());
+                for (User current : users) {
+                    current.print();
+                }
+            }
+            case "addProvider" -> {
                 Provider provider = parser.addProviderParser(command[1]);
                 providers.add(provider);
                 provider.print();
-                break;
-            case "addCommodity":
+            }
+            case "addCommodity" -> {
                 Commodity commodity = parser.addCommodityParser(command[1]);
                 commodities.add(commodity);
                 commodity.print();
-                break;
-            case "getCommoditiesList":
-                getCommoditiesList();
-                break;
-            case "rateCommodity":
+            }
+            case "getCommoditiesList" -> getCommoditiesList();
+            case "rateCommodity" -> {
                 try {
                     ObjectNode node = parser.rateCommodityParser(command[1]);
-                    if(node.get("score").asInt() < 0 || node.get("score").asInt() > 10) {
-                        System.out.println("Invalid Rating");
-                        return;
+                    if (node.get("score").asInt() < 0 || node.get("score").asInt() > 10) {
+                        throw new InvalidRatingException("Error: Invalid Score");
                     }
                     ObjectMapper mapper = new ObjectMapper();
                     System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
                     Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
                     User userFound = findByUsername(node.get("username").asText());
 
-                    if (commodityFound != null && userFound != null) {
-                        commodityFound.rateCommodity(node.get("username").asText(), node.get("score").asInt());
-                    }
+                    commodityFound.rateCommodity(node.get("username").asText(), node.get("score").asInt());
+                } catch (ExceptionHandler e) {
+                    System.out.println(e.getMessage());
                 }
-                catch (RuntimeException e){
-                    System.out.println("Invalid Rating");
-                }
-                break;
-            case "addToBuyList":
-                addToUserBuyList(command[1]);
-                break;
-            case "removeFromBuyList":
-                removeFromUserBuyList(command[1]);
-                break;
-            case "getCommodityById":
-                getCommodityById(parser.getCommodityByIdParser(command[1]));
-                break;
-            case "getCommoditiesByCategory":
-                getCommodityByCategory(parser.getCommodityByCategoryParser(command[1]));
-                break;
-            case "getBuyList":
-                getBuyList(parser.getBuyListParser(command[1]));
-                break;
-            default:
-                //TODO Exception
+            }
+            case "addToBuyList" -> addToUserBuyList(command[1]);
+            case "removeFromBuyList" -> removeFromUserBuyList(command[1]);
+            case "getCommodityById" -> getCommodityById(parser.getCommodityByIdParser(command[1]));
+            case "getCommoditiesByCategory" -> getCommodityByCategory(parser.getCommodityByCategoryParser(command[1]));
+            case "getBuyList" -> getBuyList(parser.getBuyListParser(command[1]));
+            default -> {
+            }
+            //TODO Exception
         }
     }
-    public void addToUserBuyList(String command) throws JsonProcessingException {
+    public void addToUserBuyList(String command) throws JsonProcessingException, ExceptionHandler {
         ObjectNode node = parser.modifyBuyListParser(command);
         Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
-        if (commodityFound != null) {
-            if(commodityFound.getInStock() == 0) {
-                System.out.println("Error: Commodity out of stock");
-                return;
-            }
-            User userFound = findByUsername(node.get("username").asText());
-            if(userFound != null) {
-                userFound.addToBuyList(node.get("commodityId").asInt());
-            }
+        if (commodityFound.getInStock() == 0) {
+            System.out.println("Error: Commodity out of stock");
+            return;
         }
+        User userFound = findByUsername(node.get("username").asText());
+        userFound.addToBuyList(node.get("commodityId").asInt());
     }
 
-    public void removeFromUserBuyList(String command) throws JsonProcessingException{
+    public void removeFromUserBuyList(String command) throws JsonProcessingException, ExceptionHandler {
         ObjectNode node = parser.modifyBuyListParser(command);
         Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
-        if (commodityFound != null) {
-            User userFound = findByUsername(node.get("username").asText());
-            if(userFound != null) {
-                userFound.removeFromBuyList(node.get("commodityId").asInt());
-            }
-        }
+        User userFound = findByUsername(node.get("username").asText());
+        userFound.removeFromBuyList(node.get("commodityId").asInt());
     }
     private void getCommoditiesList() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -146,17 +145,15 @@ public class CommandHandler {
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newNode));
     }
 
-    public void getCommodityById(int id) throws JsonProcessingException {
+    public void getCommodityById(int id) throws JsonProcessingException, ExceptionHandler {
         Commodity commodity = findByCommodityId(id);
-        if (commodity != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            ObjectNode commodityNode = commodity.toJson();
-            String commodityInfo = mapper.writeValueAsString(commodityNode);
-            System.out.println();
-            ObjectNode mainNode = mapper.createObjectNode();
-            mainNode.put("data", mapper.readTree(commodityInfo));
-            System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainNode));
-        }
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode commodityNode = commodity.toJson();
+        String commodityInfo = mapper.writeValueAsString(commodityNode);
+        System.out.println();
+        ObjectNode mainNode = mapper.createObjectNode();
+        mainNode.put("data", mapper.readTree(commodityInfo));
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainNode));
     }
 
     public void getCommodityByCategory(String category) throws JsonProcessingException {
@@ -177,10 +174,8 @@ public class CommandHandler {
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newNode));
     }
 
-    public void getBuyList(String username) throws JsonProcessingException {
+    public void getBuyList(String username) throws JsonProcessingException, ExceptionHandler {
         User user = findByUsername(username);
-        if (user == null)
-            return;
         Set<Integer> buyListIds = user.getBuyList();
 
         ObjectMapper mapper = new ObjectMapper();

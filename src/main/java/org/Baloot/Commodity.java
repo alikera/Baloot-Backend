@@ -1,6 +1,8 @@
 package org.Baloot;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,5 +33,18 @@ public class Commodity {
     public void print() {
         System.out.println(this.id + " " + this.name + " " + this.providerId + " " + this.price + " " + this.categories
         + " " + this.rating + " " + this.inStock);
+    }
+
+    public ObjectNode toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+        node.put("id", this.id);
+        node.put("name", this.name);
+        node.put("providerId", this.providerId);
+        node.put("price", this.price);
+        node.put("categories", this.categories);
+        node.put("rating", this.rating);
+        node.put("inStock", this.inStock);
+        return node;
     }
 }

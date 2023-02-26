@@ -1,21 +1,22 @@
 package org.Baloot;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class CommandHandler {
-    public static Set<User> users = new HashSet<User>();
-    public static Set<Provider> providers = new HashSet<Provider>();
-    public static Set<Commodity> commodities = new HashSet<Commodity>();
-
-    public static void executeCommands(String[] command) throws IOException {
+    public List<User> users = new ArrayList<>();
+    public List<Provider> providers = new ArrayList<>();
+    public List<Commodity> commodities = new ArrayList<>();
+    
+    public void executeCommands(String[] command) throws IOException {
         Parser parser = new Parser();
         System.out.println(command[0]);
 
@@ -36,7 +37,7 @@ public class CommandHandler {
                 commodity.print();
                 break;
             case "getCommoditiesList":
-
+                getCommoditiesList();
                 break;
             case "rateCommodity":
                 break;
@@ -54,4 +55,22 @@ public class CommandHandler {
                 //TODO Exception
         }
     }
+
+    private void getCommoditiesList() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        List<ObjectNode> commodityNodes = new ArrayList<>();
+        for(Commodity commodity : commodities) {
+            commodityNodes.add(commodity.toJson());
+        }
+        ObjectNode mainNode = mapper.createObjectNode();
+        mainNode.putPOJO("commoditiesList", commodityNodes);
+        String jsonString = mapper.writeValueAsString(mainNode);
+
+        ObjectNode newNode = mapper.createObjectNode();
+        newNode.put("data", mapper.readTree(jsonString));
+
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newNode));
+    }
+
+
 }

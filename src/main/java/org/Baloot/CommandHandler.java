@@ -12,7 +12,7 @@ public class CommandHandler {
     public List<User> users = new ArrayList<>();
     public List<Provider> providers = new ArrayList<>();
     public  List<Commodity> commodities = new ArrayList<>();
-
+    private Parser parser;
     private Commodity findByCommodityId(int commodityId){
         for (Commodity commodity : commodities) {
             if (commodity.getId() == commodityId) {
@@ -44,7 +44,7 @@ public class CommandHandler {
     }
 
     public void executeCommands(String[] command) throws IOException {
-        Parser parser = new Parser();
+        parser = new Parser();
         System.out.println(command[0]);
 
         switch (command[0]) {
@@ -79,7 +79,7 @@ public class CommandHandler {
                     User userFound = findByUsername(node.get("username").asText());
 
                     if (commodityFound != null && userFound != null) {
-                        commodityFound.rateMovie(node.get("username").asText(), node.get("score").asInt());
+                        commodityFound.rateCommodity(node.get("username").asText(), node.get("score").asInt());
                     }
                 }
                 catch (RuntimeException e){
@@ -87,8 +87,10 @@ public class CommandHandler {
                 }
                 break;
             case "addToBuyList":
+                addToUserBuyList(command[1]);
                 break;
             case "removeFromBuyList":
+                removeFromUserBuyList(command[1]);
                 break;
             case "getCommodityById":
                 getCommodityById(parser.getCommodityByIdParser(command[1]));
@@ -102,7 +104,31 @@ public class CommandHandler {
                 //TODO Exception
         }
     }
+    public void addToUserBuyList(String command) throws JsonProcessingException {
+        ObjectNode node = parser.modifyBuyListParser(command);
+        Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
+        if (commodityFound != null) {
+            if(commodityFound.getInStock() == 0) {
+                System.out.println("Error: Commodity out of stock");
+                return;
+            }
+            User userFound = findByUsername(node.get("username").asText());
+            if(userFound != null) {
+                userFound.addToBuyList(node.get("commodityId").asInt());
+            }
+        }
+    }
 
+    public void removeFromUserBuyList(String command) throws JsonProcessingException{
+        ObjectNode node = parser.modifyBuyListParser(command);
+        Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
+        if (commodityFound != null) {
+            User userFound = findByUsername(node.get("username").asText());
+            if(userFound != null) {
+                userFound.removeFromBuyList(node.get("commodityId").asInt());
+            }
+        }
+    }
     private void getCommoditiesList() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         List<ObjectNode> commodityNodes = new ArrayList<>();

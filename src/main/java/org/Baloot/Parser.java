@@ -60,6 +60,18 @@ public class Parser {
 
         return id;
     }
+    public ObjectNode modifyBuyListParser(String data) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> map = objectMapper.readValue(data, new TypeReference<>() {});
+        ObjectNode node = objectMapper.createObjectNode();
+        String username = (String) map.get("username");
+        int commodityId = (int) map.get("commodityId");
+        node.put("username", username);
+        node.put("commodityId", commodityId);
+        return node;
+    }
+
+        public void main(String args[]) throws JsonProcessingException {
 
     public String getCommodityByCategoryParser(String data) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();

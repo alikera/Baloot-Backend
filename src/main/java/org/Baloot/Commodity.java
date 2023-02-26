@@ -29,6 +29,10 @@ public class Commodity {
         return categories;
     }
 
+    public int getInStock() {
+        return inStock;
+    }
+
     public Commodity(@JsonProperty ("id") int _id, @JsonProperty ("name") String _name,
                      @JsonProperty ("providerId") String _providerId, @JsonProperty ("price") double _price,
                      @JsonProperty ("categories") String _categories, @JsonProperty ("rating") double _rating,
@@ -46,7 +50,7 @@ public class Commodity {
         Ratings = new HashMap<>();
     }
 
-    public void rateMovie(String username, int score) {
+    public void rateCommodity(String username, int score) {
         Ratings.put(username, score);
         Ratings.forEach((key, value) -> System.out.println(key + " " + value));
     }

@@ -18,6 +18,7 @@ public class CommandHandler {
                 return commodity;
             }
         }
+        System.out.println("Error: Couldn't find commodity with the given Id!");
         return null;
     }
     private User findByUsername(String username){
@@ -26,6 +27,7 @@ public class CommandHandler {
                 return user;
             }
         }
+        System.out.println("Error: Couldn't find user with the given Username!");
         return null;
     }
     public void executeCommands(String[] command) throws IOException {
@@ -65,8 +67,6 @@ public class CommandHandler {
 
                     if (commodityFound != null && userFound != null) {
                         commodityFound.rateMovie(node.get("username").asText(), node.get("score").asInt());
-                    } else {
-                        System.out.println("Commodity Not Found!");
                     }
                 }
                 catch (RuntimeException e){
@@ -78,6 +78,7 @@ public class CommandHandler {
             case "removeFromBuyList":
                 break;
             case "getCommodityById":
+                getCommodityById(parser.getCommodityByIdParser(command[1]));
                 break;
             case "getCommodityByCategory":
                 break;
@@ -104,5 +105,17 @@ public class CommandHandler {
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newNode));
     }
 
+    public void getCommodityById(int id) throws JsonProcessingException {
+        Commodity commodity = findByCommodityId(id);
+        if (commodity != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode commodityNode = commodity.toJson();
+            String commodityInfo = mapper.writeValueAsString(commodityNode);
+            System.out.println();
+            ObjectNode mainNode = mapper.createObjectNode();
+            mainNode.put("data", mapper.readTree(commodityInfo));
+            System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainNode));
+        }
+    }
 
 }

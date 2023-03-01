@@ -108,6 +108,7 @@ public class CommandHandler {
         }
         catch (UserNotFoundException e){
             users.add(user);
+            user.print();
         }
         catch (InvalidUsernameException e){
             System.out.println(e.getMessage());
@@ -125,6 +126,7 @@ public class CommandHandler {
         try {
             addToProviderCommodityList(commodity);
             commodities.add(commodity);
+            commodity.print();
         }
         catch (ProviderNotFoundException e){
             System.out.println(e.getMessage());

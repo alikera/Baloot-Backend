@@ -24,9 +24,6 @@ public class Provider {
                 .mapToDouble(Commodity::getRating) // Extract the scores as an IntStream
                 .average() // Calculate the average score
                 .orElse(0.0);
-        for(Commodity cc : myCommodities){
-            cc.print();
-        }
     }
     public Provider(@JsonProperty("id") int _id,
                     @JsonProperty("name") String _name,

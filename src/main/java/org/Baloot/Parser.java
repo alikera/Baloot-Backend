@@ -34,8 +34,6 @@ public class Parser {
 
     public ObjectNode rateCommodityParser(String data) throws JsonProcessingException, InvalidRatingException {
         ObjectMapper objectMapper = new ObjectMapper();
-//        String tempData = objectMapper.writeValueAsString(data);
-//        System.out.println(tempData);
         Map<String, Object> map = objectMapper.readValue(data, new TypeReference<>() {});
         ObjectNode node = objectMapper.createObjectNode();
 

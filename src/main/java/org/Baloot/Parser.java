@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.Baloot.Exception.InvalidRatingException;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Parser {
 
@@ -38,6 +40,12 @@ public class Parser {
         ObjectNode node = objectMapper.createObjectNode();
 
         String username = (String) map.get("username");
+        String commodityIdGiven = (String) map.get("commodityId");
+        Pattern pattern = Pattern.compile("[0-9]+");
+        Matcher matcher = pattern.matcher(commodityIdGiven);
+        if(!matcher.matches()){
+            throw new InvalidRatingException("Invalid Rating");
+        }
         int commodityId = (int) map.get("commodityId");
         int score;
         try {
@@ -47,7 +55,7 @@ public class Parser {
             node.put("commodityId", commodityId);
         }
         catch (RuntimeException e){
-            throw new InvalidRatingException("Error: Invalid Rating");
+            throw new InvalidRatingException("Invalid Rating");
         }
 
         return node;

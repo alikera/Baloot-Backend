@@ -112,7 +112,7 @@ public class Baloot {
             Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
 
             if (commodityFound.getInStock() == 0) {
-                throw new OutOfStockException("Commodity out of stock");
+                throw new OutOfStockException("Commodity out of stock!");
             }
             commodityFound.decreaseInStock();
             User userFound = findByUsername(node.get("username").asText());

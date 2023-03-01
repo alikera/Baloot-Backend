@@ -61,12 +61,12 @@ public class CommandHandler {
             case "addProvider" -> System.out.println(addProvider(command[1]));
             case "addCommodity" -> System.out.println(addCommodity(command[1]));
             case "getCommoditiesList" -> System.out.println(getCommoditiesList());
-            case "rateCommodity" -> System.out.println(rateCommodity(parser.rateCommodityParser(command[1])));
+            case "rateCommodity" -> System.out.println(rateCommodity(command[1]));
             case "addToBuyList" -> System.out.println(addToUserBuyList(command[1]));
             case "removeFromBuyList" -> removeFromUserBuyList(command[1]);
-            case "getCommodityById" -> System.out.println(getCommodityById(parser.getCommodityByIdParser(command[1])));
-            case "getCommoditiesByCategory" -> System.out.println(getCommodityByCategory(parser.getCommodityByCategoryParser(command[1])));
-            case "getBuyList" -> System.out.println(getBuyList(parser.getBuyListParser(command[1])));
+            case "getCommodityById" -> System.out.println(getCommodityById(command[1]));
+            case "getCommoditiesByCategory" -> System.out.println(getCommodityByCategory(command[1]));
+            case "getBuyList" -> System.out.println(getBuyList(command[1]));
             default -> {
             }
             //TODO Exception
@@ -110,16 +110,16 @@ public class CommandHandler {
         try {
             addToProviderCommodityList(commodity);
             commodities.add(commodity);
-            commodity.print();
-            return makeJsonFromString(true, "User added successfully");
+            return makeJsonFromString(true, "Commodity added successfully");
         }
         catch (ProviderNotFoundException e){
             return makeJsonFromString(false, e.getMessage());
         }
     }
 
-    public String rateCommodity(ObjectNode node) throws JsonProcessingException {
+    public String rateCommodity(String data) throws JsonProcessingException {
         try {
+            ObjectNode node = parser.rateCommodityParser(data);
             Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
             User userFound = findByUsername(node.get("username").asText());
             commodityFound.rateCommodity(node.get("username").asText(), node.get("score").asInt());
@@ -176,9 +176,10 @@ public class CommandHandler {
         return makeJsonFromObjectNode(true, mainNode);
     }
 
-    public String getCommodityById(int id) throws JsonProcessingException, ExceptionHandler {
+    public String getCommodityById(String data) throws JsonProcessingException, ExceptionHandler {
         ObjectMapper mapper = new ObjectMapper();
         try {
+            int id = parser.getCommodityByIdParser(data);
             Commodity commodity = findByCommodityId(id);
             ObjectNode commodityNode = commodity.toJson();
             commodityNode.remove("inStock");
@@ -189,7 +190,8 @@ public class CommandHandler {
         }
     }
 
-    public String getCommodityByCategory(String category) throws JsonProcessingException {
+    public String getCommodityByCategory(String data) throws JsonProcessingException {
+        String category = parser.getCommodityByCategoryParser(data);
         List<Commodity> foundedCommodities = findCommoditiesByCategory(category);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -205,9 +207,10 @@ public class CommandHandler {
         return makeJsonFromObjectNode(true, mainNode);
     }
 
-    public String getBuyList(String username) throws JsonProcessingException, ExceptionHandler {
+    public String getBuyList(String data) throws JsonProcessingException, ExceptionHandler {
         ObjectMapper mapper = new ObjectMapper();
         try {
+            String username = parser.getBuyListParser(data);
             User user = findByUsername(username);
             Set<Integer> buyListIds = user.getBuyList();
             List<ObjectNode> commodityNodes = new ArrayList<>();

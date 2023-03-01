@@ -36,7 +36,7 @@ public class TestGetCommodityById {
 
     @Test
     public void testGetCommoditiesByExistedId() throws JsonProcessingException, ExceptionHandler {
-        String output = cmdHandler.getCommodityById(1);
+        String output = cmdHandler.getCommodityById("");
         String expectedOutput = "\"data\": {\"id\": 1, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, " +
                 "\"categories\": [\"Technology\", \"Phone\"], \"rating\": 8.8}";
         assertEquals(expectedOutput, output);
@@ -44,7 +44,7 @@ public class TestGetCommodityById {
 
     @Test
     public void testGetCommoditiesByNoExistedId() throws JsonProcessingException, ExceptionHandler {
-        String output = cmdHandler.getCommodityById(0);
+        String output = cmdHandler.getCommodityById("");
         String expectedOutput = "\"data\": {\"commoditiesListByCategory\": []}";
         assertEquals(expectedOutput, output);
     }

@@ -40,7 +40,7 @@ public class Parser {
         ObjectNode node = objectMapper.createObjectNode();
 
         String username = (String) map.get("username");
-        String commodityIdGiven = (String) map.get("commodityId");
+        String commodityIdGiven = map.get("commodityId").toString();
         Pattern pattern = Pattern.compile("[0-9]+");
         Matcher matcher = pattern.matcher(commodityIdGiven);
         if(!matcher.matches()){

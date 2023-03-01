@@ -68,7 +68,7 @@ public class Commodity {
 
     public void rateCommodity(String username, int score) throws InvalidRatingException {
         if (score < 0 || score > 10) {
-            throw new InvalidRatingException("Error: Invalid Rating");
+            throw new InvalidRatingException("Invalid Rating");
         }
         Ratings.put(username, (double) score);
         Ratings.forEach((key, value) -> System.out.println(key + " " + value));

@@ -60,7 +60,6 @@ public class TestAddToBuyList {
         commodity1 = null;
         commodity2 = null;
         commodity3 = null;
-
     }
 
     @Test

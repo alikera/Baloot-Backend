@@ -56,9 +56,6 @@ public class Baloot {
         return foundedCommodities;
     }
     public ObjectNode addUser(User user) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode node = mapper.createObjectNode();
-
         Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");
         Matcher matcher = pattern.matcher(user.getUsername());
         try {
@@ -85,7 +82,6 @@ public class Baloot {
     }
 
     public ObjectNode addCommodity(Commodity commodity) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             addToProviderCommodityList(commodity);
             commodities.add(commodity);
@@ -96,7 +92,19 @@ public class Baloot {
         }
     }
 
-    public ObjectNode rateCommodity(ObjectNode node) throws JsonProcessingException {
+    public ObjectNode getCommoditiesList() {
+        ObjectMapper mapper = new ObjectMapper();
+        List<ObjectNode> commodityNodes = new ArrayList<>();
+        for(Commodity commodity : commodities) {
+            commodityNodes.add(commodity.toJson());
+        }
+        ObjectNode mainNode = mapper.createObjectNode();
+        mainNode.putPOJO("commoditiesList", commodityNodes);
+
+        return makeJsonFromObjectNode(true, mainNode);
+    }
+
+    public ObjectNode rateCommodity(ObjectNode node) {
         try {
             Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
             User userFound = findByUsername(node.get("username").asText());
@@ -107,7 +115,7 @@ public class Baloot {
         }
     }
 
-    public ObjectNode addToUserBuyList(ObjectNode node) throws JsonProcessingException, ExceptionHandler {
+    public ObjectNode addToUserBuyList(ObjectNode node) throws ExceptionHandler {
         try {
             Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
 
@@ -133,7 +141,7 @@ public class Baloot {
         }
     }
 
-    public ObjectNode removeFromUserBuyList(ObjectNode node) throws JsonProcessingException, ExceptionHandler {
+    public ObjectNode removeFromUserBuyList(ObjectNode node) throws ExceptionHandler {
         try {
             Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
             User userFound = findByUsername(node.get("username").asText());
@@ -151,21 +159,7 @@ public class Baloot {
         }
     }
 
-    public ObjectNode getCommoditiesList() throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        List<ObjectNode> commodityNodes = new ArrayList<>();
-        for(Commodity commodity : commodities) {
-            commodityNodes.add(commodity.toJson());
-        }
-        ObjectNode mainNode = mapper.createObjectNode();
-        mainNode.putPOJO("commoditiesList", commodityNodes);
-        String data = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainNode);
-
-        return makeJsonFromObjectNode(true, mainNode);
-    }
-
-    public ObjectNode getCommodityById(int id) throws JsonProcessingException, ExceptionHandler {
-        ObjectMapper mapper = new ObjectMapper();
+    public ObjectNode getCommodityById(int id) throws ExceptionHandler {
         try {
             Commodity commodity = findByCommodityId(id);
             ObjectNode commodityNode = commodity.toJson();
@@ -177,7 +171,7 @@ public class Baloot {
         }
     }
 
-    public ObjectNode getCommodityByCategory(String category) throws JsonProcessingException {
+    public ObjectNode getCommodityByCategory(String category) {
         List<Commodity> foundedCommodities = findCommoditiesByCategory(category);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -193,7 +187,7 @@ public class Baloot {
         return makeJsonFromObjectNode(true, mainNode);
     }
 
-    public ObjectNode getBuyList(String username) throws JsonProcessingException, ExceptionHandler {
+    public ObjectNode getBuyList(String username) throws ExceptionHandler {
         ObjectMapper mapper = new ObjectMapper();
         try {
             User user = findByUsername(username);
@@ -215,7 +209,7 @@ public class Baloot {
         }
     }
 
-    public ObjectNode makeJsonFromObjectNode(Boolean success, ObjectNode dataNode) throws JsonProcessingException {
+    public ObjectNode makeJsonFromObjectNode(Boolean success, ObjectNode dataNode) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
         node.put("success", success);
@@ -223,7 +217,7 @@ public class Baloot {
         return node;
     }
 
-    public ObjectNode makeJsonFromString(Boolean success, String data) throws JsonProcessingException {
+    public ObjectNode makeJsonFromString(Boolean success, String data) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
         node.put("success", success);

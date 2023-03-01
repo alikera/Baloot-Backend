@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.Baloot.Exception.InvalidRatingException;
-
-import java.math.BigDecimal;
 import java.util.*;
 
 public class Commodity {

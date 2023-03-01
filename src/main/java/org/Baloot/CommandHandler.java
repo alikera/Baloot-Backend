@@ -1,26 +1,22 @@
 package org.Baloot;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import javax.swing.*;
 import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.Baloot.Exception.*;
+
 public class CommandHandler {
     private Parser parser;
     private Baloot baloot;
     ObjectMapper mapper;
+
     public CommandHandler() {
         baloot = new Baloot();
         parser = new Parser();
         mapper = new ObjectMapper();
     }
 
-    public void executeCommands(String[] command) throws IOException, ExceptionHandler {
+    public void executeCommands(String[] command) throws IOException {
         try {
             switch (command[0]) {
                 case "addUser" -> {

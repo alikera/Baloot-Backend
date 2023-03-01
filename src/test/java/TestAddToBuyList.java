@@ -1,9 +1,11 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.Baloot.CommandHandler;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.Baloot.Baloot;
 import org.Baloot.Commodity;
 import org.Baloot.Exception.ExceptionHandler;
 import org.Baloot.Exception.UserNotFoundException;
+import org.Baloot.Provider;
 import org.Baloot.User;
 import org.junit.*;
 
@@ -13,63 +15,101 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class TestAddToBuyList {
-    private CommandHandler cmdHandler;
-    User user;
-
+    private Baloot baloot;
+    private User user;
+    private Provider provider;
+    private Commodity commodity1, commodity2, commodity3;
+    private ObjectMapper objectMapper;
     @Before
     public void setUp() throws JsonProcessingException, UserNotFoundException {
-        cmdHandler = new CommandHandler();
-        cmdHandler.addProvider("{\"id\": 1, \"name\": \"provider1\", \"registryDate\": \"2023-09-15\"}");
+        baloot = new Baloot();
+        objectMapper = new ObjectMapper();
+        provider = new Provider(1, "provider1", "2023-09-15");
+        baloot.addProvider(provider);
 
-        cmdHandler.addUser("{\"username\": \"user1\", \"password\": \"1234\", \"email\": \"user@gmail.com\", " +
-                "\"birthDate\": \"1977-09-15\", \"address\": \"address1\", \"credit\": 1500}");
+        user = new User("user1", "1234", "user@gmail.com","1977-09-15",
+                "address1",1500);
+        baloot.addUser(user);
 
-        cmdHandler.addCommodity("{\"id\": 1, \"name\": \"Headphone\", \"providerId\": 1, \"price\": 35000, " +
-                "\"categories\": [\"Technology\", \"Phone\"], \"rating\": 8.8, \"inStock\": 10}");
-        cmdHandler.addCommodity("{\"id\": 2, \"name\": \"Apple\", \"providerId\": 1, \"price\": 3000, " +
-                "\"categories\": [\"Technology\"], \"rating\": 1.8, \"inStock\": 20}");
-        cmdHandler.addCommodity("{\"id\": 3, \"name\": \"Apple\", \"providerId\": 1, \"price\": 300, " +
-                "\"categories\": [\"Fruit\"], \"rating\": 9.8, \"inStock\": 0}");
-        user = cmdHandler.findByUsername("user1");
+        List<String> categories1 = new ArrayList<>();
+        categories1.add("Technology");
+        commodity1 = new Commodity(1, "Headphone", 1, 35000, categories1, 0.0,
+                50);
+        baloot.addCommodity(commodity1);
 
+        List<String> categories2 = new ArrayList<>();
+        categories2.add("Technology");
+        categories2.add("Phone");
+        commodity2 = new Commodity(2, "Apple", 1, 3000, categories2, 0.0,
+                0);
+        baloot.addCommodity(commodity2);
+
+        List<String> categories3 = new ArrayList<>();
+        categories3.add("Fruit");
+        commodity3 = new Commodity(3, "Apple", 1, 300, categories3, 0.0,
+                220);
+        baloot.addCommodity(commodity3);
     }
 
     @After
     public void tearDown() {
-        cmdHandler = null;
+        baloot = null;
+        objectMapper = null;
+        user = null;
+        provider = null;
+        commodity1 = null;
+        commodity2 = null;
+        commodity3 = null;
+
     }
 
     @Test
     public void testAddToBuyListIfUserDoesNotExist() throws JsonProcessingException, ExceptionHandler {
-        String output = cmdHandler.addToUserBuyList("{\"username\": \"user2\", \"commodityId\": 1}");
-        String expectedOutput = "{\"success\" : false, \"data\" : \"Couldn't find user with the given Username!\"}";
-        assertEquals(expectedOutput, output);
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("username", "user2");
+        node.put("commodityId", 1);
+        ObjectNode outputNode = baloot.addToUserBuyList(node);
+        assertFalse(outputNode.get("success").asBoolean());
+        assertEquals("Couldn't find user with the given Username!", outputNode.get("data").asText());
     }
     @Test
     public void testAddToBuyListIfCommodityDoesNotExist() throws JsonProcessingException, ExceptionHandler {
-        String output = cmdHandler.addToUserBuyList("{\"username\": \"user1\", \"commodityId\": 4}");
-        String expectedOutput = "{\"success\" : false, \"data\" : \"Couldn't find commodity with the given Id!\"}";
-        assertEquals(expectedOutput, output);
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("username", "user1");
+        node.put("commodityId", 4);
+        ObjectNode outputNode = baloot.addToUserBuyList(node);
+        assertFalse(outputNode.get("success").asBoolean());
+        assertEquals("Couldn't find commodity with the given Id!", outputNode.get("data").asText());
     }
     @Test
     public void testAddToBuyListIfCommodityAlreadyExistedInBuyListUser() throws JsonProcessingException, ExceptionHandler {
-        String dummy = cmdHandler.addToUserBuyList("{\"username\": \"user1\", \"commodityId\": 1}");
-        String output = cmdHandler.addToUserBuyList("{\"username\": \"user1\", \"commodityId\": 1}");
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("username", "user1");
+        node.put("commodityId", 1);
 
-        String expectedOutput = "{\"success\" : false, \"data\" :\"Commodity already exists in your BuyList!\"}";
-
-        assertEquals(expectedOutput, output);
+        ObjectNode dummyNode = baloot.addToUserBuyList(node);
+        ObjectNode outputNode = baloot.addToUserBuyList(node);
+        assertFalse(outputNode.get("success").asBoolean());
+        assertEquals("Commodity already exists in your BuyList!", outputNode.get("data").asText());
     }
     @Test
     public void testAddToBuyListOutOfStockCommodity() throws JsonProcessingException, ExceptionHandler {
-        String output = cmdHandler.addToUserBuyList("{\"username\": \"user1\", \"commodityId\": 4}");
-        String expectedOutput = "{\"success\" : false, \"data\" : \"Commodity out of stock!\"}";
-        assertEquals(expectedOutput, output);
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("username", "user1");
+        node.put("commodityId", 2);
+
+        ObjectNode outputNode = baloot.addToUserBuyList(node);
+        assertFalse(outputNode.get("success").asBoolean());
+        assertEquals("Commodity out of stock!", outputNode.get("data").asText());
+
     }
     @Test
     public void testAddToBuyListSuccessful() throws JsonProcessingException, ExceptionHandler {
-        String output = cmdHandler.addToUserBuyList("{\"username\": \"user1\", \"commodityId\": 1}");
-        String expectedOutput = "{\"success\" : true, \"data\" : \"Commodity added to user buy list successfully\"}";
-        assertEquals(expectedOutput, output);
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("username", "user1");
+        node.put("commodityId", 1);
+        ObjectNode outputNode = baloot.addToUserBuyList(node);
+        assertTrue(outputNode.get("success").asBoolean());
+        assertEquals("Commodity added to user buy list successfully", outputNode.get("data").asText());
     }
 }

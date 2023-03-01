@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.Baloot.Exception.InvalidRatingException;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -36,10 +37,9 @@ public class Commodity {
         return inStock;
     }
 
-    public double getRating() {
-        return rating;
-    }
+    public double getRating() { return rating; }
 
+    public int getCountOfRatings(){ return Ratings.size(); }
     public void decreaseInStock(){
         inStock--;
     }
@@ -66,11 +66,13 @@ public class Commodity {
         rating = _rating;
         inStock = _inStock;
         Ratings = new HashMap<>();
-        Ratings.put("@", _rating);
     }
 
 
-    public void rateCommodity(String username, int score) {
+    public void rateCommodity(String username, int score) throws InvalidRatingException {
+        if (score < 0 || score > 10) {
+            throw new InvalidRatingException("Error: Invalid Rating");
+        }
         Ratings.put(username, (double) score);
         Ratings.forEach((key, value) -> System.out.println(key + " " + value));
         rating = calculateAverageOfRatings();

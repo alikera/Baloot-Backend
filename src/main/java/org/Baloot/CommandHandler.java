@@ -14,8 +14,8 @@ public class CommandHandler {
     public List<User> users = new ArrayList<>();
     public List<Provider> providers = new ArrayList<>();
     public  List<Commodity> commodities = new ArrayList<>();
-    private Parser parser;
-    private Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException {
+    private Parser parser = new Parser();
+    public Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException {
         for (Commodity commodity : commodities) {
             if (commodity.getId() == commodityId) {
                 return commodity;
@@ -23,7 +23,7 @@ public class CommandHandler {
         }
         throw new CommodityNotFoundException("Error: Couldn't find commodity with the given Id!");
     }
-    private User findByUsername(String username) throws UserNotFoundException {
+    public User findByUsername(String username) throws UserNotFoundException {
         for (User user : users) {
             if (Objects.equals(user.getUsername(), username)) {
                 return user;
@@ -66,7 +66,6 @@ public class CommandHandler {
     }
 
     public void executeCommands(String[] command) throws IOException, ExceptionHandler {
-        parser = new Parser();
         System.out.println(command[0]);
 
         switch (command[0]) {
@@ -77,9 +76,6 @@ public class CommandHandler {
             case "rateCommodity" -> {
                 try {
                     ObjectNode node = parser.rateCommodityParser(command[1]);
-                    if (node.get("score").asInt() < 0 || node.get("score").asInt() > 10) {
-                        throw new InvalidRatingException("Error: Invalid Score");
-                    }
                     Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
                     User userFound = findByUsername(node.get("username").asText());
                     commodityFound.rateCommodity(node.get("username").asText(), node.get("score").asInt());

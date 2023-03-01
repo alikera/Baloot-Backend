@@ -48,7 +48,7 @@ public class Parser {
             node.put("commodityId", commodityId);
         }
         catch (RuntimeException e){
-            throw new InvalidRatingException("Error: Invalid Score");
+            throw new InvalidRatingException("Error: Invalid Rating");
         }
 
         return node;

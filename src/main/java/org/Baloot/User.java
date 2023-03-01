@@ -1,6 +1,7 @@
 package org.Baloot;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.Baloot.Exception.CommodityExistenceException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -59,20 +60,20 @@ public class User {
         address = user.getAddress();
         credit = user.getCredit();
     }
-    public void addToBuyList(int commodityId){
+    public void addToBuyList(int commodityId) throws CommodityExistenceException {
         if(buyList.contains(commodityId)){
-            System.out.println("Error: Commodity already exists in your BuyList!");
+            throw new CommodityExistenceException("Commodity already exists in your BuyList!");
         }
         else {
             buyList.add(commodityId);
         }
     }
 
-    public void removeFromBuyList(int commodityId) {
+    public void removeFromBuyList(int commodityId) throws CommodityExistenceException {
         if (buyList.contains(commodityId)) {
             buyList.remove(commodityId);
         } else {
-            System.out.println("Error: Commodity does not exists in your BuyList!");
+            throw new CommodityExistenceException("Commodity does not exists in your BuyList!");
         }
     }
     public void print() {

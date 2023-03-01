@@ -70,41 +70,9 @@ public class CommandHandler {
         System.out.println(command[0]);
 
         switch (command[0]) {
-            case "addUser" -> {
-                User user = parser.addUserParser(command[1]);
-                Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");
-                Matcher matcher = pattern.matcher(user.getUsername());
-                try {
-                    if (matcher.matches()) {
-                        User foundUser = findByUsername(user.getUsername());
-                        foundUser.modifyFields(user);
-                    } else {
-                        throw new InvalidUsernameException("Error: Invalid Username!");
-                    }
-                }
-                catch (UserNotFoundException e){
-                    users.add(user);
-                }
-                catch (InvalidUsernameException e){
-                    System.out.println(e.getMessage());
-                }
-
-            }
-            case "addProvider" -> {
-                Provider provider = parser.addProviderParser(command[1]);
-                providers.add(provider);
-                provider.print();
-            }
-            case "addCommodity" -> {
-                Commodity commodity = parser.addCommodityParser(command[1]);
-                try {
-                    addToProviderCommodityList(commodity);
-                    commodities.add(commodity);
-                }
-                catch (ProviderNotFoundException e){
-                    System.out.println(e.getMessage());
-                }
-            }
+            case "addUser" -> addUser(command[1]);
+            case "addProvider" -> addProvider(command[1]);
+            case "addCommodity" -> addCommodity(command[1]);
             case "getCommoditiesList" -> getCommoditiesList();
             case "rateCommodity" -> {
                 try {
@@ -121,14 +89,52 @@ public class CommandHandler {
             }
             case "addToBuyList" -> addToUserBuyList(command[1]);
             case "removeFromBuyList" -> removeFromUserBuyList(command[1]);
-            case "getCommodityById" -> getCommodityById(parser.getCommodityByIdParser(command[1]));
-            case "getCommoditiesByCategory" -> getCommodityByCategory(parser.getCommodityByCategoryParser(command[1]));
+            case "getCommodityById" -> System.out.println(getCommodityById(parser.getCommodityByIdParser(command[1])));
+            case "getCommoditiesByCategory" -> System.out.println(getCommodityByCategory(parser.getCommodityByCategoryParser(command[1])));
             case "getBuyList" -> getBuyList(parser.getBuyListParser(command[1]));
             default -> {
             }
             //TODO Exception
         }
     }
+
+    public void addUser(String data) throws JsonProcessingException {
+        User user = parser.addUserParser(data);
+        Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");
+        Matcher matcher = pattern.matcher(user.getUsername());
+        try {
+            if (matcher.matches()) {
+                User foundUser = findByUsername(user.getUsername());
+                foundUser.modifyFields(user);
+            } else {
+                throw new InvalidUsernameException("Error: Invalid Username!");
+            }
+        }
+        catch (UserNotFoundException e){
+            users.add(user);
+        }
+        catch (InvalidUsernameException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void addProvider(String data) throws JsonProcessingException {
+        Provider provider = parser.addProviderParser(data);
+        providers.add(provider);
+        provider.print();
+    }
+
+    public void addCommodity(String data) throws JsonProcessingException {
+        Commodity commodity = parser.addCommodityParser(data);
+        try {
+            addToProviderCommodityList(commodity);
+            commodities.add(commodity);
+        }
+        catch (ProviderNotFoundException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void addToUserBuyList(String command) throws JsonProcessingException, ExceptionHandler {
         ObjectNode node = parser.modifyBuyListParser(command);
         Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
@@ -167,7 +173,7 @@ public class CommandHandler {
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newNode));
     }
 
-    public void getCommodityById(int id) throws JsonProcessingException, ExceptionHandler {
+    public String getCommodityById(int id) throws JsonProcessingException, ExceptionHandler {
         Commodity commodity = findByCommodityId(id);
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode commodityNode = commodity.toJson();
@@ -175,10 +181,10 @@ public class CommandHandler {
         System.out.println();
         ObjectNode mainNode = mapper.createObjectNode();
         mainNode.put("data", mapper.readTree(commodityInfo));
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainNode));
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainNode);
     }
 
-    public void getCommodityByCategory(String category) throws JsonProcessingException {
+    public String getCommodityByCategory(String category) throws JsonProcessingException {
         List<Commodity> foundedCommodities = findCommoditiesByCategory(category);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -193,7 +199,7 @@ public class CommandHandler {
         ObjectNode newNode = mapper.createObjectNode();
         newNode.put("data", mapper.readTree(jsonString));
 
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newNode));
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newNode);
     }
 
     public void getBuyList(String username) throws JsonProcessingException, ExceptionHandler {

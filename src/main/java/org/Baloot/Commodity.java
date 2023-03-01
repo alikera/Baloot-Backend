@@ -71,7 +71,6 @@ public class Commodity {
             throw new InvalidRatingException("Invalid Rating");
         }
         Ratings.put(username, (double) score);
-        Ratings.forEach((key, value) -> System.out.println(key + " " + value));
         rating = calculateAverageOfRatings();
     }
     public void print() {

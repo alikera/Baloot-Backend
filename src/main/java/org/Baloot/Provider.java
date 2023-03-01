@@ -27,7 +27,6 @@ public class Provider {
         for(Commodity cc : myCommodities){
             cc.print();
         }
-        System.out.println(averageRatingCommodities);
     }
     public Provider(@JsonProperty("id") int _id,
                     @JsonProperty("name") String _name,

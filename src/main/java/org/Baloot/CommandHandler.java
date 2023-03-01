@@ -114,7 +114,7 @@ public class CommandHandler {
             users.add(user);
             user.print();
         }
-        catch (InvalidUsernameException e){
+        catch (InvalidUsernameException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -176,14 +176,19 @@ public class CommandHandler {
     }
 
     public String getCommodityById(int id) throws JsonProcessingException, ExceptionHandler {
-        Commodity commodity = findByCommodityId(id);
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode commodityNode = commodity.toJson();
-        String commodityInfo = mapper.writeValueAsString(commodityNode);
-        System.out.println();
-        ObjectNode mainNode = mapper.createObjectNode();
-        mainNode.put("data", mapper.readTree(commodityInfo));
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainNode);
+        try {
+            Commodity commodity = findByCommodityId(id);
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode commodityNode = commodity.toJson();
+            commodityNode.remove("inStock");
+            String commodityInfo = mapper.writeValueAsString(commodityNode);
+            ObjectNode mainNode = mapper.createObjectNode();
+            mainNode.put("data", mapper.readTree(commodityInfo));
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainNode);
+        }
+        catch (CommodityNotFoundException e) {
+            return e.getMessage();
+        }
     }
 
     public String getCommodityByCategory(String category) throws JsonProcessingException {
@@ -192,7 +197,9 @@ public class CommandHandler {
         ObjectMapper mapper = new ObjectMapper();
         List<ObjectNode> commodityNodes = new ArrayList<>();
         for(Commodity commodity : foundedCommodities) {
-            commodityNodes.add(commodity.toJson());
+            ObjectNode commodityNode = commodity.toJson();
+            commodityNode.remove("inStock");
+            commodityNodes.add(commodityNode);
         }
         ObjectNode mainNode = mapper.createObjectNode();
         mainNode.putPOJO("commoditiesListByCategory", commodityNodes);

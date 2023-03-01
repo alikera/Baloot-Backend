@@ -35,7 +35,7 @@ public class CommandHandler {
                     Commodity commodity = parser.addCommodityParser(command[1]);
                     System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(baloot.addCommodity(commodity)));
                 }
-                case "getCommoditiesList" -> System.out.println(baloot.getCommoditiesList());
+                case "getCommoditiesList" -> System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(baloot.getCommoditiesList()));
                 case "rateCommodity" -> {
                     ObjectNode node = parser.rateCommodityParser(command[1]);
                     System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(baloot.rateCommodity(node)));
@@ -46,7 +46,7 @@ public class CommandHandler {
                 }
                 case "removeFromBuyList" -> {
                     ObjectNode node = parser.modifyBuyListParser(command[1]);
-                    baloot.removeFromUserBuyList(node);
+                    System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(baloot.removeFromUserBuyList(node)));
                 }
                 case "getCommodityById" -> {
                     int id = parser.getCommodityByIdParser(command[1]);

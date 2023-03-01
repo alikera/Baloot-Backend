@@ -133,10 +133,22 @@ public class Baloot {
         }
     }
 
-    public void removeFromUserBuyList(ObjectNode node) throws JsonProcessingException, ExceptionHandler {
-        Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
-        User userFound = findByUsername(node.get("username").asText());
-        userFound.removeFromBuyList(node.get("commodityId").asInt());
+    public ObjectNode removeFromUserBuyList(ObjectNode node) throws JsonProcessingException, ExceptionHandler {
+        try {
+            Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
+            User userFound = findByUsername(node.get("username").asText());
+            userFound.removeFromBuyList(node.get("commodityId").asInt());
+            return makeJsonFromString(true, "Commodity removed from user buy list successfully");
+        }
+        catch (CommodityNotFoundException e) {
+            return makeJsonFromString(false, "Commodity does not exists in your BuyList!");
+        }
+        catch (CommodityExistenceException e) {
+            return makeJsonFromString(false, e.getMessage());
+        }
+        catch (UserNotFoundException e) {
+            return makeJsonFromString(false, e.getMessage());
+        }
     }
 
     public ObjectNode getCommoditiesList() throws JsonProcessingException {
@@ -189,7 +201,9 @@ public class Baloot {
             List<ObjectNode> commodityNodes = new ArrayList<>();
             for (int commodityId : buyListIds) {
                 Commodity commodity = findByCommodityId(commodityId);
-                commodityNodes.add(commodity.toJson());
+                ObjectNode commodityNode = commodity.toJson();
+                commodityNode.remove("inStock");
+                commodityNodes.add(commodityNode);
             }
             ObjectNode mainNode = mapper.createObjectNode();
             mainNode.putPOJO("buyList", commodityNodes);

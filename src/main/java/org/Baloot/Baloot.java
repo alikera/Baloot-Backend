@@ -55,7 +55,7 @@ public class Baloot {
         }
         return foundedCommodities;
     }
-    public String addUser(User user) throws JsonProcessingException {
+    public ObjectNode addUser(User user) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
 
@@ -79,12 +79,12 @@ public class Baloot {
         }
     }
 
-    public String addProvider(Provider provider) throws JsonProcessingException {
+    public ObjectNode addProvider(Provider provider) throws JsonProcessingException {
         providers.add(provider);
         return makeJsonFromString(true, "Provider added successfully");
     }
 
-    public String addCommodity(Commodity commodity) throws JsonProcessingException {
+    public ObjectNode addCommodity(Commodity commodity) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         try {
             addToProviderCommodityList(commodity);
@@ -96,7 +96,7 @@ public class Baloot {
         }
     }
 
-    public String rateCommodity(ObjectNode node) throws JsonProcessingException {
+    public ObjectNode rateCommodity(ObjectNode node) throws JsonProcessingException {
         try {
             Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
             User userFound = findByUsername(node.get("username").asText());
@@ -107,7 +107,7 @@ public class Baloot {
         }
     }
 
-    public String addToUserBuyList(ObjectNode node) throws JsonProcessingException, ExceptionHandler {
+    public ObjectNode addToUserBuyList(ObjectNode node) throws JsonProcessingException, ExceptionHandler {
         try {
             Commodity commodityFound = findByCommodityId(node.get("commodityId").asInt());
 
@@ -139,7 +139,7 @@ public class Baloot {
         userFound.removeFromBuyList(node.get("commodityId").asInt());
     }
 
-    public String getCommoditiesList() throws JsonProcessingException {
+    public ObjectNode getCommoditiesList() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         List<ObjectNode> commodityNodes = new ArrayList<>();
         for(Commodity commodity : commodities) {
@@ -152,7 +152,7 @@ public class Baloot {
         return makeJsonFromObjectNode(true, mainNode);
     }
 
-    public String getCommodityById(int id) throws JsonProcessingException, ExceptionHandler {
+    public ObjectNode getCommodityById(int id) throws JsonProcessingException, ExceptionHandler {
         ObjectMapper mapper = new ObjectMapper();
         try {
             Commodity commodity = findByCommodityId(id);
@@ -165,7 +165,7 @@ public class Baloot {
         }
     }
 
-    public String getCommodityByCategory(String category) throws JsonProcessingException {
+    public ObjectNode getCommodityByCategory(String category) throws JsonProcessingException {
         List<Commodity> foundedCommodities = findCommoditiesByCategory(category);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -181,7 +181,7 @@ public class Baloot {
         return makeJsonFromObjectNode(true, mainNode);
     }
 
-    public String getBuyList(String username) throws JsonProcessingException, ExceptionHandler {
+    public ObjectNode getBuyList(String username) throws JsonProcessingException, ExceptionHandler {
         ObjectMapper mapper = new ObjectMapper();
         try {
             User user = findByUsername(username);
@@ -201,19 +201,19 @@ public class Baloot {
         }
     }
 
-    public String makeJsonFromObjectNode(Boolean success, ObjectNode dataNode) throws JsonProcessingException {
+    public ObjectNode makeJsonFromObjectNode(Boolean success, ObjectNode dataNode) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
         node.put("success", success);
         node.put("data", dataNode);
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+        return node;
     }
 
-    public String makeJsonFromString(Boolean success, String data) throws JsonProcessingException {
+    public ObjectNode makeJsonFromString(Boolean success, String data) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
         node.put("success", success);
         node.put("data", data);
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+        return node;
     }
 }

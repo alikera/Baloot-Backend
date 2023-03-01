@@ -30,7 +30,6 @@ public class Parser {
         return commodity;
     }
 
-
     public ObjectNode rateCommodityParser(String data) throws JsonProcessingException, InvalidRatingException {
         ObjectMapper objectMapper = new ObjectMapper();
 //        String tempData = objectMapper.writeValueAsString(data);

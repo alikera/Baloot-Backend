@@ -53,16 +53,13 @@ public class Commodity {
     }
     public Commodity(@JsonProperty ("id") int _id, @JsonProperty ("name") String _name,
                      @JsonProperty ("providerId") int _providerId, @JsonProperty ("price") double _price,
-                     @JsonProperty ("categories") String _categories, @JsonProperty ("rating") double _rating,
+                     @JsonProperty ("categories") List<String> _categories, @JsonProperty ("rating") double _rating,
                      @JsonProperty ("inStock") int _inStock) {
         id = _id;
         name = _name;
         providerId = _providerId;
         price = _price;
-
-        String[] seperatedCategories = _categories.substring(1, _categories.length() - 1).split(", ");
-        categories = new HashSet<>(Arrays.asList(seperatedCategories));
-
+        categories = new HashSet<String>(_categories);
         rating = _rating;
         inStock = _inStock;
         Ratings = new HashMap<>();

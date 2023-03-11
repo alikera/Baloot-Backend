@@ -67,10 +67,10 @@ public class RequestHandler {
             context.html(template.html());
         });
 
-        //        app.get("/commoditys/search/{genre}", context -> {
-//            Document template = getcommodityByGenre(context.pathParam("genre"));
-//            context.html(template.html());
-//        });
+        app.get("/commodities/search/{categories}", context -> {
+            Document template = getFilteredCommoditiesByCategories(context.pathParam("categories"));
+            context.html(template.html());
+        });
 //
 //
 //        app.get("/ratecommodity/{userId}/{commodityId}/{rate}", context -> {
@@ -245,4 +245,12 @@ public class RequestHandler {
         showAllCommodities(table, filteredCommodities);
         return template;
     }
+    private static Document getFilteredCommoditiesByCategories(String category) throws IOException {
+        Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
+        Element table = template.selectFirst("tbody");
+        List<Commodity> filteredCommodities = baloot.getCommoditiesByCategory(category);
+        showAllCommodities(table, filteredCommodities);
+        return template;
+    }
+
 }

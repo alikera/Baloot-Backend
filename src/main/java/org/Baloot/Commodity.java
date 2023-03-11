@@ -71,8 +71,14 @@ public class Commodity {
         inStock = _inStock;
         Ratings = new HashMap<>();
     }
-
-
+    public boolean isInCategoryGiven(String category){
+        for(String cat : categories){
+            if(Objects.equals(category, cat)){
+                return true;
+            }
+        }
+        return false;
+    }
     public void rateCommodity(String username, int score) throws InvalidRatingException {
         if (score < 0 || score > 10) {
             throw new InvalidRatingException("Invalid Rating");

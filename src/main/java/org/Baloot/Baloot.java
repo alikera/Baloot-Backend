@@ -35,6 +35,15 @@ public class Baloot {
         }
         return filteredCommodities;
     }
+    public List<Commodity> getCommoditiesByCategory(String category) {
+        List<Commodity> filteredCommodities = new ArrayList<>();
+        for (Commodity commodity : commodities) {
+            if (commodity.isInCategoryGiven(category)) {
+                filteredCommodities.add(commodity);
+            }
+        }
+        return filteredCommodities;
+    }
     public User findByUsername(String username) throws UserNotFoundException {
         for (User user : users) {
             if (Objects.equals(user.getUsername(), username)) {

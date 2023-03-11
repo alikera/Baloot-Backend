@@ -1,5 +1,6 @@
 package org.Baloot;
 import io.javalin.Javalin;
+import org.Baloot.Exception.CommodityExistenceException;
 import org.Baloot.Exception.CommodityNotFoundException;
 import org.Baloot.Exception.ProviderNotFoundException;
 import org.Baloot.Exception.UserNotFoundException;
@@ -49,11 +50,11 @@ public class RequestHandler {
         });
 
 
-//        app.post("/removeFromBuyList/{userId}/{commodityId}", context -> {
-//            Document template = removeFromBuyList(context.pathParam("userId"),context.pathParam("commodityId"));
-//            context.html(template.html());
-//            context.redirect("/users/" + context.pathParam("userId"));
-//        });
+        app.post("/removeFromBuyList/{userId}/{commodityId}", context -> {
+            Document template = removeFromBuyList(context.pathParam("userId"),context.pathParam("commodityId"));
+            context.html(template.html());
+            context.redirect("/users/" + context.pathParam("userId"));
+        });
 //
 //        app.get("/watchList/{user_id}/{commodity_id}", context -> {
 //            Document template = addToWatchList(context.pathParam("user_id"),context.pathParam("commodity_id"));
@@ -221,7 +222,17 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
-
+    private static Document removeFromBuyList(String user_id, String commodity_id) throws IOException {
+        try {
+            User user = baloot.findByUsername(user_id);
+            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodity_id));
+            user.removeFromBuyList(Integer.parseInt(commodity_id));
+            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
+        }
+        catch (UserNotFoundException | CommodityNotFoundException | CommodityExistenceException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+        }
+    }
 
 
 }

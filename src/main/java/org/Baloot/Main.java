@@ -8,13 +8,15 @@ import java.io.InputStreamReader;
 
 public class Main {
     public static void main(String[] args) throws IOException, ExceptionHandler {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String line;
-        CommandHandler ch = new CommandHandler();
-        while ((line = reader.readLine()) != null) {
-            String[] seperatedLine = line.split(" ", 2);
-            ch.executeCommands(seperatedLine);
-        }
+//        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+//        String line;
+//        CommandHandler ch = new CommandHandler();
+//        while ((line = reader.readLine()) != null) {
+//            String[] seperatedLine = line.split(" ", 2);
+//            ch.executeCommands(seperatedLine);
+//        }
+        RequestHandler r = new RequestHandler();
+        r.getRequest();
     }
 }
 

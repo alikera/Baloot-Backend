@@ -62,22 +62,16 @@ public class RequestHandler {
             context.redirect("/watchList/" + context.pathParam("userId"));
         });
 
-//        app.get("/watchList/{userId}/{commodityId}", context -> {
-//            Document template = addToWatchList(context.pathParam("userId"),context.pathParam("commodityId"));
+        app.get("/commodities/search/{startPrice}/{endPrice}", context -> {
+            Document template = getFilteredCommoditiesByPriceRange(context.pathParam("startPrice"), context.pathParam("endPrice"));
+            context.html(template.html());
+        });
+
+        //        app.get("/commoditys/search/{genre}", context -> {
+//            Document template = getcommodityByGenre(context.pathParam("genre"));
 //            context.html(template.html());
 //        });
 //
-//        app.post("/add_to_watch/{commodityId}/{userId}", context -> {
-//            Document template = addToWatchList(context.pathParam("userId"),context.pathParam("commodityId"));
-//            context.html(template.html());
-//            context.redirect("/watchList/" + context.pathParam("userId"));
-//        });
-//
-//        app.post("/removeFromWatchList/{userId}/{commodityId}", context -> {
-//            Document template = removeFromWatchList(context.pathParam("userId"),context.pathParam("commodityId"));
-//            context.html(template.html());
-//            context.redirect("/watchList/" + context.pathParam("userId"));
-//        });
 //
 //        app.get("/ratecommodity/{userId}/{commodityId}/{rate}", context -> {
 //            Document template = ratecommodity(context.pathParam("userId"),context.pathParam("commodityId"),context.pathParam("rate"));
@@ -110,15 +104,7 @@ public class RequestHandler {
 //            context.redirect("/commoditylogin/" + context.pathParam("commodityId") + "/" + context.pathParam("userId"));
 //        });
 //
-//        app.get("/commoditys/search/{genre}", context -> {
-//            Document template = getcommodityByGenre(context.pathParam("genre"));
-//            context.html(template.html());
-//        });
-//
-//        app.get("/commoditys/search/{start_year}/{end_year}", context -> {
-//            Document template = getcommodityByYear(context.pathParam("start_year"), context.pathParam("end_year"));
-//            context.html(template.html());
-//        });
+
     }
     private static Document getCommodities() throws IOException {
         Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
@@ -153,7 +139,7 @@ public class RequestHandler {
     }
     private static Document getCommodity(String commodityId) throws IOException {
         try {
-            Document template = Jsoup.parse(new File("src/main/Templates/Templates/commodity.html"), "utf-8");
+            Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodity.html"), "utf-8");
             Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
             Objects.requireNonNull(template.selectFirst("#id")).html(Integer.toString(commodity.getId()));
             Objects.requireNonNull(template.selectFirst("#name")).html(commodity.getName());
@@ -179,7 +165,7 @@ public class RequestHandler {
     }
     private static Document getProvider(String provider_id) throws IOException {
         try {
-            Document template = Jsoup.parse(new File("src/main/Templates/Templates/provider.html"), "utf-8");
+            Document template = Jsoup.parse(new File("src/main/Templates/Templates/Provider.html"), "utf-8");
             Provider provider = baloot.findByProviderId(Integer.parseInt(provider_id));
             Objects.requireNonNull(template.selectFirst("#name")).html(provider.getName());
             Objects.requireNonNull(template.selectFirst("#registryDate")).html(provider.getRegistryDate());
@@ -244,7 +230,7 @@ public class RequestHandler {
             User user = baloot.findByUsername(userId);
             Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
             user.addToBuyList(Integer.parseInt(commodityId));
-            return Jsoup.parse(new File("src/main/template/200.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         }
         catch (UserNotFoundException | CommodityNotFoundException exp) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
@@ -252,5 +238,11 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
         }
     }
-
+    static Document getFilteredCommoditiesByPriceRange(String startPrice, String endPrice) throws IOException {
+        Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
+        Element table = template.selectFirst("tbody");
+        List<Commodity> filteredCommodities = baloot.getCommoditiesByPriceRange(Double.parseDouble(startPrice), Double.parseDouble(endPrice));
+        showAllCommodities(table, filteredCommodities);
+        return template;
+    }
 }

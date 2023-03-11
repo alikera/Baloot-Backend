@@ -26,6 +26,15 @@ public class Baloot {
         throw new CommodityNotFoundException("Couldn't find commodity with the given Id!");
     }
 
+    public List<Commodity> getCommoditiesByPriceRange(double startPrice, double endPrice){
+        List<Commodity> filteredCommodities = new ArrayList<>();
+        for (Commodity commodity : commodities) {
+            if (commodity.getPrice() >= startPrice && commodity.getPrice() <= endPrice) {
+                filteredCommodities.add(commodity);
+            }
+        }
+        return filteredCommodities;
+    }
     public User findByUsername(String username) throws UserNotFoundException {
         for (User user : users) {
             if (Objects.equals(user.getUsername(), username)) {

@@ -2,6 +2,7 @@ package org.Baloot;
 import io.javalin.Javalin;
 import org.Baloot.Exception.CommodityNotFoundException;
 import org.Baloot.Exception.ProviderNotFoundException;
+import org.Baloot.Exception.UserNotFoundException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,20 +33,26 @@ public class RequestHandler {
             context.html(template.html());
         });
 
-        app.get("/commodities/{commodity_id}", context -> {
-            Document template = getCommodity(context.pathParam("commodity_id"));
+        app.get("/commodities/{commodityId}", context -> {
+            Document template = getCommodity(context.pathParam("commodityId"));
             context.html(template.html());
         });
 
-        app.get("/providers/{provider_id}", context -> {
-            Document template = getProvider(context.pathParam("provider_id"));
+        app.get("/providers/{providerId}", context -> {
+            Document template = getProvider(context.pathParam("providerId"));
             context.html(template.html());
         });
 
-//
-//        app.get("/watchList/{user_id}", context -> {
-//            Document template = getWatchList(context.pathParam("user_id"));
+        app.get("/users/{userId}", context -> {
+            Document template = getUser(context.pathParam("userId"));
+            context.html(template.html());
+        });
+
+
+//        app.post("/removeFromBuyList/{userId}/{commodityId}", context -> {
+//            Document template = removeFromBuyList(context.pathParam("userId"),context.pathParam("commodityId"));
 //            context.html(template.html());
+//            context.redirect("/users/" + context.pathParam("userId"));
 //        });
 //
 //        app.get("/watchList/{user_id}/{commodity_id}", context -> {
@@ -160,23 +167,61 @@ public class RequestHandler {
             return template;
         }
         catch (CommodityNotFoundException e) {
-            return Jsoup.parse(new File("src/main/template/404.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
     private static Document getProvider(String provider_id) throws IOException {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/provider.html"), "utf-8");
             Provider provider = baloot.findByProviderId(Integer.parseInt(provider_id));
-            template.selectFirst("#name").html(provider.getName());
-            template.selectFirst("#registryDate").html(provider.getRegistryDate());
+            Objects.requireNonNull(template.selectFirst("#name")).html(provider.getName());
+            Objects.requireNonNull(template.selectFirst("#registryDate")).html(provider.getRegistryDate());
             Element table = template.selectFirst("tbody");
             showAllCommodities(table, provider.getMyCommodities());
 
             return template;
         }
         catch (ProviderNotFoundException e) {
-            return Jsoup.parse(new File("src/main/template/404.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
+    static Document getUser(String user_id) throws IOException {
+        try {
+            Document template = Jsoup.parse(new File("src/main/Templates/Templates/User.html"), "utf-8");
+            User user = baloot.findByUsername(user_id);
+            Objects.requireNonNull(template.selectFirst("#username")).html(user.getUsername());
+            Objects.requireNonNull(template.selectFirst("#email")).html(user.getEmail());
+            Objects.requireNonNull(template.selectFirst("#birthDate")).html(user.getBirthDate());
+            Objects.requireNonNull(template.selectFirst("#address")).html(user.getAddress());
+            Objects.requireNonNull(template.selectFirst("#credit")).html(Double.toString(user.getCredit()));
+
+            Element table = template.selectFirst("tbody");
+//            showAllCommodities(table, user.getBuyList());
+            for (Integer id : user.getBuyList()) {
+                Commodity commodity = baloot.findByCommodityId(id);
+                Element row = showCommodities(commodity);
+
+                String remove = "<td>"
+                        + "<form action= \"/removeFromBuyList/" + user_id + "/"
+                        + new DecimalFormat("00").format(commodity.getId())
+                        +"\" method=\"POST\" >"
+                        + "<input id=\"form_commodity_id\" type=\"hidden\" name=\"commodity_id\" value=\"";
+                remove += commodity.getId();
+                remove += "\">"
+                        + "<button type=\"submit\">Remove</button>"
+                        + "</form>"
+                        + "</td>";
+                row.append(remove);
+                assert table != null;
+                table.append(row.html());
+            }
+            return template;
+        }
+         catch (UserNotFoundException | CommodityNotFoundException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+        }
+    }
+
+
 
 }

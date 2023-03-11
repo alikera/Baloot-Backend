@@ -50,58 +50,64 @@ public class RequestHandler {
         });
 
 
-        app.post("/removeFromBuyList/{userId}/{commodityId}", context -> {
-            Document template = removeFromBuyList(context.pathParam("userId"),context.pathParam("commodityId"));
+        app.post("/removeFromBuyList/{username}/{commodityId}", context -> {
+            Document template = removeFromBuyList(context.pathParam("username"),context.pathParam("commodityId"));
             context.html(template.html());
             context.redirect("/users/" + context.pathParam("userId"));
         });
-//
-//        app.get("/watchList/{user_id}/{commodity_id}", context -> {
-//            Document template = addToWatchList(context.pathParam("user_id"),context.pathParam("commodity_id"));
+
+        app.post("/addToBuyList/{username}/{commodityId}", context -> {
+            Document template = addToBuyList(context.pathParam("userId"),context.pathParam("commodityId"));
+            context.html(template.html());
+            context.redirect("/watchList/" + context.pathParam("userId"));
+        });
+
+//        app.get("/watchList/{userId}/{commodityId}", context -> {
+//            Document template = addToWatchList(context.pathParam("userId"),context.pathParam("commodityId"));
 //            context.html(template.html());
 //        });
 //
-//        app.post("/add_to_watch/{commodity_id}/{user_id}", context -> {
-//            Document template = addToWatchList(context.pathParam("user_id"),context.pathParam("commodity_id"));
+//        app.post("/add_to_watch/{commodityId}/{userId}", context -> {
+//            Document template = addToWatchList(context.pathParam("userId"),context.pathParam("commodityId"));
 //            context.html(template.html());
-//            context.redirect("/watchList/" + context.pathParam("user_id"));
+//            context.redirect("/watchList/" + context.pathParam("userId"));
 //        });
 //
-//        app.post("/removeFromWatchList/{user_id}/{commodity_id}", context -> {
-//            Document template = removeFromWatchList(context.pathParam("user_id"),context.pathParam("commodity_id"));
+//        app.post("/removeFromWatchList/{userId}/{commodityId}", context -> {
+//            Document template = removeFromWatchList(context.pathParam("userId"),context.pathParam("commodityId"));
 //            context.html(template.html());
-//            context.redirect("/watchList/" + context.pathParam("user_id"));
+//            context.redirect("/watchList/" + context.pathParam("userId"));
 //        });
 //
-//        app.get("/ratecommodity/{user_id}/{commodity_id}/{rate}", context -> {
-//            Document template = ratecommodity(context.pathParam("user_id"),context.pathParam("commodity_id"),context.pathParam("rate"));
-//            context.html(template.html());
-//        });
-//
-//        app.post("/rate/{commodity_id}/{user_id}", context -> {
-//            Document template = ratecommodity(context.pathParam("user_id"),context.pathParam("commodity_id"),context.formParam("quantity"));
-//            context.html(template.html());
-//            context.redirect("/commoditylogin/" + context.pathParam("commodity_id") + "/" + context.pathParam("user_id"));
-//        });
-//
-//        app.post("/commodity_user/{commodity_id}", context -> {
-//            context.redirect("/commoditylogin/" + context.pathParam("commodity_id") + "/" + context.formParam("user_id"));
-//        });
-//
-//        app.get("/commoditylogin/{commodity_id}/{user_id}", context -> {
-//            Document template = getcommodityUser(context.pathParam("commodity_id"), context.pathParam("user_id"));
+//        app.get("/ratecommodity/{userId}/{commodityId}/{rate}", context -> {
+//            Document template = ratecommodity(context.pathParam("userId"),context.pathParam("commodityId"),context.pathParam("rate"));
 //            context.html(template.html());
 //        });
 //
-//        app.get("/voteComment/{user_id}/{comment_id}/{vote}", context -> {
-//            Document template = voteComment(context.pathParam("user_id"),context.pathParam("comment_id"),context.pathParam("vote"));
+//        app.post("/rate/{commodityId}/{userId}", context -> {
+//            Document template = ratecommodity(context.pathParam("userId"),context.pathParam("commodityId"),context.formParam("quantity"));
+//            context.html(template.html());
+//            context.redirect("/commoditylogin/" + context.pathParam("commodityId") + "/" + context.pathParam("userId"));
+//        });
+//
+//        app.post("/commodity_user/{commodityId}", context -> {
+//            context.redirect("/commoditylogin/" + context.pathParam("commodityId") + "/" + context.formParam("userId"));
+//        });
+//
+//        app.get("/commoditylogin/{commodityId}/{userId}", context -> {
+//            Document template = getcommodityUser(context.pathParam("commodityId"), context.pathParam("userId"));
 //            context.html(template.html());
 //        });
 //
-//        app.post("/vote/{commodity_id}/{comment_id}/{user_id}/{vote}", context -> {
-//            Document template = voteComment(context.pathParam("user_id"),context.pathParam("comment_id"),context.pathParam("vote"));
+//        app.get("/voteComment/{userId}/{comment_id}/{vote}", context -> {
+//            Document template = voteComment(context.pathParam("userId"),context.pathParam("comment_id"),context.pathParam("vote"));
 //            context.html(template.html());
-//            context.redirect("/commoditylogin/" + context.pathParam("commodity_id") + "/" + context.pathParam("user_id"));
+//        });
+//
+//        app.post("/vote/{commodityId}/{comment_id}/{userId}/{vote}", context -> {
+//            Document template = voteComment(context.pathParam("userId"),context.pathParam("comment_id"),context.pathParam("vote"));
+//            context.html(template.html());
+//            context.redirect("/commoditylogin/" + context.pathParam("commodityId") + "/" + context.pathParam("userId"));
 //        });
 //
 //        app.get("/commoditys/search/{genre}", context -> {
@@ -145,10 +151,10 @@ public class RequestHandler {
         row.append("<td><a href=\"/commodities/" + new DecimalFormat("00").format(commodity.getId()) + "\">Link</a></td>");
         return row;
     }
-    private static Document getCommodity(String commodity_id) throws IOException {
+    private static Document getCommodity(String commodityId) throws IOException {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/commodity.html"), "utf-8");
-            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodity_id));
+            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
             Objects.requireNonNull(template.selectFirst("#id")).html(Integer.toString(commodity.getId()));
             Objects.requireNonNull(template.selectFirst("#name")).html(commodity.getName());
             Objects.requireNonNull(template.selectFirst("#providerId")).html(Integer.toString(commodity.getProviderId()));
@@ -158,10 +164,10 @@ public class RequestHandler {
             Objects.requireNonNull(template.selectFirst("#rating")).html(Double.toString(commodity.getRating()));
             Objects.requireNonNull(template.selectFirst("#inStock")).html(Integer.toString(commodity.getInStock()));
 
-//            String rate_commodity = "<br> <td> <form action=\"/commodity_user/" + commodity_id + "\"" +
+//            String rate_commodity = "<br> <td> <form action=\"/commodity_user/" + commodityId + "\"" +
 //                    " method=\"POST\">\n" +
 //                    "      <label>Your ID:</label>\n" +
-//                    "      <input id = \"user_id\" type=\"text\" name=\"user_id\" value=\"\" />\n" +
+//                    "      <input id = \"userId\" type=\"text\" name=\"userId\" value=\"\" />\n" +
 //                    "      <button type=\"submit\">login</button>\n" +
 //                    "    </form> </td></br>";
 //            template.append(rate_commodity);
@@ -186,10 +192,10 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
-    static Document getUser(String user_id) throws IOException {
+    static Document getUser(String userId) throws IOException {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/User.html"), "utf-8");
-            User user = baloot.findByUsername(user_id);
+            User user = baloot.findByUsername(userId);
             Objects.requireNonNull(template.selectFirst("#username")).html(user.getUsername());
             Objects.requireNonNull(template.selectFirst("#email")).html(user.getEmail());
             Objects.requireNonNull(template.selectFirst("#birthDate")).html(user.getBirthDate());
@@ -203,10 +209,10 @@ public class RequestHandler {
                 Element row = showCommodities(commodity);
 
                 String remove = "<td>"
-                        + "<form action= \"/removeFromBuyList/" + user_id + "/"
+                        + "<form action= \"/removeFromBuyList/" + userId + "/"
                         + new DecimalFormat("00").format(commodity.getId())
                         +"\" method=\"POST\" >"
-                        + "<input id=\"form_commodity_id\" type=\"hidden\" name=\"commodity_id\" value=\"";
+                        + "<input id=\"form_commodityId\" type=\"hidden\" name=\"commodityId\" value=\"";
                 remove += commodity.getId();
                 remove += "\">"
                         + "<button type=\"submit\">Remove</button>"
@@ -222,17 +228,29 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
-    private static Document removeFromBuyList(String user_id, String commodity_id) throws IOException {
+    private static Document removeFromBuyList(String userId, String commodityId) throws IOException {
         try {
-            User user = baloot.findByUsername(user_id);
-            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodity_id));
-            user.removeFromBuyList(Integer.parseInt(commodity_id));
+            User user = baloot.findByUsername(userId);
+            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
+            user.removeFromBuyList(Integer.parseInt(commodityId));
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         }
         catch (UserNotFoundException | CommodityNotFoundException | CommodityExistenceException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
-
+    static Document addToBuyList(String userId, String commodityId) throws IOException {
+        try {
+            User user = baloot.findByUsername(userId);
+            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
+            user.addToBuyList(Integer.parseInt(commodityId));
+            return Jsoup.parse(new File("src/main/template/200.html"), "utf-8");
+        }
+        catch (UserNotFoundException | CommodityNotFoundException exp) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+        } catch (CommodityExistenceException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
+        }
+    }
 
 }

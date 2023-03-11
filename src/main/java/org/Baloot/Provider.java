@@ -12,11 +12,24 @@ public class Provider {
     private String registryDate;
 
     private double averageRatingCommodities;
+    private List<Commodity> myCommodities = new ArrayList<>();
+
     public int getId() {
         return id;
     }
 
-    private List<Commodity> myCommodities = new ArrayList<>();
+    public String getName() {
+        return name;
+    }
+
+    public String getRegistryDate() {
+        return registryDate;
+    }
+
+    public List<Commodity> getMyCommodities() {
+        return myCommodities;
+    }
+
     public void addToCommodities(Commodity commodity){
         myCommodities.add(commodity);
 

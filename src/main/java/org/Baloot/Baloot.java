@@ -34,7 +34,14 @@ public class Baloot {
         }
         throw new UserNotFoundException("Couldn't find user with the given Username!");
     }
-
+    public Provider findByProviderId(int providerId) throws ProviderNotFoundException {
+        for (Provider provider : providers) {
+            if (Objects.equals(provider.getId(), providerId)) {
+                return provider;
+            }
+        }
+        throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
+    }
     private void addToProviderCommodityList(Commodity commodity) throws ProviderNotFoundException {
         for(Provider provider : providers){
             if(Objects.equals(provider.getId(), commodity.getProviderId())){

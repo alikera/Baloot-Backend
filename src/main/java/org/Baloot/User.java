@@ -76,6 +76,11 @@ public class User {
             throw new CommodityExistenceException("Commodity does not exists in your BuyList!");
         }
     }
+
+    public void increaseCredit(double amount) {
+        credit += amount;
+    }
+
     public void print() {
         System.out.println(username + " " + password + " " + email + " " + birthDate + " " + address + " " + credit);
     }

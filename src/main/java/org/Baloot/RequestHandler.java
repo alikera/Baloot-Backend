@@ -1,10 +1,7 @@
 package org.Baloot;
 import io.javalin.Javalin;
 import org.Baloot.Database.Database;
-import org.Baloot.Exception.CommodityExistenceException;
-import org.Baloot.Exception.CommodityNotFoundException;
-import org.Baloot.Exception.ProviderNotFoundException;
-import org.Baloot.Exception.UserNotFoundException;
+import org.Baloot.Exception.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -55,16 +52,19 @@ public class RequestHandler {
         });
 
 
-        app.post("/removeFromBuyList/{username}/{commodityId}", context -> {
-            Document template = removeFromBuyList(context.pathParam("username"),context.pathParam("commodityId"));
+        app.post("/removeFromBuyList/{userId}/{commodityId}", context -> {
+            Document template = removeFromBuyList(context.pathParam("userId"),context.pathParam("commodityId"));
             context.html(template.html());
             context.redirect("/users/" + context.pathParam("userId"));
         });
 
-        app.post("/addToBuyList/{username}/{commodityId}", context -> {
+        app.get("/addToBuyList/{userId}/{commodityId}", context -> {
             Document template = addToBuyList(context.pathParam("userId"),context.pathParam("commodityId"));
             context.html(template.html());
-            context.redirect("/watchList/" + context.pathParam("userId"));
+//            context.redirect("/users/" + context.pathParam("userId"));
+        });
+        app.post("/addToBuyListTemp/{commodityId}", context -> {
+            context.redirect("/addToBuyList/" + context.formParam("userId") + "/" + context.pathParam("commodityId"));
         });
 
         app.get("/commodities/search/{startPrice}/{endPrice}", context -> {
@@ -76,12 +76,15 @@ public class RequestHandler {
             Document template = getFilteredCommoditiesByCategories(context.pathParam("categories"));
             context.html(template.html());
         });
-//
-//
-//        app.get("/ratecommodity/{userId}/{commodityId}/{rate}", context -> {
-//            Document template = ratecommodity(context.pathParam("userId"),context.pathParam("commodityId"),context.pathParam("rate"));
-//            context.html(template.html());
-//        });
+
+        app.get("/rateCommodity/{userId}/{commodityId}/{rate}", context -> {
+            Document template = rateCommodity(context.pathParam("userId"),context.pathParam("commodityId"),context.pathParam("rate"));
+            context.html(template.html());
+        });
+
+        app.post("/rateCommodityTemp/{commodityId}", context -> {
+            context.redirect("/rateCommodity/" + context.formParam("userId") + "/" + context.pathParam("commodityId") + "/" + context.formParam("rate"));
+        });
 //
 //        app.post("/rate/{commodityId}/{userId}", context -> {
 //            Document template = ratecommodity(context.pathParam("userId"),context.pathParam("commodityId"),context.formParam("quantity"));
@@ -114,13 +117,6 @@ public class RequestHandler {
     private Document getCommodities() throws IOException {
         Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
         Element table = template.selectFirst("tbody");
-//        List<String> _categories = new ArrayList<>();
-//        _categories.add("sib");
-//        _categories.add("holoo");
-////        TODO: test
-//        Commodity commodity = new Commodity(1,"a",2,300,_categories,8,10);
-//        table.append(showCommodities(commodity).html());
-
         showAllCommodities(table, baloot.getCommodities());
         return template;
     }
@@ -146,22 +142,57 @@ public class RequestHandler {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodity.html"), "utf-8");
             Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
-            Objects.requireNonNull(template.selectFirst("#id")).html(Integer.toString(commodity.getId()));
-            Objects.requireNonNull(template.selectFirst("#name")).html(commodity.getName());
-            Objects.requireNonNull(template.selectFirst("#providerId")).html(Integer.toString(commodity.getProviderId()));
-            Objects.requireNonNull(template.selectFirst("#price")).html(Double.toString(commodity.getPrice()));
+            Objects.requireNonNull(template.selectFirst("#id")).html("Id: " + commodity.getId());
+            Objects.requireNonNull(template.selectFirst("#name")).html("Name: " + commodity.getName());
+            Objects.requireNonNull(template.selectFirst("#providerId")).html("Provider Id: " + commodity.getProviderId());
+            Objects.requireNonNull(template.selectFirst("#price")).html("Price: " + commodity.getPrice());
 
-            Objects.requireNonNull(template.selectFirst("#categories")).html(String.join(", ", commodity.getCategories()));
-            Objects.requireNonNull(template.selectFirst("#rating")).html(Double.toString(commodity.getRating()));
-            Objects.requireNonNull(template.selectFirst("#inStock")).html(Integer.toString(commodity.getInStock()));
+            Objects.requireNonNull(template.selectFirst("#categories")).html("Categories: " + String.join(", ", commodity.getCategories()));
+            Objects.requireNonNull(template.selectFirst("#rating")).html("Rating: " + commodity.getRating());
+            Objects.requireNonNull(template.selectFirst("#inStock")).html("In Stock: " + commodity.getInStock());
 
-//            String rate_commodity = "<br> <td> <form action=\"/commodity_user/" + commodityId + "\"" +
+            String post = "<td> <form action=\"/\" method=\"POST\">\n" +
+                    "  <input type=\"hidden\" name=\"commodityId\" value=\"\">\n" +
+                    "  <input type=\"hidden\" name=\"commodityId\" value=\"\">\n" +
+                    "  <label for=\"userId\">Your ID:</label>\n" +
+                    "  <input id=\"userId\" type=\"text\" name=\"userId\" value=\"\">\n" +
+                    "      <br><br>\n" +
+                    "      <label>Rate(between 1 and 10):</label>\n" +
+                    "  <input type=\"number\" id=\"rate\" name=\"rate\" min=\"1\" max=\"10\">\n " +
+                    "    <tr>\n" +
+                    "      <td>\n" +
+                    "        <button type=\"submit\" formaction=\"/rateCommodityTemp/"+commodityId+"\">Rate</button>\n" +
+                    "      </td>\n" +
+                    "      <br><br>\n" +
+
+                    "      <td>\n" +
+                    "        <button type=\"submit\" formaction=\"/addToBuyListTemp/"+commodityId+"\">Add to BuyList</button>\n" +
+                    "      </td>\n" +
+                    "    </tr>\n" +
+                    "</form>";
+            template.append(post);
+
+
+
+//            String template = rate_commodity + addToBuyList;
+
+//            String rate_commodity = "<br> <td> <form action=\"/rateCommodityTemp/" + commodityId + "\"" +
 //                    " method=\"POST\">\n" +
 //                    "      <label>Your ID:</label>\n" +
 //                    "      <input id = \"userId\" type=\"text\" name=\"userId\" value=\"\" />\n" +
-//                    "      <button type=\"submit\">login</button>\n" +
+//                    "      <br><br>\n" +
+//                    "      <label>Rate(between 1 and 10):</label>\n" +
+//                    "      <input type=\"number\" id=\"rate\" name=\"rate\" min=\"1\" max=\"10\">\n " +
+//                    "      <button type=\"submit\">Rate</button>\n" +
 //                    "    </form> </td></br>";
 //            template.append(rate_commodity);
+//
+//            String addToBuyList = "<br> <td> <form action=\"/addToBuyListTemp/" + commodityId + "\"" +
+//                    " method=\"POST\">\n" +
+//                    "      <button type=\"submit\">Add to BuyList</button>\n" +
+//                    "    </form> </td></br>";
+//            template.append(addToBuyList);
+
             return template;
         }
         catch (CommodityNotFoundException e) {
@@ -183,7 +214,7 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
-    Document getUser(String userId) throws IOException {
+    private Document getUser(String userId) throws IOException {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/User.html"), "utf-8");
             User user = baloot.findByUsername(userId);
@@ -194,7 +225,6 @@ public class RequestHandler {
             Objects.requireNonNull(template.selectFirst("#credit")).html("Credit: " + Double.toString(user.getCredit()));
 
             Element table = template.selectFirst("tbody");
-//            showAllCommodities(table, user.getBuyList());
             for (Integer id : user.getBuyList()) {
                 Commodity commodity = baloot.findByCommodityId(id);
                 Element row = showCommodities(commodity);
@@ -256,6 +286,20 @@ public class RequestHandler {
         List<Commodity> filteredCommodities = baloot.getCommoditiesByCategory(category);
         showAllCommodities(table, filteredCommodities);
         return template;
+    }
+
+    private Document rateCommodity(String userId, String commodityId, String rate) throws IOException {
+        try{
+            User user = baloot.findByUsername(userId);
+            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
+            commodity.rateCommodity(userId, Integer.parseInt((rate)));
+            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
+        }
+        catch (UserNotFoundException | CommodityNotFoundException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+        } catch (InvalidRatingException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
+        }
     }
 
 }

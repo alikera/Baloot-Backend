@@ -234,6 +234,17 @@ public class Baloot {
         }
     }
 
+    public ObjectNode addCredit(String username, double amount) {
+        try {
+            User user = findByUsername(username);
+            user.increaseCredit(amount);
+            return makeJsonFromString(true, "User credit increased");
+        }
+        catch (UserNotFoundException e) {
+            return makeJsonFromString(false, e.getMessage());
+        }
+    }
+
     public ObjectNode makeJsonFromObjectNode(Boolean success, ObjectNode dataNode) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();

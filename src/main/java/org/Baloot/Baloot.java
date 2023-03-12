@@ -3,6 +3,7 @@ package org.Baloot;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.Baloot.Database.Database;
 import org.Baloot.Exception.*;
 
 import java.util.ArrayList;
@@ -13,12 +14,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Baloot {
-    public List<User> users = new ArrayList<>();
-    public List<Provider> providers = new ArrayList<>();
-    public  List<Commodity> commodities = new ArrayList<>();
+    private Database db;
+    public Baloot(Database _db) {
+        db = _db;
+    }
 
     public Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException {
-        for (Commodity commodity : commodities) {
+        for (Commodity commodity : db.getCommodities()) {
             if (commodity.getId() == commodityId) {
                 return commodity;
             }
@@ -28,7 +30,7 @@ public class Baloot {
 
     public List<Commodity> getCommoditiesByPriceRange(double startPrice, double endPrice){
         List<Commodity> filteredCommodities = new ArrayList<>();
-        for (Commodity commodity : commodities) {
+        for (Commodity commodity : db.getCommodities()) {
             if (commodity.getPrice() >= startPrice && commodity.getPrice() <= endPrice) {
                 filteredCommodities.add(commodity);
             }
@@ -37,7 +39,7 @@ public class Baloot {
     }
     public List<Commodity> getCommoditiesByCategory(String category) {
         List<Commodity> filteredCommodities = new ArrayList<>();
-        for (Commodity commodity : commodities) {
+        for (Commodity commodity : db.getCommodities()) {
             if (commodity.isInCategoryGiven(category)) {
                 filteredCommodities.add(commodity);
             }
@@ -45,7 +47,7 @@ public class Baloot {
         return filteredCommodities;
     }
     public User findByUsername(String username) throws UserNotFoundException {
-        for (User user : users) {
+        for (User user : db.getUsers()) {
             if (Objects.equals(user.getUsername(), username)) {
                 return user;
             }
@@ -53,7 +55,7 @@ public class Baloot {
         throw new UserNotFoundException("Couldn't find user with the given Username!");
     }
     public Provider findByProviderId(int providerId) throws ProviderNotFoundException {
-        for (Provider provider : providers) {
+        for (Provider provider : db.getProviders()) {
             if (Objects.equals(provider.getId(), providerId)) {
                 return provider;
             }
@@ -61,7 +63,7 @@ public class Baloot {
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
     private void addToProviderCommodityList(Commodity commodity) throws ProviderNotFoundException {
-        for(Provider provider : providers){
+        for(Provider provider : db.getProviders()){
             if(Objects.equals(provider.getId(), commodity.getProviderId())){
                 provider.addToCommodities(commodity);
                 return;
@@ -72,7 +74,7 @@ public class Baloot {
 
     private List<Commodity> findCommoditiesByCategory(String category){
         List<Commodity> foundedCommodities = new ArrayList<>();
-        for (Commodity commodity : commodities) {
+        for (Commodity commodity : db.getCommodities()) {
             Set<String> categories = commodity.getCategories();
             if (categories.contains(category)) {
                 foundedCommodities.add(commodity);
@@ -93,7 +95,7 @@ public class Baloot {
             }
         }
         catch (UserNotFoundException e){
-            users.add(user);
+            db.insertUser(user);
             return makeJsonFromString(true, "User added successfully");
         }
         catch (InvalidUsernameException e) {
@@ -102,14 +104,14 @@ public class Baloot {
     }
 
     public ObjectNode addProvider(Provider provider) throws JsonProcessingException {
-        providers.add(provider);
+        db.insertProvider(provider);
         return makeJsonFromString(true, "Provider added successfully");
     }
 
     public ObjectNode addCommodity(Commodity commodity) throws JsonProcessingException {
         try {
             addToProviderCommodityList(commodity);
-            commodities.add(commodity);
+            db.insertCommodity(commodity);
             return makeJsonFromString(true, "Commodity added successfully");
         }
         catch (ProviderNotFoundException e){
@@ -120,7 +122,7 @@ public class Baloot {
     public ObjectNode getCommoditiesList() {
         ObjectMapper mapper = new ObjectMapper();
         List<ObjectNode> commodityNodes = new ArrayList<>();
-        for(Commodity commodity : commodities) {
+        for(Commodity commodity : db.getCommodities()) {
             commodityNodes.add(commodity.toJson());
         }
         ObjectNode mainNode = mapper.createObjectNode();
@@ -259,5 +261,15 @@ public class Baloot {
         node.put("success", success);
         node.put("data", data);
         return node;
+    }
+
+    public List<User> getUsers() {
+        return db.getUsers();
+    }
+    public List<Provider> getProviders() {
+        return db.getProviders();
+    }
+    public List<Commodity> getCommodities() {
+        return db.getCommodities();
     }
 }

@@ -1,5 +1,6 @@
 package org.Baloot;
 import io.javalin.Javalin;
+import org.Baloot.Database.Database;
 import org.Baloot.Exception.CommodityExistenceException;
 import org.Baloot.Exception.CommodityNotFoundException;
 import org.Baloot.Exception.ProviderNotFoundException;
@@ -10,6 +11,7 @@ import org.jsoup.nodes.Element;
 
 //import org.w3c.dom.Document;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -18,13 +20,16 @@ import java.util.List;
 import java.util.Objects;
 
 public class RequestHandler {
-    private static final String SERVICE_API = "http://5.253.25.110:5000";
-    private static final String USERS_API = SERVICE_API + "/api/users";
-    private static final String COMMODITY_API = SERVICE_API + "/api/commodities";
-    private static final String PROVIDERS_API = SERVICE_API + "/api/providers";
-    private static final String COMMENTS_API = SERVICE_API + "/api/comments";
+    private final String SERVICE_API = "http://5.253.25.110:5000";
+    private final String USERS_API = SERVICE_API + "/api/users";
+    private final String COMMODITY_API = SERVICE_API + "/api/commodities";
+    private final String PROVIDERS_API = SERVICE_API + "/api/providers";
+    private final String COMMENTS_API = SERVICE_API + "/api/comments";
+    private Baloot baloot;
 
-    public static Baloot baloot = new Baloot();
+    public RequestHandler(Baloot _baloot) {
+        baloot = _baloot;
+    }
     public void getRequest() {
         Javalin app = Javalin.create().start(8081);
         app.get("/", ctx -> ctx.result("Welcome to IEMDB!"));
@@ -106,7 +111,7 @@ public class RequestHandler {
 //
 
     }
-    private static Document getCommodities() throws IOException {
+    private Document getCommodities() throws IOException {
         Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
         Element table = template.selectFirst("tbody");
 //        List<String> _categories = new ArrayList<>();
@@ -116,16 +121,16 @@ public class RequestHandler {
 //        Commodity commodity = new Commodity(1,"a",2,300,_categories,8,10);
 //        table.append(showCommodities(commodity).html());
 
-        showAllCommodities(table, baloot.commodities);
+        showAllCommodities(table, baloot.getCommodities());
         return template;
     }
-    private static void showAllCommodities(Element table, List<Commodity> commodities){
+    private void showAllCommodities(Element table, List<Commodity> commodities){
         for (Commodity commodity : commodities) {
             assert table != null;
             table.append(showCommodities(commodity).html());
         }
     }
-    private static Element showCommodities(Commodity commodity){
+    private Element showCommodities(Commodity commodity){
         Element row = new Element("tr");
         row.append("<td>" + commodity.getId() + "</td>");
         row.append("<td>" + commodity.getName() + "</td>");
@@ -137,7 +142,7 @@ public class RequestHandler {
         row.append("<td><a href=\"/commodities/" + new DecimalFormat("00").format(commodity.getId()) + "\">Link</a></td>");
         return row;
     }
-    private static Document getCommodity(String commodityId) throws IOException {
+    private Document getCommodity(String commodityId) throws IOException {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodity.html"), "utf-8");
             Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
@@ -163,7 +168,7 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
-    private static Document getProvider(String provider_id) throws IOException {
+    private Document getProvider(String provider_id) throws IOException {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/Provider.html"), "utf-8");
             Provider provider = baloot.findByProviderId(Integer.parseInt(provider_id));
@@ -178,15 +183,15 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
-    static Document getUser(String userId) throws IOException {
+    Document getUser(String userId) throws IOException {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/User.html"), "utf-8");
             User user = baloot.findByUsername(userId);
-            Objects.requireNonNull(template.selectFirst("#username")).html(user.getUsername());
-            Objects.requireNonNull(template.selectFirst("#email")).html(user.getEmail());
-            Objects.requireNonNull(template.selectFirst("#birthDate")).html(user.getBirthDate());
+            Objects.requireNonNull(template.selectFirst("#username")).html("Username: " + user.getUsername());
+            Objects.requireNonNull(template.selectFirst("#email")).html("Email: " + user.getEmail());
+            Objects.requireNonNull(template.selectFirst("#birthDate")).html("Birth Date: " + user.getBirthDate());
             Objects.requireNonNull(template.selectFirst("#address")).html(user.getAddress());
-            Objects.requireNonNull(template.selectFirst("#credit")).html(Double.toString(user.getCredit()));
+            Objects.requireNonNull(template.selectFirst("#credit")).html("Credit: " + Double.toString(user.getCredit()));
 
             Element table = template.selectFirst("tbody");
 //            showAllCommodities(table, user.getBuyList());
@@ -214,7 +219,7 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
-    private static Document removeFromBuyList(String userId, String commodityId) throws IOException {
+    private Document removeFromBuyList(String userId, String commodityId) throws IOException {
         try {
             User user = baloot.findByUsername(userId);
             Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
@@ -225,7 +230,7 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
-    static Document addToBuyList(String userId, String commodityId) throws IOException {
+    Document addToBuyList(String userId, String commodityId) throws IOException {
         try {
             User user = baloot.findByUsername(userId);
             Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
@@ -238,14 +243,14 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
         }
     }
-    static Document getFilteredCommoditiesByPriceRange(String startPrice, String endPrice) throws IOException {
+    private Document getFilteredCommoditiesByPriceRange(String startPrice, String endPrice) throws IOException {
         Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
         Element table = template.selectFirst("tbody");
         List<Commodity> filteredCommodities = baloot.getCommoditiesByPriceRange(Double.parseDouble(startPrice), Double.parseDouble(endPrice));
         showAllCommodities(table, filteredCommodities);
         return template;
     }
-    private static Document getFilteredCommoditiesByCategories(String category) throws IOException {
+    private Document getFilteredCommoditiesByCategories(String category) throws IOException {
         Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
         Element table = template.selectFirst("tbody");
         List<Commodity> filteredCommodities = baloot.getCommoditiesByCategory(category);

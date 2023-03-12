@@ -14,6 +14,10 @@ public class Database {
     public Database() {
     }
 
+    public List<User> getUsers() { return users; }
+    public List<Provider> getProviders() { return providers; }
+    public List<Commodity> getCommodities() { return commodities; }
+
     public void insertInitialData(User[] _users, Provider[] _providers, Commodity[] _commodities) {
         users.addAll(Arrays.asList(_users));
         providers.addAll(Arrays.asList(_providers));

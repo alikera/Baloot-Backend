@@ -1,4 +1,6 @@
 package org.Baloot;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.Baloot.Database.Database;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -9,22 +11,33 @@ import java.io.IOException;
 
 public class DataGetter {
 
-    private String endPoint = "http://5.253.25.110:5000/api";
-    private String getUsersAddr = "users";
-    private String getCommoditiesAddr = "commodities";
-    private String getProvidersAddr = "providers";
-    private String getCommentsAddr = "comments";
+    private String baseEndpoint = "http://5.253.25.110:5000/api/";
+    private String getUsersEndpoint = "users";
+    private String getCommoditiesEndpoint = "commodities";
+    private String getProvidersEndpoint = "providers";
+    private String getCommentsEndpoint = "comments";
 
     public void getDataFromServer() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
         HttpClient httpClient = HttpClientBuilder.create().build();
-        getRequest(httpClient, getUsersAddr);
-        getRequest(httpClient, getCommoditiesAddr);
-        getRequest(httpClient, getProvidersAddr);
-        getRequest(httpClient, getCommentsAddr);
+
+        String usersData = getRequest(httpClient, getUsersEndpoint);
+        User[] users = mapper.readValue(usersData, User[].class);
+
+        String commoditiesData = getRequest(httpClient, getCommoditiesEndpoint);
+        Commodity[] commodities = mapper.readValue(commoditiesData, Commodity[].class);
+
+        String providersData = getRequest(httpClient, getProvidersEndpoint);
+        Provider[] providers = mapper.readValue(providersData, Provider[].class);
+
+        String commentsData = getRequest(httpClient, getCommentsEndpoint);
+
+        Database db = new Database();
+        db.insertInitialData(users, providers, commodities);
     }
 
-    public void getRequest(HttpClient httpClient, String address) throws IOException {
-        HttpGet httpGet = new HttpGet(endPoint + address);
+    public String getRequest(HttpClient httpClient, String address) throws IOException {
+        HttpGet httpGet = new HttpGet(baseEndpoint + address);
         HttpResponse response = httpClient.execute(httpGet);
 
         int statusCode = response.getStatusLine().getStatusCode();
@@ -32,5 +45,7 @@ public class DataGetter {
 
         System.out.println(statusCode);
         System.out.println(responseBody);
+
+        return responseBody;
     }
 }

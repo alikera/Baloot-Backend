@@ -95,6 +95,11 @@ public class Parser {
     public void main(String args[]) throws JsonProcessingException {
         String data = "{“username”: “user1”, “password”: “1234”, “email”: “user@gmail.com”, “birthDate”:“1977-09-15”, “address”: “address1”, “credit”: 1500}";
         addUserParser(data);
+    }
 
+    public User[] getUsersParser(String data) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        User[] user = mapper.readValue(data, User[].class);
+        return user;
     }
 }

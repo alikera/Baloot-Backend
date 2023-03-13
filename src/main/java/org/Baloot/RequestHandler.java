@@ -17,11 +17,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class RequestHandler {
-    private final String SERVICE_API = "http://5.253.25.110:5000";
-    private final String USERS_API = SERVICE_API + "/api/users";
-    private final String COMMODITY_API = SERVICE_API + "/api/commodities";
-    private final String PROVIDERS_API = SERVICE_API + "/api/providers";
-    private final String COMMENTS_API = SERVICE_API + "/api/comments";
     private Baloot baloot;
 
     public RequestHandler(Baloot _baloot) {
@@ -90,6 +85,14 @@ public class RequestHandler {
         app.post("/rateCommodityTemp/{commodityId}", context -> {
             context.redirect("/rateCommodity/" + context.formParam("userId") + "/" + context.pathParam("commodityId") + "/" + context.formParam("rate"));
         });
+        app.get("/voteComment/{userId}/{commodityId}/{vote}", context -> {
+            Document template = voteComment(context.pathParam("userId"),context.pathParam("commodityId"), context.pathParam("vote"));
+            context.html(template.html());
+//            context.redirect("/users/" + context.pathParam("userId"));
+        });
+        app.post("/voteCommentTemp/{commodityId}/{vote}", context -> {
+            context.redirect("/voteComment/" + context.formParam("userId") + "/" + context.pathParam("commodityId") + "/" + context.pathParam("vote"));
+        });
 //
 //        app.post("/rate/{commodityId}/{userId}", context -> {
 //            Document template = ratecommodity(context.pathParam("userId"),context.pathParam("commodityId"),context.formParam("quantity"));
@@ -116,8 +119,6 @@ public class RequestHandler {
 //            context.html(template.html());
 //            context.redirect("/commoditylogin/" + context.pathParam("commodityId") + "/" + context.pathParam("userId"));
 //        });
-//
-
     }
     private Document getCommodities() throws IOException {
         Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
@@ -150,6 +151,25 @@ public class RequestHandler {
         row.append("<td><a href=\"/commodities/" + new DecimalFormat("00").format(commodity.getId()) + "\">Link</a></td>");
         return row;
     }
+    private void showAllComments(Document template, List<Comment> comments, String commodityId) {
+        Element table = template.selectFirst("tbody");
+
+        for (Comment comment : comments) {
+            assert table != null;
+            table.append(showComment(comment, commodityId).html());
+        }
+        System.out.println(table);
+    }
+
+    private Element showComment(Comment comment, String commodityId) {
+        Element row = new Element("tr");
+        row.append("<td>" + comment.getUserEmail() + "</td>");
+        row.append("<td>" + comment.getText() + "</td>");
+        row.append("<td>" + comment.getDate() + "</td>");
+        row.append("<td><label for=\"\">"+comment.getLikes()+"</label>\n<button type=\"submit\" formaction=\"/voteCommentTemp/"+commodityId+"/"+ "1" +"\">like</button></td>\n");
+        row.append("<td><label for=\"\">"+comment.getDislikes()+"</label>\n<button type=\"submit\" formaction=\"/voteCommentTemp/"+commodityId+"/"+"-1"+"\">dislike</button></td>\n");
+        return row;
+    }
     private Document getCommodity(String commodityId) throws IOException {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodity.html"), "utf-8");
@@ -164,8 +184,6 @@ public class RequestHandler {
             Objects.requireNonNull(template.selectFirst("#inStock")).html("In Stock: " + commodity.getInStock());
 
             String post = "<td> <form action=\"/\" method=\"POST\">\n" +
-                    "  <input type=\"hidden\" name=\"commodityId\" value=\"\">\n" +
-                    "  <input type=\"hidden\" name=\"commodityId\" value=\"\">\n" +
                     "  <label for=\"userId\">Your ID:</label>\n" +
                     "  <input id=\"userId\" type=\"text\" name=\"userId\" value=\"\">\n" +
                     "      <br><br>\n" +
@@ -176,15 +194,23 @@ public class RequestHandler {
                     "        <button type=\"submit\" formaction=\"/rateCommodityTemp/"+commodityId+"\">Rate</button>\n" +
                     "      </td>\n" +
                     "      <br><br>\n" +
-
                     "      <td>\n" +
                     "        <button type=\"submit\" formaction=\"/addToBuyListTemp/"+commodityId+"\">Add to BuyList</button>\n" +
                     "      </td>\n" +
                     "    </tr>\n" +
-                    "</form>";
+                    "    <table>\n" +
+                    "      <tr>\n" +
+                    "        <th>username</th>\n" +
+                    "        <th>comment</th>\n" +
+                    "        <th>date</th>\n" +
+                    "        <th></th>\n" +
+                    "        <th></th>\n" +
+                    "      </tr>\n" +
+                    "    </table>\n" +
+                    "</form>\n";
+
             template.append(post);
-
-
+            showAllComments(template, baloot.getCommentsByCommodityId(Integer.parseInt(commodityId)), commodityId);
 
 //            String template = rate_commodity + addToBuyList;
 
@@ -325,4 +351,14 @@ public class RequestHandler {
         }
     }
 
+    private Document voteComment(String userId, String commodityId, String vote) throws UserNotFoundException, CommodityNotFoundException, IOException {
+        try {
+            User user = baloot.findByUsername(userId);
+            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
+            baloot.voteComment(commodity, userId, vote);
+            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
+        } catch (UserNotFoundException | CommodityNotFoundException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+        }
+    }
 }

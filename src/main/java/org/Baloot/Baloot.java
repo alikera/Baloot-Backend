@@ -46,6 +46,16 @@ public class Baloot {
         }
         return filteredCommodities;
     }
+
+    public List<Comment> getCommentsByCommodityId(int commodityId){
+        List<Comment> filteredComments = new ArrayList<>();
+        for (Comment comment : db.getComments()) {
+            if (comment.getCommodityId() == commodityId) {
+                filteredComments.add(comment);
+            }
+        }
+        return filteredComments;
+    }
     public User findByUsername(String username) throws UserNotFoundException {
         for (User user : db.getUsers()) {
             if (Objects.equals(user.getUsername(), username)) {
@@ -244,6 +254,14 @@ public class Baloot {
         user.increaseCredit(amount);
     }
 
+    public void voteComment(Commodity commodity, String username, String vote){
+        for (Comment comment : db.getComments()){
+            if(comment.getCommodityId() == commodity.getId()){
+                comment.voteComment(username, Integer.parseInt(vote));
+            }
+        }
+    }
+
     public ObjectNode makeJsonFromObjectNode(Boolean success, ObjectNode dataNode) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
@@ -269,4 +287,6 @@ public class Baloot {
     public List<Commodity> getCommodities() {
         return db.getCommodities();
     }
+
+
 }

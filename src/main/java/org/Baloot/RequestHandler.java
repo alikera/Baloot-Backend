@@ -55,7 +55,7 @@ public class RequestHandler {
         app.post("/removeFromBuyList/{userId}/{commodityId}", context -> {
             Document template = removeFromBuyList(context.pathParam("userId"),context.pathParam("commodityId"));
             context.html(template.html());
-            context.redirect("/users/" + context.pathParam("userId"));
+//            context.redirect("/users/" + context.pathParam("userId"));
         });
 
         app.get("/addToBuyList/{userId}/{commodityId}", context -> {

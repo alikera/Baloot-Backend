@@ -14,6 +14,7 @@ public class User {
     private String address;
     private double credit;
     private Set<Integer> buyList = new HashSet<>();
+    private Set<Integer> purchasedList = new HashSet<>();
     public String getUsername() {
         return username;
     }
@@ -42,6 +43,8 @@ public class User {
         return buyList;
     }
 
+    public Set<Integer> getPurchasedList() { return purchasedList; }
+
     public User(@JsonProperty("username") String _username, @JsonProperty("password") String _password,
                 @JsonProperty("email") String _email, @JsonProperty("birthDate") String _birthDate,
                 @JsonProperty("address") String _address, @JsonProperty("credit") double _credit) {
@@ -68,7 +71,6 @@ public class User {
             buyList.add(commodityId);
         }
     }
-
     public void removeFromBuyList(int commodityId) throws CommodityExistenceException {
         if (buyList.contains(commodityId)) {
             buyList.remove(commodityId);
@@ -76,9 +78,14 @@ public class User {
             throw new CommodityExistenceException("Commodity does not exists in your BuyList!");
         }
     }
-
     public void increaseCredit(double amount) {
         credit += amount;
+    }
+
+    public void moveBuyToPurchased(double cost) {
+        purchasedList.addAll(buyList);
+        buyList.clear();
+        credit -= cost;
     }
 
     public void print() {

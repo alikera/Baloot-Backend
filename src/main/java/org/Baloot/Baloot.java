@@ -253,6 +253,29 @@ public class Baloot {
         }
         user.increaseCredit(amount);
     }
+    public boolean finalizePayment(String username) {
+        try {
+            User user = findByUsername(username);
+            Set<Integer> commoditiesId = user.getBuyList();
+            double cost = 0;
+
+            for (Integer id: commoditiesId) {
+                Commodity commodity = findByCommodityId(id);
+                cost += commodity.getPrice();
+            }
+            if (user.getCredit() >= cost) {
+                user.moveBuyToPurchased(cost);
+                return true;
+            }
+            else {
+                return false;
+            }
+        } catch (UserNotFoundException e) {
+            return false;
+        } catch (CommodityNotFoundException e) {
+            return false;
+        }
+    }
 
     public void voteComment(Commodity commodity, String username, String vote){
         for (Comment comment : db.getComments()){

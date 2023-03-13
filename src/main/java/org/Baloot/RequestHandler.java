@@ -93,6 +93,19 @@ public class RequestHandler {
         app.post("/voteCommentTemp/{commodityId}/{vote}", context -> {
             context.redirect("/voteComment/" + context.formParam("userId") + "/" + context.pathParam("commodityId") + "/" + context.pathParam("vote"));
         });
+
+        app.get("/payment/{userId}", context -> {
+            boolean success = baloot.finalizePayment(context.formParam("userId"));
+            if (success) {
+                context.redirect("/users/" + context.formParam("userId"));
+            }
+            else {
+
+            }
+        });
+
+//        app.get("/404Error", context -> {
+//        })
 //
 //        app.post("/rate/{commodityId}/{userId}", context -> {
 //            Document template = ratecommodity(context.pathParam("userId"),context.pathParam("commodityId"),context.formParam("quantity"));
@@ -120,6 +133,7 @@ public class RequestHandler {
 //            context.redirect("/commoditylogin/" + context.pathParam("commodityId") + "/" + context.pathParam("userId"));
 //        });
     }
+
     private Document getCommodities() throws IOException {
         Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
         Element table = template.selectFirst("tbody");
@@ -263,7 +277,15 @@ public class RequestHandler {
             Objects.requireNonNull(template.selectFirst("#credit")).html("Credit: " + Double.toString(user.getCredit()));
 
             Element table = template.selectFirst("tbody");
-
+            String paymentButton = "<li>"
+                                + "<form action=\"/payment/" + userId + "\" method=\"POST\" >"
+                                + "<label>Buy List Payment</label>"
+                                + "<input id=\"form_payment\" type=\"hidden\" name=\"userId\" value=" + userId + ">"
+                                + "<button type=\"submit\">Payment</button>"
+                                + "</form>"
+                                + "</li>";
+            assert table != null;
+            table.append(paymentButton);
             for (Integer id : user.getBuyList()) {
                 Commodity commodity = baloot.findByCommodityId(id);
                 Element row = showCommodities(commodity);
@@ -278,7 +300,11 @@ public class RequestHandler {
                         + "</form>"
                         + "</td>";
                 row.append(remove);
-                assert table != null;
+                table.append(row.html());
+            }
+            for (Integer id : user.getPurchasedList()) {
+                Commodity commodity = baloot.findByCommodityId(id);
+                Element row = showCommodities(commodity);
                 table.append(row.html());
             }
             return template;

@@ -51,6 +51,11 @@ public class RequestHandler {
             context.html(template.html());
         });
 
+        app.get("/addCredit/{userId}/{credit}", context -> {
+            Document template = addCredit(context.pathParam("userId"), context.pathParam("credit"));
+            context.html(template.html());
+        });
+
 
         app.post("/removeFromBuyList/{userId}/{commodityId}", context -> {
             Document template = removeFromBuyList(context.pathParam("userId"),context.pathParam("commodityId"));
@@ -117,6 +122,13 @@ public class RequestHandler {
     private Document getCommodities() throws IOException {
         Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
         Element table = template.selectFirst("tbody");
+//        List<String> _categories = new ArrayList<>();
+//        _categories.add("sib");
+//        _categories.add("holoo");
+////        TODO: test
+//        Commodity commodity = new Commodity(1,"a",2,300,_categories,8,10);
+//        table.append(showCommodities(commodity).html());
+
         showAllCommodities(table, baloot.getCommodities());
         return template;
     }
@@ -225,10 +237,10 @@ public class RequestHandler {
             Objects.requireNonNull(template.selectFirst("#credit")).html("Credit: " + Double.toString(user.getCredit()));
 
             Element table = template.selectFirst("tbody");
+
             for (Integer id : user.getBuyList()) {
                 Commodity commodity = baloot.findByCommodityId(id);
                 Element row = showCommodities(commodity);
-
                 String remove = "<td>"
                         + "<form action= \"/removeFromBuyList/" + userId + "/"
                         + new DecimalFormat("00").format(commodity.getId())
@@ -249,6 +261,17 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         }
     }
+
+    private Document addCredit(String username, String credit) throws IOException {
+        Double amount = Double.parseDouble(credit);
+        try {
+            baloot.addCredit(username, amount);
+            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
+        } catch (UserNotFoundException | NegativeAmountException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+        }
+    }
+
     private Document removeFromBuyList(String userId, String commodityId) throws IOException {
         try {
             User user = baloot.findByUsername(userId);

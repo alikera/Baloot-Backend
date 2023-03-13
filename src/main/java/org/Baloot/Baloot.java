@@ -236,15 +236,12 @@ public class Baloot {
         }
     }
 
-    public ObjectNode addCredit(String username, double amount) {
-        try {
-            User user = findByUsername(username);
-            user.increaseCredit(amount);
-            return makeJsonFromString(true, "User credit increased");
+    public void addCredit(String username, double amount) throws UserNotFoundException, NegativeAmountException {
+        User user = findByUsername(username);
+        if (amount <= 0) {
+            throw new NegativeAmountException();
         }
-        catch (UserNotFoundException e) {
-            return makeJsonFromString(false, e.getMessage());
-        }
+        user.increaseCredit(amount);
     }
 
     public ObjectNode makeJsonFromObjectNode(Boolean success, ObjectNode dataNode) {

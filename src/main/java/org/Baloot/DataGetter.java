@@ -31,8 +31,9 @@ public class DataGetter {
         Provider[] providers = mapper.readValue(providersData, Provider[].class);
 
         String commentsData = getRequest(httpClient, getCommentsEndpoint);
+        Comment[] comments = mapper.readValue(commentsData, Comment[].class);
 
-        db.insertInitialData(users, providers, commodities);
+        db.insertInitialData(users, providers, commodities, comments);
     }
 
     public String getRequest(HttpClient httpClient, String address) throws IOException {

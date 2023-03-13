@@ -10,6 +10,7 @@ public class Database {
     private List<User> users = new ArrayList<>();
     private List<Provider> providers = new ArrayList<>();
     private List<Commodity> commodities = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
 
     public Database() {
     }
@@ -17,11 +18,13 @@ public class Database {
     public List<User> getUsers() { return users; }
     public List<Provider> getProviders() { return providers; }
     public List<Commodity> getCommodities() { return commodities; }
+    public List<Comment> getComments() { return comments; }
 
-    public void insertInitialData(User[] _users, Provider[] _providers, Commodity[] _commodities) {
+    public void insertInitialData(User[] _users, Provider[] _providers, Commodity[] _commodities, Comment[] _comments) {
         users.addAll(Arrays.asList(_users));
         providers.addAll(Arrays.asList(_providers));
         commodities.addAll(Arrays.asList(_commodities));
+        comments.addAll(Arrays.asList(_comments));
 
         for (User user: users) {
             user.print();
@@ -45,4 +48,6 @@ public class Database {
     public void insertCommodity(Commodity commodity) {
         commodities.add(commodity);
     }
+
+    public void insertComment(Comment comment) { comments.add(comment); }
 }

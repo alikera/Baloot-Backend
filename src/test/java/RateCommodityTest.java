@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.Baloot.Baloot;
 import org.Baloot.Commodity;
+import org.Baloot.Database.Database;
 import org.Baloot.Exception.CommodityNotFoundException;
 import org.Baloot.Exception.ExceptionHandler;
 import org.Baloot.Exception.InvalidRatingException;
@@ -18,51 +19,50 @@ import static org.junit.Assert.*;
 
 public class RateCommodityTest {
     private Baloot baloot;
+    private Database db;
     private User user;
     private Provider provider;
     private Commodity commodity1, commodity2, commodity3;
-    private ObjectMapper objectMapper;
     @Before
     public void setUp() throws JsonProcessingException, UserNotFoundException {
-        baloot = new Baloot();
-        objectMapper = new ObjectMapper();
+        db = new Database();
+        baloot = new Baloot(db);
+
         provider = new Provider(1, "provider1", "2023-09-15");
-        baloot.addProvider(provider);
+        db.insertProvider(provider);
 
         user = new User("user1", "1234", "user@gmail.com","1977-09-15",
                 "address1",1500);
-        baloot.addUser(user);
+        db.insertUser(user);
 
         List<String> categories1 = new ArrayList<>();
         categories1.add("Technology");
         commodity1 = new Commodity(1, "Headphone", 1, 35000, categories1, 0.0,
                 50);
-        baloot.addCommodity(commodity1);
+        db.insertCommodity(commodity1);
 
         List<String> categories2 = new ArrayList<>();
         categories2.add("Technology");
         categories2.add("Phone");
         commodity2 = new Commodity(2, "Apple", 1, 3000, categories2, 0.0,
                 0);
-        baloot.addCommodity(commodity2);
+        db.insertCommodity(commodity2);
 
         List<String> categories3 = new ArrayList<>();
         categories3.add("Fruit");
         commodity3 = new Commodity(3, "Apple", 1, 300, categories3, 0.0,
                 220);
-        baloot.addCommodity(commodity3);
+        db.insertCommodity(commodity3);
     }
 
     @After
     public void tearDown() {
         baloot = null;
-        objectMapper = null;
         user = null;
         provider = null;
         commodity1 = null;
         commodity2 = null;
         commodity3 = null;
-
     }
     @Test
     public void testIncreaseRatingsCountIfUserHasNotRatedCurrentCommodity() throws ExceptionHandler {
@@ -104,30 +104,18 @@ public class RateCommodityTest {
         assertEquals(((rating*ratingsCount - userGivenRating_1) + userGivenRating_2) / commodity1.getCountOfRatings(), commodity1.getRating(),0.01);
     }
     @Test
-    public void TestErrorIfUserRatingIsNotBetween1To10() {
+    public void TestErrorInRateCommodityIfUserRatingIsNotBetween1To10() {
         int userGivenRating = -1;
 
         assertThrows(InvalidRatingException.class, () -> commodity1.rateCommodity(user.getUsername(), userGivenRating));
     }
     @Test
-    public void testRateCommodityIfUserDoesNotExist() throws JsonProcessingException {
-        ObjectNode node = objectMapper.createObjectNode();
-        node.put("username", "user2");
-        node.put("commodityId", 1);
-        node.put("score", 2);
-        ObjectNode outputNode = baloot.rateCommodity(node);
-        assertFalse(outputNode.get("success").asBoolean());
-        assertEquals("Couldn't find user with the given Username!", outputNode.get("data").asText());
+    public void testErrorInRateCommodityIfUserDoesNotExist() {
+        assertThrows(UserNotFoundException.class, () -> baloot.rateCommodity("user2", "1", "2"));
     }
 
     @Test
-    public void testRateCommodityIfCommodityDoesNotExist() throws JsonProcessingException {
-        ObjectNode node = objectMapper.createObjectNode();
-        node.put("username", "user1");
-        node.put("commodityId", 4);
-        node.put("score", 2);
-        ObjectNode outputNode = baloot.rateCommodity(node);
-        assertFalse(outputNode.get("success").asBoolean());
-        assertEquals("Couldn't find commodity with the given Id!", outputNode.get("data").asText());
+    public void testErrorInRateCommodityIfCommodityDoesNotExist() {
+        assertThrows(CommodityNotFoundException.class, () -> baloot.rateCommodity("user1", "4", "2"));
     }
 }

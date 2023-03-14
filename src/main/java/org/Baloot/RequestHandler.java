@@ -363,11 +363,15 @@ public class RequestHandler {
         }
     }
     private Document getFilteredCommoditiesByPriceRange(String startPrice, String endPrice) throws IOException {
-        Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
-        Element table = template.selectFirst("tbody");
-        List<Commodity> filteredCommodities = baloot.getCommoditiesByPriceRange(Double.parseDouble(startPrice), Double.parseDouble(endPrice));
-        showAllCommodities(table, filteredCommodities);
-        return template;
+        try {
+            Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
+            Element table = template.selectFirst("tbody");
+            List<Commodity> filteredCommodities = baloot.getCommoditiesByPriceRange(startPrice, endPrice);
+            showAllCommodities(table, filteredCommodities);
+            return template;
+        }catch (NumberFormatException e){
+            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
+        }
     }
     private Document getFilteredCommoditiesByCategories(String category) throws IOException {
         Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");

@@ -28,7 +28,10 @@ public class Baloot {
         throw new CommodityNotFoundException("Couldn't find commodity with the given Id!");
     }
 
-    public List<Commodity> getCommoditiesByPriceRange(double startPrice, double endPrice){
+    public List<Commodity> getCommoditiesByPriceRange(String _startPrice, String _endPrice) throws NumberFormatException {
+        double startPrice = Double.parseDouble(_startPrice);
+        double endPrice = Double.parseDouble(_endPrice);
+
         List<Commodity> filteredCommodities = new ArrayList<>();
         for (Commodity commodity : db.getCommodities()) {
             if (commodity.getPrice() >= startPrice && commodity.getPrice() <= endPrice) {
@@ -72,6 +75,7 @@ public class Baloot {
         }
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
+
     private void addToProviderCommodityList(Commodity commodity) throws ProviderNotFoundException {
         for(Provider provider : db.getProviders()){
             if(Objects.equals(provider.getId(), commodity.getProviderId())){

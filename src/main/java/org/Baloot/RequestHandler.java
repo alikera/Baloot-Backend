@@ -53,10 +53,13 @@ public class RequestHandler {
         });
 
 
-        app.post("/removeFromBuyList/{userId}/{commodityId}", context -> {
+        app.get("/removeFromBuyList/{userId}/{commodityId}", context -> {
             Document template = removeFromBuyList(context.pathParam("userId"),context.pathParam("commodityId"));
             context.html(template.html());
 //            context.redirect("/users/" + context.pathParam("userId"));
+        });
+        app.post("/removeFromBuyListTemp/{userId}/{commodityId}", context -> {
+            context.redirect("/removeFromBuyList/" + context.pathParam("userId") + "/" + context.pathParam("commodityId"));
         });
 
         app.get("/addToBuyList/{userId}/{commodityId}", context -> {
@@ -292,15 +295,14 @@ public class RequestHandler {
                                 + "<button type=\"submit\" formaction=\"/payment/" + userId +"\">Payment</button>"
                                 + "</form>"
                                 + "</li>";
-            assert tables != null;
-//            System.out.println(table.toString());
+            //            System.out.println(table.toString());
 //            template.append(paymentButton);
 //            table.append(paymentButton);
             for (Integer id : user.getBuyList()) {
                 Commodity commodity = baloot.findByCommodityId(id);
                 Element row = showCommodities(commodity);
                 String remove = "<td>"
-                        + "<form action= \"/removeFromBuyList/" + userId + "/"
+                        + "<form action= \"/removeFromBuyListTemp/" + userId + "/"
                         + new DecimalFormat("00").format(commodity.getId())
                         +"\" method=\"POST\" >"
                         + "<input id=\"form_commodityId\" type=\"hidden\" name=\"commodityId\" value=\"";
@@ -325,36 +327,37 @@ public class RequestHandler {
     }
 
     private Document addCredit(String username, String credit) throws IOException {
-        Double amount = Double.parseDouble(credit);
         try {
-            baloot.addCredit(username, amount);
+            baloot.addCredit(username, credit);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
-        } catch (UserNotFoundException | NegativeAmountException e) {
+        } catch (UserNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+        } catch (NegativeAmountException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
         }
     }
 
     private Document removeFromBuyList(String userId, String commodityId) throws IOException {
         try {
-            User user = baloot.findByUsername(userId);
-            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
-            user.removeFromBuyList(Integer.parseInt(commodityId));
+            baloot.removeCommodityFromUserBuyList(userId, commodityId);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         }
-        catch (UserNotFoundException | CommodityNotFoundException | CommodityExistenceException e) {
+        catch (UserNotFoundException | CommodityNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+        } catch (CommodityExistenceException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
         }
     }
     Document addToBuyList(String userId, String commodityId) throws IOException {
         try {
-            User user = baloot.findByUsername(userId);
-            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
-            user.addToBuyList(Integer.parseInt(commodityId));
+            baloot.addCommodityToUserBuyList(userId, commodityId);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         }
         catch (UserNotFoundException | CommodityNotFoundException exp) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
         } catch (CommodityExistenceException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
+        } catch (OutOfStockException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
         }
     }
@@ -375,9 +378,7 @@ public class RequestHandler {
 
     private Document rateCommodity(String userId, String commodityId, String rate) throws IOException {
         try{
-            User user = baloot.findByUsername(userId);
-            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
-            commodity.rateCommodity(userId, Integer.parseInt((rate)));
+            baloot.rateCommodity(userId, commodityId, rate);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {
@@ -387,11 +388,9 @@ public class RequestHandler {
         }
     }
 
-    private Document voteComment(String userId, String commodityId, String vote) throws UserNotFoundException, CommodityNotFoundException, IOException {
+    private Document voteComment(String userId, String commodityId, String vote) throws IOException {
         try {
-            User user = baloot.findByUsername(userId);
-            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
-            baloot.voteComment(commodity, userId, vote);
+            baloot.voteComment(userId, commodityId, vote);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         } catch (UserNotFoundException | CommodityNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");

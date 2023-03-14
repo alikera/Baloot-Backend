@@ -50,6 +50,10 @@ public class Commodity {
     public void decreaseInStock(){
         inStock--;
     }
+    public void increaseInStock(){
+        inStock++;
+    }
+
     private double calculateAverageOfRatings(){
         double sum = 0.0;
         for (Double value : Ratings.values()) {

@@ -5,6 +5,7 @@ import org.Baloot.Exception.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 //import org.w3c.dom.Document;
 
@@ -94,10 +95,11 @@ public class RequestHandler {
             context.redirect("/voteComment/" + context.formParam("userId") + "/" + context.pathParam("commodityId") + "/" + context.pathParam("vote"));
         });
 
-        app.get("/payment/{userId}", context -> {
-            boolean success = baloot.finalizePayment(context.formParam("userId"));
+        app.post("/payment/{userId}", context -> {
+            boolean success = baloot.finalizePayment(context.pathParam("userId"));
+            System.out.println(success);
             if (success) {
-                context.redirect("/users/" + context.formParam("userId"));
+                context.redirect("/users/" + context.pathParam("userId"));
             }
             else {
 
@@ -275,17 +277,25 @@ public class RequestHandler {
             Objects.requireNonNull(template.selectFirst("#birthDate")).html("Birth Date: " + user.getBirthDate());
             Objects.requireNonNull(template.selectFirst("#address")).html(user.getAddress());
             Objects.requireNonNull(template.selectFirst("#credit")).html("Credit: " + Double.toString(user.getCredit()));
-
-            Element table = template.selectFirst("tbody");
-            String paymentButton = "<li>"
-                                + "<form action=\"/payment/" + userId + "\" method=\"POST\" >"
+            Objects.requireNonNull(template.selectFirst("#X")).html(
+                    "<form action=\"\" method=\"POST\">"
+                           + "<label>Buy List Payment</label>"
+                        + "<input id=\"form_payment\" type=\"hidden\" name=\"userId\" value=\"" + userId + "\">"
+                        + "<button type=\"submit\" formaction=\"/payment/" + userId + "\">Payment</button>"
+                     + "</form>");
+            Elements tables = template.select("table");
+            String paymentButton =
+                                "<li>"
+                                + "<form action=\"\" method=\"POST\" >"
                                 + "<label>Buy List Payment</label>"
                                 + "<input id=\"form_payment\" type=\"hidden\" name=\"userId\" value=" + userId + ">"
-                                + "<button type=\"submit\">Payment</button>"
+                                + "<button type=\"submit\" formaction=\"/payment/" + userId +"\">Payment</button>"
                                 + "</form>"
                                 + "</li>";
-            assert table != null;
-            table.append(paymentButton);
+            assert tables != null;
+//            System.out.println(table.toString());
+//            template.append(paymentButton);
+//            table.append(paymentButton);
             for (Integer id : user.getBuyList()) {
                 Commodity commodity = baloot.findByCommodityId(id);
                 Element row = showCommodities(commodity);
@@ -300,12 +310,12 @@ public class RequestHandler {
                         + "</form>"
                         + "</td>";
                 row.append(remove);
-                table.append(row.html());
+                tables.get(0).append(row.html());
             }
             for (Integer id : user.getPurchasedList()) {
                 Commodity commodity = baloot.findByCommodityId(id);
                 Element row = showCommodities(commodity);
-                table.append(row.html());
+                tables.get(1).append(row.html());
             }
             return template;
         }

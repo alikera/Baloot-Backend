@@ -21,15 +21,11 @@ public class RateCommodityTest {
     private Baloot baloot;
     private Database db;
     private User user;
-    private Provider provider;
     private Commodity commodity1, commodity2, commodity3;
     @Before
-    public void setUp() throws JsonProcessingException, UserNotFoundException {
+    public void setUp() {
         db = new Database();
         baloot = new Baloot(db);
-
-        provider = new Provider(1, "provider1", "2023-09-15");
-        db.insertProvider(provider);
 
         user = new User("user1", "1234", "user@gmail.com","1977-09-15",
                 "address1",1500);
@@ -59,7 +55,6 @@ public class RateCommodityTest {
     public void tearDown() {
         baloot = null;
         user = null;
-        provider = null;
         commodity1 = null;
         commodity2 = null;
         commodity3 = null;

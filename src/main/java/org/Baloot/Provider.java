@@ -9,7 +9,7 @@ import java.util.List;
 public class Provider {
     private int id;
     private String name;
-    private String registryDate;
+    private Date registryDate;
 
     private double averageRatingCommodities;
     private List<Commodity> myCommodities = new ArrayList<>();
@@ -23,7 +23,7 @@ public class Provider {
     }
 
     public String getRegistryDate() {
-        return registryDate;
+        return registryDate.getAsString();
     }
 
     public List<Commodity> getMyCommodities() {
@@ -43,7 +43,7 @@ public class Provider {
                     @JsonProperty("registryDate") String _registryDate) {
         this.id = _id;
         this.name = _name;
-        this.registryDate = _registryDate;
+        this.registryDate = new Date(_registryDate);
     }
 
     public void print() {

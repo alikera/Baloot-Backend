@@ -10,7 +10,7 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private String birthDate;
+    private Date birthDate;
     private String address;
     private double credit;
     private Set<Integer> buyList = new HashSet<>();
@@ -28,9 +28,12 @@ public class User {
     }
 
     public String getBirthDate() {
-        return birthDate;
+        return birthDate.getAsString();
     }
 
+    public Date getDate(){
+        return birthDate;
+    }
     public String getAddress() {
         return address;
     }
@@ -51,7 +54,7 @@ public class User {
         username = _username;
         password = _password;
         email = _email;
-        birthDate = _birthDate;
+        birthDate = new Date(_birthDate);
         address = _address;
         credit = _credit;
     }
@@ -59,7 +62,7 @@ public class User {
     public void modifyFields(User user) {
         password = user.getPassword();
         email = user.getEmail();
-        birthDate = user.getBirthDate();
+        birthDate = user.getDate();
         address = user.getAddress();
         credit = user.getCredit();
     }

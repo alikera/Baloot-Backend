@@ -260,8 +260,9 @@ public class RequestHandler {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/Provider.html"), "utf-8");
             Provider provider = baloot.findByProviderId(Integer.parseInt(provider_id));
-            Objects.requireNonNull(template.selectFirst("#name")).html(provider.getName());
-            Objects.requireNonNull(template.selectFirst("#registryDate")).html(provider.getRegistryDate());
+            Objects.requireNonNull(template.selectFirst("#id")).html("Id: " + provider.getId());
+            Objects.requireNonNull(template.selectFirst("#name")).html("Name: " + provider.getName());
+            Objects.requireNonNull(template.selectFirst("#registryDate")).html("Registry Date: " + provider.getRegistryDate());
             Element table = template.selectFirst("tbody");
             showAllCommodities(table, provider.getMyCommodities());
 

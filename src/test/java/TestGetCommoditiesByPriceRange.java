@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.Baloot.Baloot;
 import org.Baloot.Commodity;
 import org.Baloot.Database.Database;
-import org.Baloot.Exception.CommodityNotFoundException;
-import org.Baloot.Exception.ExceptionHandler;
-import org.Baloot.Exception.InvalidRatingException;
-import org.Baloot.Exception.UserNotFoundException;
+import org.Baloot.Exception.*;
 import org.Baloot.Provider;
 import org.Baloot.User;
 import org.junit.*;
@@ -21,7 +18,7 @@ public class TestGetCommoditiesByPriceRange {
     private Database db;
     private Commodity commodity1, commodity2, commodity3;
     @Before
-    public void setUp() {
+    public void setUp() throws ProviderNotFoundException {
         db = new Database();
         baloot = new Baloot(db);
 

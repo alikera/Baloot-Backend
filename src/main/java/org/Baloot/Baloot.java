@@ -15,8 +15,11 @@ import java.util.regex.Pattern;
 
 public class Baloot {
     private Database db;
-    public Baloot(Database _db) {
+    public Baloot(Database _db) throws ProviderNotFoundException {
         db = _db;
+        for (Commodity commodity : db.getCommodities()) {
+            addToProviderCommodityList(commodity);
+        }
     }
 
     public Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException {
@@ -76,14 +79,12 @@ public class Baloot {
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
 
-    private void addToProviderCommodityList(Commodity commodity) throws ProviderNotFoundException {
+    private void addToProviderCommodityList(Commodity commodity) {
         for(Provider provider : db.getProviders()){
             if(Objects.equals(provider.getId(), commodity.getProviderId())){
                 provider.addToCommodities(commodity);
-                return;
             }
         }
-        throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
 
 //    private List<Commodity> findCommoditiesByCategory(String category){
@@ -274,28 +275,16 @@ public class Baloot {
         }
         user.increaseCredit(amount);
     }
-    public boolean finalizePayment(String username) {
-        try {
-            User user = findByUsername(username);
-            Set<Integer> commoditiesId = user.getBuyList();
-            double cost = 0;
+    public void finalizePayment(String username) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException {
+        User user = findByUsername(username);
+        Set<Integer> commoditiesId = user.getBuyList();
+        double cost = 0;
 
-            for (Integer id: commoditiesId) {
-                Commodity commodity = findByCommodityId(id);
-                cost += commodity.getPrice();
-            }
-            if (user.getCredit() >= cost) {
-                user.moveBuyToPurchased(cost);
-                return true;
-            }
-            else {
-                return false;
-            }
-        } catch (UserNotFoundException e) {
-            return false;
-        } catch (CommodityNotFoundException e) {
-            return false;
+        for (Integer id: commoditiesId) {
+            Commodity commodity = findByCommodityId(id);
+            cost += commodity.getPrice();
         }
+        user.moveBuyToPurchased(cost);
     }
 
     public void voteComment(String userId, String commodityId, String vote) throws UserNotFoundException, CommodityNotFoundException {

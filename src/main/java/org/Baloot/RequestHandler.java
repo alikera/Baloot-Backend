@@ -99,14 +99,8 @@ public class RequestHandler {
         });
 
         app.post("/payment/{userId}", context -> {
-            boolean success = baloot.finalizePayment(context.pathParam("userId"));
-            System.out.println(success);
-            if (success) {
-                context.redirect("/users/" + context.pathParam("userId"));
-            }
-            else {
-
-            }
+            Document template = finalizePayment(context.pathParam("userId"));
+            context.html(template.html());
         });
 
 //        app.get("/404Error", context -> {
@@ -149,20 +143,23 @@ public class RequestHandler {
 //        Commodity commodity = new Commodity(1,"a",2,300,_categories,8,10);
 //        table.append(showCommodities(commodity).html());
 
-        showAllCommodities(table, baloot.getCommodities());
+        showAllCommodities(table, baloot.getCommodities(), true);
         return template;
     }
-    private void showAllCommodities(Element table, List<Commodity> commodities){
+    private void showAllCommodities(Element table, List<Commodity> commodities, boolean showProviderId){
         for (Commodity commodity : commodities) {
             assert table != null;
-            table.append(showCommodities(commodity).html());
+            table.append(showCommodities(commodity, showProviderId).html());
         }
     }
-    private Element showCommodities(Commodity commodity){
+
+    private Element showCommodities(Commodity commodity, boolean showProviderId){
         Element row = new Element("tr");
         row.append("<td>" + commodity.getId() + "</td>");
         row.append("<td>" + commodity.getName() + "</td>");
-        row.append("<td>" + commodity.getProviderId() + "</td>");
+        if (showProviderId) {
+            row.append("<td>" + commodity.getProviderId() + "</td>");
+        }
         row.append("<td>" + commodity.getPrice() + "</td>");
         row.append("<td>" + String.join(", ", commodity.getCategories()) + "</td>");
         row.append("<td>" + commodity.getRating() + "</td>");
@@ -170,6 +167,7 @@ public class RequestHandler {
         row.append("<td><a href=\"/commodities/" + new DecimalFormat("00").format(commodity.getId()) + "\">Link</a></td>");
         return row;
     }
+
     private void showAllComments(Document template, List<Comment> comments, String commodityId) {
         Element table = template.selectFirst("tbody");
 
@@ -264,7 +262,7 @@ public class RequestHandler {
             Objects.requireNonNull(template.selectFirst("#name")).html("Name: " + provider.getName());
             Objects.requireNonNull(template.selectFirst("#registryDate")).html("Registry Date: " + provider.getRegistryDate());
             Element table = template.selectFirst("tbody");
-            showAllCommodities(table, provider.getMyCommodities());
+            showAllCommodities(table, provider.getMyCommodities(), false);
 
             return template;
         }
@@ -301,7 +299,7 @@ public class RequestHandler {
 //            table.append(paymentButton);
             for (Integer id : user.getBuyList()) {
                 Commodity commodity = baloot.findByCommodityId(id);
-                Element row = showCommodities(commodity);
+                Element row = showCommodities(commodity, true);
                 String remove = "<td>"
                         + "<form action= \"/removeFromBuyListTemp/" + userId + "/"
                         + new DecimalFormat("00").format(commodity.getId())
@@ -317,7 +315,7 @@ public class RequestHandler {
             }
             for (Integer id : user.getPurchasedList()) {
                 Commodity commodity = baloot.findByCommodityId(id);
-                Element row = showCommodities(commodity);
+                Element row = showCommodities(commodity, true);
                 tables.get(1).append(row.html());
             }
             return template;
@@ -367,7 +365,7 @@ public class RequestHandler {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
             Element table = template.selectFirst("tbody");
             List<Commodity> filteredCommodities = baloot.getCommoditiesByPriceRange(startPrice, endPrice);
-            showAllCommodities(table, filteredCommodities);
+            showAllCommodities(table, filteredCommodities, true);
             return template;
         }catch (NumberFormatException e){
             return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
@@ -377,7 +375,7 @@ public class RequestHandler {
         Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
         Element table = template.selectFirst("tbody");
         List<Commodity> filteredCommodities = baloot.getCommoditiesByCategory(category);
-        showAllCommodities(table, filteredCommodities);
+        showAllCommodities(table, filteredCommodities, true);
         return template;
     }
 
@@ -399,6 +397,17 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         } catch (UserNotFoundException | CommodityNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+        }
+    }
+
+    private Document finalizePayment(String userId) throws UserNotFoundException, CommodityNotFoundException, NotEnoughCreditException, IOException {
+        try {
+            baloot.finalizePayment(userId);
+            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
+        } catch (UserNotFoundException | CommodityNotFoundException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+        } catch (NotEnoughCreditException e) {
+            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
         }
     }
 }

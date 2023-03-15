@@ -2,8 +2,11 @@ package org.Baloot;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.Baloot.Exception.CommodityExistenceException;
+import org.Baloot.Exception.NotEnoughCreditException;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 public class User {
 
@@ -14,7 +17,7 @@ public class User {
     private String address;
     private double credit;
     private Set<Integer> buyList = new HashSet<>();
-    private Set<Integer> purchasedList = new HashSet<>();
+    private List<Integer> purchasedList = new ArrayList<>();
     public String getUsername() {
         return username;
     }
@@ -46,7 +49,7 @@ public class User {
         return buyList;
     }
 
-    public Set<Integer> getPurchasedList() { return purchasedList; }
+    public List<Integer> getPurchasedList() { return purchasedList; }
 
     public User(@JsonProperty("username") String _username, @JsonProperty("password") String _password,
                 @JsonProperty("email") String _email, @JsonProperty("birthDate") String _birthDate,
@@ -85,7 +88,11 @@ public class User {
         credit += amount;
     }
 
-    public void moveBuyToPurchased(double cost) {
+    public void moveBuyToPurchased(double cost) throws NotEnoughCreditException {
+        if (credit < cost) {
+            throw new NotEnoughCreditException("Not Enough Credit Exception!");
+        }
+
         purchasedList.addAll(buyList);
         buyList.clear();
         credit -= cost;

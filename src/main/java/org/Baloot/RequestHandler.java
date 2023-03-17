@@ -51,7 +51,9 @@ public class RequestHandler {
             Document template = addCredit(context.pathParam("userId"), context.pathParam("credit"));
             context.html(template.html());
         });
-
+        app.get("/addCreditTemp/{userId}", context -> {
+            context.redirect("/addCredit/" + context.pathParam("userId") + "/" + context.formParam("creditr"));
+        });
 
         app.get("/removeFromBuyList/{userId}/{commodityId}", context -> {
             Document template = removeFromBuyList(context.pathParam("userId"),context.pathParam("commodityId"));
@@ -280,7 +282,12 @@ public class RequestHandler {
             Objects.requireNonNull(template.selectFirst("#email")).html("Email: " + user.getEmail());
             Objects.requireNonNull(template.selectFirst("#birthDate")).html("Birth Date: " + user.getBirthDate());
             Objects.requireNonNull(template.selectFirst("#address")).html(user.getAddress());
-            Objects.requireNonNull(template.selectFirst("#credit")).html("Credit: " + Double.toString(user.getCredit()));
+            Objects.requireNonNull(template.selectFirst("#credit")).html("Credit: " + user.getCredit() +
+                    "<form action=\"\" method=\"POST\">"
+                    + "  <input type=\"number\" id=\"creditt\" name=\"creditt\" value=\"\">\n "
+                    + "<button type=\"submit\" formaction=\"/addCreditTemp/" + userId + "\">Add Credit</button>\n"
+                    + "</form>");
+
             Objects.requireNonNull(template.selectFirst("#X")).html(
                     "<form action=\"\" method=\"POST\">"
                            + "<label>Buy List Payment</label>"

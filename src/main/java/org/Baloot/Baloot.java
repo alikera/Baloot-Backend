@@ -287,7 +287,10 @@ public class Baloot {
         user.moveBuyToPurchased(cost);
     }
 
-    public void voteComment(String userId, String commodityId, String vote) throws UserNotFoundException, CommodityNotFoundException {
+    public void voteComment(String userId, String commodityId, String vote) throws UserNotFoundException, CommodityNotFoundException, InvalidVoteException {
+        if (!Objects.equals(vote, "0") || !Objects.equals(vote, "1") || !Objects.equals(vote, "-1")) {
+            throw new InvalidVoteException("Invalid Vote");
+        }
         User user = findByUsername(userId);
         Commodity commodity = findByCommodityId(Integer.parseInt(commodityId));
         for (Comment comment : db.getComments()){

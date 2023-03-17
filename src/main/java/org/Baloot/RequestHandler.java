@@ -397,6 +397,8 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         } catch (UserNotFoundException | CommodityNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+        } catch (InvalidVoteException e){
+            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
         }
     }
 

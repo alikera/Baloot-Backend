@@ -1,18 +1,16 @@
 package org.Baloot;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.Baloot.Exception.InvalidRatingException;
 import java.util.*;
 
 public class Comment {
     HashMap<String, Integer> votes;
 
     private String userEmail;
+    private String username;
     private int commodityId;
     private String text;
     private String date;

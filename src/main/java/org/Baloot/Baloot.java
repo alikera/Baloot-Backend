@@ -22,6 +22,7 @@ public class Baloot {
         }
     }
 
+
     public Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException {
         for (Commodity commodity : db.getCommodities()) {
             if (commodity.getId() == commodityId) {
@@ -66,6 +67,15 @@ public class Baloot {
         for (User user : db.getUsers()) {
             if (Objects.equals(user.getUsername(), username)) {
                 return user;
+            }
+        }
+        throw new UserNotFoundException("Couldn't find user with the given Username!");
+    }
+
+    public String findUsernameByUserEmail(String email) throws UserNotFoundException {
+        for (User user : db.getUsers()) {
+            if (Objects.equals(user.getEmail(), email)) {
+                return user.getUsername();
             }
         }
         throw new UserNotFoundException("Couldn't find user with the given Username!");
@@ -288,7 +298,7 @@ public class Baloot {
     }
 
     public void voteComment(String userId, String commodityId, String vote) throws UserNotFoundException, CommodityNotFoundException, InvalidVoteException {
-        if (!Objects.equals(vote, "0") || !Objects.equals(vote, "1") || !Objects.equals(vote, "-1")) {
+        if (!Objects.equals(vote, "0") && !Objects.equals(vote, "1") && !Objects.equals(vote, "-1")) {
             throw new InvalidVoteException("Invalid Vote");
         }
         User user = findByUsername(userId);

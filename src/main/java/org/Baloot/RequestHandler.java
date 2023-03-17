@@ -388,7 +388,7 @@ public class RequestHandler {
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
-        } catch (InvalidRatingException e) {
+        } catch (InvalidRatingException | NumberFormatException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
         }
     }
@@ -399,12 +399,12 @@ public class RequestHandler {
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         } catch (UserNotFoundException | CommodityNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
-        } catch (InvalidVoteException e){
+        } catch (InvalidVoteException | NumberFormatException e){
             return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
         }
     }
 
-    private Document finalizePayment(String userId) throws UserNotFoundException, CommodityNotFoundException, NotEnoughCreditException, IOException {
+    private Document finalizePayment(String userId) throws IOException {
         try {
             baloot.finalizePayment(userId);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");

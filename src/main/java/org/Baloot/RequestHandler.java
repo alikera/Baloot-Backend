@@ -261,6 +261,8 @@ public class RequestHandler {
             Objects.requireNonNull(template.selectFirst("#id")).html("Id: " + provider.getId());
             Objects.requireNonNull(template.selectFirst("#name")).html("Name: " + provider.getName());
             Objects.requireNonNull(template.selectFirst("#registryDate")).html("Registry Date: " + provider.getRegistryDate());
+            Objects.requireNonNull(template.selectFirst("#AverageRatingCommodities")).html("Average Rating Commodities: " + provider.getAverageRatingCommodities());
+
             Element table = template.selectFirst("tbody");
             showAllCommodities(table, provider.getMyCommodities(), false);
 

@@ -11,7 +11,6 @@ public class Provider {
     private String name;
     private Date registryDate;
 
-    private double averageRatingCommodities;
     private List<Commodity> myCommodities = new ArrayList<>();
 
     public int getId() {
@@ -30,13 +29,15 @@ public class Provider {
         return myCommodities;
     }
 
-    public void addToCommodities(Commodity commodity){
-        myCommodities.add(commodity);
-
-        averageRatingCommodities = myCommodities.stream()
+    public double getAverageRatingCommodities() {
+        return myCommodities.stream()
                 .mapToDouble(Commodity::getRating) // Extract the scores as an IntStream
                 .average() // Calculate the average score
                 .orElse(0.0);
+    }
+
+    public void addToCommodities(Commodity commodity){
+        myCommodities.add(commodity);
     }
     public Provider(@JsonProperty("id") int _id,
                     @JsonProperty("name") String _name,

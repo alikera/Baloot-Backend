@@ -51,8 +51,8 @@ public class RequestHandler {
             Document template = addCredit(context.pathParam("userId"), context.pathParam("credit"));
             context.html(template.html());
         });
-        app.get("/addCreditTemp/{userId}", context -> {
-            context.redirect("/addCredit/" + context.pathParam("userId") + "/" + context.formParam("creditr"));
+        app.post("/addCreditTemp/{userId}", context -> {
+            context.redirect("/addCredit/" + context.pathParam("userId") + "/" + context.formParam("creditt"));
         });
 
         app.get("/removeFromBuyList/{userId}/{commodityId}", context -> {

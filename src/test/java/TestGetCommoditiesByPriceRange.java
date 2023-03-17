@@ -69,6 +69,14 @@ public class TestGetCommoditiesByPriceRange {
         assertEquals(expectedCommodities, actualCommodities);
     }
     @Test
+    public void testGetCommoditiesIfStartRangeIsBiggerThanEndRange() {
+        String startPrice = "1000";
+        String endPrice = "305";
+        List<Commodity> actualCommodities = baloot.getCommoditiesByPriceRange(startPrice, endPrice);
+        List<Commodity> expectedCommodities = new ArrayList<>();
+        assertEquals(expectedCommodities, actualCommodities);
+    }
+    @Test
     public void testGetCommoditiesIfPriceRangeDoesntContainAnyCommodity() {
         String startPrice = "1";
         String endPrice = "2";

@@ -110,4 +110,9 @@ public class RateCommodityTest {
     public void testErrorInRateCommodityIfCommodityDoesNotExist() {
         assertThrows(CommodityNotFoundException.class, () -> baloot.rateCommodity("user1", "4", "2"));
     }
+    @Test
+    public void testErrorInRateCommodityWhenRateIsNotNumerical() {
+        String rate = "a";
+        assertThrows(NumberFormatException.class, () -> baloot.rateCommodity("user1", "1", rate));
+    }
 }

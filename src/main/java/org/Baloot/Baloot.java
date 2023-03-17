@@ -314,7 +314,7 @@ public class Baloot {
         commodityFound.increaseInStock();
     }
 
-    public void rateCommodity(String userId, String commodityId, String rate) throws CommodityNotFoundException, UserNotFoundException, InvalidRatingException {
+    public void rateCommodity(String userId, String commodityId, String rate) throws CommodityNotFoundException, UserNotFoundException, InvalidRatingException, NumberFormatException {
         Commodity commodityFound = findByCommodityId(Integer.parseInt(commodityId));
         User userFound = findByUsername(userId);
         commodityFound.rateCommodity(userId, Integer.parseInt(rate));

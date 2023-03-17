@@ -9,20 +9,16 @@ import org.Baloot.Provider;
 import org.Baloot.User;
 import org.junit.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 public class TestShowingBuyList {
     private Baloot baloot;
     private Database db;
-    private User user;
-    private User user2;
+    private User user, user2, user3;
     private Commodity commodity1, commodity2, commodity3;
     @Before
-    public void setUp() throws ProviderNotFoundException, CommodityExistenceException {
+    public void setUp() throws ProviderNotFoundException, CommodityExistenceException, NotEnoughCreditException {
         db = new Database();
         baloot = new Baloot(db);
 
@@ -31,7 +27,10 @@ public class TestShowingBuyList {
         db.insertUser(user);
         user2 = new User("user2", "1234", "user2@gmail.com","1977-09-15",
                 "address2",5500);
-        db.insertUser(user);
+        db.insertUser(user2);
+        user3 = new User("user3", "1234", "user3@gmail.com","1977-09-15",
+                "address2",5500);
+        db.insertUser(user3);
 
         List<String> categories1 = new ArrayList<>();
         categories1.add("Technology");
@@ -39,6 +38,8 @@ public class TestShowingBuyList {
                 50);
         db.insertCommodity(commodity1);
         user2.addToBuyList(commodity1.getId());
+        user3.addToBuyList(commodity1.getId());
+        user3.moveBuyToPurchased(0);
 
         List<String> categories2 = new ArrayList<>();
         categories2.add("Technology");
@@ -63,11 +64,16 @@ public class TestShowingBuyList {
     }
 
     @Test
-    public void testShowingBuyListIfUserBuyListIsEmpty() throws ExceptionHandler {
-        user.addToBuyList(commodity1.getId());
+    public void testShowingBuyListIfUserBuyListIsEmpty() {
+        Set<Integer> expected = Collections.emptySet();
+        Set<Integer> actual = user.getBuyList();
+        assertEquals(expected, actual);
+    }
+    @Test
+    public void testShowingBuyListIfUserBuyListIsNotEmpty() {
         Set<Integer> expected = new HashSet<>();
         expected.add(1);
-        Set<Integer> actual = user.getBuyList();
+        Set<Integer> actual = user2.getBuyList();
         assertEquals(expected, actual);
     }
 
@@ -76,14 +82,26 @@ public class TestShowingBuyList {
         assertThrows(CommodityExistenceException.class, () -> user2.addToBuyList(commodity1.getId()));
     }
     @Test
-    public void testShowingBuyListIfUserHasPurchasedHisBuyListSuccessfully() {
-//        user2.moveBuyToPurchased();
-//        assertThrows(CommodityExistenceException.class, () -> user2.addToBuyList(commodity1.getId()));
+    public void testShowingBuyListIfUserHasPurchasedHisBuyListSuccessfully() throws NotEnoughCreditException {
+        Set<Integer> actual = user3.getBuyList();
+        Set<Integer> expected = Collections.emptySet();
+        assertEquals(expected, actual);
+    }
+    @Test
+    public void testShowingBuyListIfUserHasFinalizedHisBuyListPaymentSuccessfully() throws NotEnoughCreditException, UserNotFoundException, CommodityNotFoundException {
+        baloot.finalizePayment("user1");
+        Set<Integer> actual = user.getBuyList();
+        Set<Integer> expected = Collections.emptySet();
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void testErrorInShowingBuyListIfUserCannot() {
-//        user2.moveBuyToPurchased();
-//        assertThrows(CommodityExistenceException.class, () -> user2.addToBuyList(commodity1.getId()));
+    public void testErrorInShowingBuyListIfUserCreditIsNotEnough() {
+        assertThrows(NotEnoughCreditException.class, () -> user2.moveBuyToPurchased(10000));
     }
+    @Test
+    public void testErrorInShowingBuyListIfUserCreditIsNotEnoughWhenFinalizingPayment() {
+        assertThrows(NotEnoughCreditException.class, () -> baloot.finalizePayment("user2"));
+    }
+
 }

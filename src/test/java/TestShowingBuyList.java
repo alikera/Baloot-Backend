@@ -1,12 +1,8 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.Baloot.Baloot;
-import org.Baloot.Commodity;
+import org.Baloot.Entities.Commodity;
 import org.Baloot.Database.Database;
 import org.Baloot.Exception.*;
-import org.Baloot.Provider;
-import org.Baloot.User;
+import org.Baloot.Entities.User;
 import org.junit.*;
 
 import java.util.*;
@@ -54,6 +50,7 @@ public class TestShowingBuyList {
                 220);
         db.insertCommodity(commodity3);
     }
+
     @After
     public void tearDown() {
         baloot = null;
@@ -81,6 +78,7 @@ public class TestShowingBuyList {
     public void testErrorInShowingBuyListIfThisCommodityAlreadyExistsInUserBuyList() {
         assertThrows(CommodityExistenceException.class, () -> user2.addToBuyList(commodity1.getId()));
     }
+
     @Test
     public void testShowingBuyListIfUserHasPurchasedHisBuyListSuccessfully() throws NotEnoughCreditException {
         Set<Integer> actual = user3.getBuyList();

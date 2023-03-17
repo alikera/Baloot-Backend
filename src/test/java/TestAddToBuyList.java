@@ -2,11 +2,11 @@
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import com.fasterxml.jackson.databind.node.ObjectNode;
 //import org.Baloot.Baloot;
-//import org.Baloot.Commodity;
+//import org.Baloot.Entities.Commodity;
 //import org.Baloot.Exception.ExceptionHandler;
 //import org.Baloot.Exception.UserNotFoundException;
-//import org.Baloot.Provider;
-//import org.Baloot.User;
+//import org.Baloot.Entities.Provider;
+//import org.Baloot.Entities.User;
 //import org.junit.*;
 //
 //import java.util.ArrayList;

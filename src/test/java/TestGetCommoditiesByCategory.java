@@ -4,8 +4,8 @@
 //import com.fasterxml.jackson.databind.node.ObjectNode;
 //import org.Baloot.Baloot;
 //import org.Baloot.CommandHandler;
-//import org.Baloot.Commodity;
-//import org.Baloot.Provider;
+//import org.Baloot.Entities.Commodity;
+//import org.Baloot.Entities.Provider;
 //import org.junit.*;
 //
 //import java.util.ArrayList;

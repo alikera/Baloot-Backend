@@ -63,7 +63,7 @@ public class TestShowingBuyList {
     }
 
     @Test
-    public void testShowBuyListIfUserBuyListIsEmpty() throws ExceptionHandler {
+    public void testShowingBuyListIfUserBuyListIsEmpty() throws ExceptionHandler {
         user.addToBuyList(commodity1.getId());
         Set<Integer> expected = new HashSet<>();
         expected.add(1);
@@ -72,7 +72,18 @@ public class TestShowingBuyList {
     }
 
     @Test
-    public void testErrorInShowBuyListIfThisCommodityAlreadyExistsInUserBuyList() throws ExceptionHandler {
+    public void testErrorInShowingBuyListIfThisCommodityAlreadyExistsInUserBuyList() {
         assertThrows(CommodityExistenceException.class, () -> user2.addToBuyList(commodity1.getId()));
+    }
+    @Test
+    public void testShowingBuyListIfUserHasPurchasedHisBuyListSuccessfully() {
+//        user2.moveBuyToPurchased();
+//        assertThrows(CommodityExistenceException.class, () -> user2.addToBuyList(commodity1.getId()));
+    }
+
+    @Test
+    public void testErrorInShowingBuyListIfUserCannot() {
+//        user2.moveBuyToPurchased();
+//        assertThrows(CommodityExistenceException.class, () -> user2.addToBuyList(commodity1.getId()));
     }
 }

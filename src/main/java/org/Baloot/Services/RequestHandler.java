@@ -53,6 +53,10 @@ public class RequestHandler {
 
         app.get("/", ctx -> ctx.result("Welcome to IEMDB!"));
 
+        app.error(404, ctx -> {
+            ctx.html(Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8").html());
+        });
+
         commoditiesRequest(app);
 
         app.get("/providers/{providerId}", context -> {

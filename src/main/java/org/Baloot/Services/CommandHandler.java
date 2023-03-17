@@ -10,8 +10,8 @@
 //    private Baloot baloot;
 //    ObjectMapper mapper;
 //
-//    public CommandHandler() {
-//        baloot = new Baloot();
+//    public CommandHandler(Baloot _baloot) {
+//        baloot = _baloot;
 //        parser = new Parser();
 //        mapper = new ObjectMapper();
 //    }
@@ -21,7 +21,7 @@
 //            switch (command[0]) {
 //                case "addUser" -> {
 //                    User user = parser.addUserParser(command[1]);
-//                    System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(baloot.addUser(user)));
+//                    baloot.addUser(user);
 //                }
 //                case "addProvider" -> {
 //                    Provider provider = parser.addProviderParser(command[1]);

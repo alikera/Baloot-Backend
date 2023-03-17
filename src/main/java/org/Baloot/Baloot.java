@@ -1,17 +1,16 @@
 package org.Baloot;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.Baloot.Database.Database;
+import org.Baloot.Entities.Comment;
+import org.Baloot.Entities.Commodity;
+import org.Baloot.Entities.Provider;
+import org.Baloot.Entities.User;
 import org.Baloot.Exception.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Baloot {
     private Database db;
@@ -21,7 +20,6 @@ public class Baloot {
             addToProviderCommodityList(commodity);
         }
     }
-
 
     public Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException {
         for (Commodity commodity : db.getCommodities()) {
@@ -107,7 +105,7 @@ public class Baloot {
 //        }
 //        return foundedCommodities;
 //    }
-//    public ObjectNode addUser(User user) throws JsonProcessingException {
+//    public void addUser(User user) throws JsonProcessingException {
 //        Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");
 //        Matcher matcher = pattern.matcher(user.getUsername());
 //        try {
@@ -134,14 +132,9 @@ public class Baloot {
 //    }
 //
 //    public ObjectNode addCommodity(Commodity commodity) throws JsonProcessingException {
-//        try {
-//            addToProviderCommodityList(commodity);
-//            db.insertCommodity(commodity);
-//            return makeJsonFromString(true, "Commodity added successfully");
-//        }
-//        catch (ProviderNotFoundException e){
-//            return makeJsonFromString(false, e.getMessage());
-//        }
+//        addToProviderCommodityList(commodity);
+//        db.insertCommodity(commodity);
+//        return makeJsonFromString(true, "Commodity added successfully");
 //    }
 
 //    public ObjectNode getCommoditiesList() {

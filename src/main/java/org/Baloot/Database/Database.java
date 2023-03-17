@@ -1,6 +1,9 @@
 package org.Baloot.Database;
 
-import org.Baloot.*;
+import org.Baloot.Entities.Comment;
+import org.Baloot.Entities.Commodity;
+import org.Baloot.Entities.Provider;
+import org.Baloot.Entities.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,16 +28,6 @@ public class Database {
         providers.addAll(Arrays.asList(_providers));
         commodities.addAll(Arrays.asList(_commodities));
         comments.addAll(Arrays.asList(_comments));
-
-        for (User user: users) {
-            user.print();
-        }
-        for (Provider provider: providers) {
-            provider.print();
-        }
-        for (Commodity commodity: commodities) {
-            commodity.print();
-        }
     }
 
     public void insertUser(User user) {

@@ -1,4 +1,4 @@
-package org.Baloot;
+package org.Baloot.Entities;
 
 import java.text.DecimalFormat;
 
@@ -12,7 +12,6 @@ public class Date {
         year = Integer.parseInt(parts[0]);
         month = Integer.parseInt(parts[1]);
         day = Integer.parseInt(parts[2]);
-
     }
 
     public String getAsString() {

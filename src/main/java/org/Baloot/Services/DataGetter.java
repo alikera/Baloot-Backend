@@ -1,6 +1,10 @@
-package org.Baloot;
+package org.Baloot.Services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.Baloot.Database.Database;
+import org.Baloot.Entities.Comment;
+import org.Baloot.Entities.Commodity;
+import org.Baloot.Entities.Provider;
+import org.Baloot.Entities.User;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -42,9 +46,6 @@ public class DataGetter {
 
         int statusCode = response.getStatusLine().getStatusCode();
         String responseBody = EntityUtils.toString(response.getEntity());
-
-        System.out.println(statusCode);
-        System.out.println(responseBody);
 
         return responseBody;
     }

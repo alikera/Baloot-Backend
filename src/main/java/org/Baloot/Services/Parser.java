@@ -1,10 +1,13 @@
-package org.Baloot;
+package org.Baloot.Services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.Baloot.Entities.Commodity;
+import org.Baloot.Entities.Provider;
+import org.Baloot.Entities.User;
 import org.Baloot.Exception.InvalidRatingException;
 
 import java.util.Map;

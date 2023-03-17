@@ -1,4 +1,4 @@
-package org.Baloot;
+package org.Baloot.Entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

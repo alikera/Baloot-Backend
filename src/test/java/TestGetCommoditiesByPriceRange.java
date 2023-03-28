@@ -15,7 +15,7 @@ public class TestGetCommoditiesByPriceRange {
     @Before
     public void setUp() throws ProviderNotFoundException {
         db = new Database();
-        baloot = new Baloot(db);
+        baloot = Baloot.getBaloot(db);
 
         List<String> categories1 = new ArrayList<>();
         categories1.add("Technology");

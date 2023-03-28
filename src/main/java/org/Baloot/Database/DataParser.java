@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Parser {
+public class DataParser {
 
     public User addUserParser(String data) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();

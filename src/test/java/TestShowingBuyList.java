@@ -16,7 +16,7 @@ public class TestShowingBuyList {
     @Before
     public void setUp() throws ProviderNotFoundException, CommodityExistenceException, NotEnoughCreditException {
         db = new Database();
-        baloot = new Baloot(db);
+        baloot = Baloot.getBaloot(db);
 
         user = new User("user1", "1234", "user@gmail.com","1977-09-15",
                 "address1",1500);

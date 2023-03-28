@@ -1,6 +1,7 @@
-package org.Baloot.Services;
+package org.Baloot.api;
 import io.javalin.Javalin;
 import org.Baloot.Baloot;
+import org.Baloot.Database.DataGetter;
 import org.Baloot.Database.Database;
 import org.Baloot.Entities.Comment;
 import org.Baloot.Entities.Commodity;

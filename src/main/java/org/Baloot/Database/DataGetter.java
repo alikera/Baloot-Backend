@@ -1,4 +1,4 @@
-package org.Baloot.Services;
+package org.Baloot.Database;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.Baloot.Database.Database;
 import org.Baloot.Entities.Comment;

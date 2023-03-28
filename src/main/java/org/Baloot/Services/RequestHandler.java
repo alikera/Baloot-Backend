@@ -1,6 +1,7 @@
 package org.Baloot.Services;
 import io.javalin.Javalin;
 import org.Baloot.Baloot;
+import org.Baloot.Database.Database;
 import org.Baloot.Entities.Comment;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.Provider;
@@ -377,5 +378,15 @@ public class RequestHandler {
         } catch (NotEnoughCreditException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
         }
+    }
+    public static void main(String[] args) throws IOException, ExceptionHandler {
+        Database db = new Database();
+
+        DataGetter dataGetter = new DataGetter();
+        dataGetter.getDataFromServer(db);
+
+        Baloot baloot = new Baloot(db);
+        RequestHandler rh = new RequestHandler(baloot);
+        rh.getRequest();
     }
 }

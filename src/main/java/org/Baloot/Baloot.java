@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Baloot {
     private Database db;
@@ -20,6 +22,30 @@ public class Baloot {
             addToProviderCommodityList(commodity);
         }
     }
+
+    public void addUser(User user) throws InvalidUsernameException {
+        Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");
+        Matcher matcher = pattern.matcher(user.getUsername());
+        try {
+            if (matcher.matches()) {
+                User foundUser = findByUsername(user.getUsername());
+                foundUser.modifyFields(user);
+            } else {
+                throw new InvalidUsernameException("Invalid Username!");
+            }
+        }
+        catch (UserNotFoundException e){
+            db.insertUser(user);
+        }
+    }
+    public void addProvider(Provider provider) {
+        db.insertProvider(provider);
+    }
+    public void addCommodity(Commodity commodity) throws ProviderNotFoundException {
+        addToProviderCommodityList(commodity);
+        db.insertCommodity(commodity);
+    }
+
 
     public Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException {
         for (Commodity commodity : db.getCommodities()) {
@@ -61,6 +87,16 @@ public class Baloot {
         }
         return filteredComments;
     }
+    public List<Commodity> getUserBuylist(String username) throws UserNotFoundException, CommodityNotFoundException {
+        User user = findByUsername(username);
+        Set<Integer> buyListIds = user.getBuyList();
+        List<Commodity> commodities = new ArrayList<>();
+        for (int commodityId : buyListIds) {
+            Commodity commodity = findByCommodityId(commodityId);
+            commodities.add(commodity);
+        }
+        return commodities;
+    }
     public User findByUsername(String username) throws UserNotFoundException {
         for (User user : db.getUsers()) {
             if (Objects.equals(user.getUsername(), username)) {
@@ -87,12 +123,14 @@ public class Baloot {
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
 
-    private void addToProviderCommodityList(Commodity commodity) {
+    private void addToProviderCommodityList(Commodity commodity) throws ProviderNotFoundException {
         for(Provider provider : db.getProviders()){
             if(Objects.equals(provider.getId(), commodity.getProviderId())){
                 provider.addToCommodities(commodity);
+                return;
             }
         }
+        throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
 
     public void addCredit(String username, String credit) throws UserNotFoundException, NegativeAmountException {

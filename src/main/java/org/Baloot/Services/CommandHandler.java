@@ -55,7 +55,7 @@ public class CommandHandler {
     }
     public void addProviderCommand(String command) throws JsonProcessingException {
         Provider provider = parser.addProviderParser(command);
-        baloot.addProvider(provider);
+        baloot.providerManager.addProvider(provider);
         printResponseMessage(true, "Provider added successfully.");
     }
 

@@ -8,6 +8,7 @@ import org.Baloot.Entities.User;
 import org.Baloot.Exception.*;
 import org.Baloot.Managers.CommentManager;
 import org.Baloot.Managers.CommodityManager;
+import org.Baloot.Managers.ProviderManager;
 import org.Baloot.Managers.UserManager;
 
 import java.util.ArrayList;
@@ -24,25 +25,13 @@ public class Baloot {
     public UserManager userManager;
     public CommodityManager commodityManager;
     public CommentManager commentManager;
+    public ProviderManager providerManager;
     public Baloot(Database _db) {
         db = _db;
         userManager = new UserManager(_db);
         commodityManager = new CommodityManager(_db);
         commentManager = new CommentManager(_db);
-
-    }
-    public void addProvider(Provider provider) {
-        db.insertProvider(provider);
-    }
-
-
-    public Provider findByProviderId(int providerId) throws ProviderNotFoundException {
-        for (Provider provider : db.getProviders()) {
-            if (Objects.equals(provider.getId(), providerId)) {
-                return provider;
-            }
-        }
-        throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
+        providerManager = new ProviderManager(_db);
     }
 
     public List<User> getUsers() {
@@ -53,6 +42,9 @@ public class Baloot {
     }
     public List<Provider> getProviders() {
         return db.getProviders();
+    }
+    public Provider getProviderById(Integer id) throws ProviderNotFoundException {
+        return db.findByProviderId(id);
     }
     public List<Commodity> getCommodities() {
         return db.getCommodities();

@@ -74,4 +74,12 @@ public class Database {
         }
         throw new CommodityNotFoundException("Couldn't find commodity with the given Id!");
     }
+    public Provider findByProviderId(int providerId) throws ProviderNotFoundException {
+        for (Provider provider : providers) {
+            if (Objects.equals(provider.getId(), providerId)) {
+                return provider;
+            }
+        }
+        throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
+    }
 }

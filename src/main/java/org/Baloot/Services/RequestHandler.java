@@ -221,7 +221,7 @@ public class RequestHandler {
     private Document getProvider(String provider_id) throws IOException {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/Provider.html"), "utf-8");
-            Provider provider = baloot.findByProviderId(Integer.parseInt(provider_id));
+            Provider provider = baloot.getProviderById(Integer.parseInt(provider_id));
             Objects.requireNonNull(template.selectFirst("#id")).html("Id: " + provider.getId());
             Objects.requireNonNull(template.selectFirst("#name")).html("Name: " + provider.getName());
             Objects.requireNonNull(template.selectFirst("#registryDate")).html("Registry Date: " + provider.getRegistryDate());

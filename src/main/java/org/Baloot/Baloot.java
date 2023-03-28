@@ -11,28 +11,34 @@ import org.Baloot.Managers.CommodityManager;
 import org.Baloot.Managers.ProviderManager;
 import org.Baloot.Managers.UserManager;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class Baloot {
     private static Baloot baloot = null;
-
-    private Database db;
-    public UserManager userManager;
-    public CommodityManager commodityManager;
-    public CommentManager commentManager;
-    public ProviderManager providerManager;
-    public Baloot(Database _db) {
+//    private Baloot() {
+//        // initialization code here
+//    }
+    private Baloot(Database _db) {
         db = _db;
         userManager = new UserManager(_db);
         commodityManager = new CommodityManager(_db);
         commentManager = new CommentManager(_db);
         providerManager = new ProviderManager(_db);
     }
+    // public static method to get instance
+    public static Baloot getBaloot(Database _db) {
+        if(baloot == null) {
+            baloot = new Baloot(_db);
+        }
+        return baloot;
+    }
+    private Database db;
+    public UserManager userManager;
+    public CommodityManager commodityManager;
+    public CommentManager commentManager;
+    public ProviderManager providerManager;
+
 
     public List<User> getUsers() {
         return db.getUsers();

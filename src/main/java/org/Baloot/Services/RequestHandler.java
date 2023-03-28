@@ -385,7 +385,7 @@ public class RequestHandler {
         DataGetter dataGetter = new DataGetter();
         dataGetter.getDataFromServer(db);
 
-        Baloot baloot = new Baloot(db);
+        Baloot baloot = Baloot.getBaloot(db);
         RequestHandler rh = new RequestHandler(baloot);
         rh.getRequest();
     }

@@ -142,7 +142,7 @@ public class CommandHandler {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String line;
-        Baloot baloot = new Baloot(db);
+        Baloot baloot = Baloot.getBaloot(db);
         CommandHandler ch = new CommandHandler(baloot);
         while ((line = reader.readLine()) != null) {
             String[] seperatedLine = line.split(" ", 2);

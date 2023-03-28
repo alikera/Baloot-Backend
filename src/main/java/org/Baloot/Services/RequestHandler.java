@@ -169,7 +169,7 @@ public class RequestHandler {
     private Document getCommodity(String commodityId) throws IOException {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodity.html"), "utf-8");
-            Commodity commodity = baloot.findByCommodityId(Integer.parseInt(commodityId));
+            Commodity commodity = baloot.getCommodityById(Integer.parseInt(commodityId));
             Objects.requireNonNull(template.selectFirst("#id")).html("Id: " + commodity.getId());
             Objects.requireNonNull(template.selectFirst("#name")).html("Name: " + commodity.getName());
             Objects.requireNonNull(template.selectFirst("#providerId")).html("Provider Id: " + commodity.getProviderId());
@@ -239,7 +239,7 @@ public class RequestHandler {
     private Document getUser(String userId) throws IOException {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/User.html"), "utf-8");
-            User user = baloot.findByUsername(userId);
+            User user = baloot.getUserByUsername(userId);
             Objects.requireNonNull(template.selectFirst("#username")).html("Username: " + user.getUsername());
             Objects.requireNonNull(template.selectFirst("#email")).html("Email: " + user.getEmail());
             Objects.requireNonNull(template.selectFirst("#birthDate")).html("Birth Date: " + user.getBirthDate());
@@ -270,7 +270,7 @@ public class RequestHandler {
 
     private void showBuyList(User user, Elements tables) throws CommodityNotFoundException {
         for (Integer id : user.getBuyList()) {
-            Commodity commodity = baloot.findByCommodityId(id);
+            Commodity commodity = baloot.getCommodityById(id);
             Element row = showCommodities(commodity, true);
             String remove = "<td>"
                     + "<form action= \"/removeFromBuyListTemp/" + user.getUsername() + "/"
@@ -288,7 +288,7 @@ public class RequestHandler {
     }
     private void showPurchasedList(User user, Elements tables) throws CommodityNotFoundException {
         for (Integer id : user.getPurchasedList()) {
-            Commodity commodity = baloot.findByCommodityId(id);
+            Commodity commodity = baloot.getCommodityById(id);
             Element row = showCommodities(commodity, true);
             tables.get(1).append(row.html());
         }
@@ -307,7 +307,7 @@ public class RequestHandler {
 
     private Document removeFromBuyList(String userId, String commodityId) throws IOException {
         try {
-            baloot.removeCommodityFromUserBuyList(userId, commodityId);
+            baloot.userManager.removeCommodityFromUserBuyList(userId, commodityId);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {
@@ -318,7 +318,7 @@ public class RequestHandler {
     }
     Document addToBuyList(String userId, String commodityId) throws IOException {
         try {
-            baloot.addCommodityToUserBuyList(userId, commodityId);
+            baloot.userManager.addCommodityToUserBuyList(userId, commodityId);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         }
         catch (UserNotFoundException | CommodityNotFoundException exp) {
@@ -331,7 +331,7 @@ public class RequestHandler {
         try {
             Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
             Element table = template.selectFirst("tbody");
-            List<Commodity> filteredCommodities = baloot.getCommoditiesByPriceRange(startPrice, endPrice);
+            List<Commodity> filteredCommodities = baloot.commodityManager.getCommoditiesByPriceRange(startPrice, endPrice);
             showAllCommodities(table, filteredCommodities, true);
             return template;
         }catch (NumberFormatException e){
@@ -341,14 +341,14 @@ public class RequestHandler {
     private Document getFilteredCommoditiesByCategories(String category) throws IOException {
         Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
         Element table = template.selectFirst("tbody");
-        List<Commodity> filteredCommodities = baloot.getCommoditiesByCategory(category);
+        List<Commodity> filteredCommodities = baloot.commodityManager.getCommoditiesByCategory(category);
         showAllCommodities(table, filteredCommodities, true);
         return template;
     }
 
     private Document rateCommodity(String userId, String commodityId, String rate) throws IOException {
         try{
-            baloot.rateCommodity(userId, commodityId, rate);
+            baloot.commodityManager.rateCommodity(userId, commodityId, rate);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {

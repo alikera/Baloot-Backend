@@ -5,6 +5,7 @@ import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.Provider;
 import org.Baloot.Entities.User;
 import org.Baloot.Exception.CommodityNotFoundException;
+import org.Baloot.Exception.ProviderNotFoundException;
 import org.Baloot.Exception.UserNotFoundException;
 
 import java.util.ArrayList;
@@ -41,13 +42,22 @@ public class Database {
         providers.add(provider);
     }
 
-    public void insertCommodity(Commodity commodity) {
+    public void insertCommodity(Commodity commodity) throws ProviderNotFoundException {
         commodities.add(commodity);
+        addToProviderCommodityList(commodity);
     }
 
     public void insertComment(Comment comment) { comments.add(comment); }
 
-
+    public void addToProviderCommodityList(Commodity commodity) throws ProviderNotFoundException {
+        for(Provider provider : providers){
+            if(Objects.equals(provider.getId(), commodity.getProviderId())){
+                provider.addToCommodities(commodity);
+                return;
+            }
+        }
+        throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
+    }
     public User findByUsername(String username) throws UserNotFoundException {
         for (User user : users) {
             if (Objects.equals(user.getUsername(), username)) {

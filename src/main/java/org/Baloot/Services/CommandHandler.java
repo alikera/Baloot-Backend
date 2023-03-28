@@ -61,7 +61,7 @@ public class CommandHandler {
 
     public void addCommodityCommand(String command) throws JsonProcessingException, ProviderNotFoundException {
         Commodity commodity = parser.addCommodityParser(command);
-        baloot.addCommodity(commodity);
+        baloot.commodityManager.addCommodity(commodity);
         printResponseMessage(true, "Commodity added successfully.");
     }
 
@@ -82,30 +82,30 @@ public class CommandHandler {
     }
     public void rateCommodityCommand(String command) throws JsonProcessingException, InvalidRatingException, UserNotFoundException, CommodityNotFoundException {
         ObjectNode node = parser.rateCommodityParser(command);
-        baloot.rateCommodity(node.get("username").asText(), node.get("commodityId").asText(), node.get("score").asText());
+        baloot.commodityManager.rateCommodity(node.get("username").asText(), node.get("commodityId").asText(), node.get("score").asText());
         printResponseMessage(true, "User rated commodity successfully.");
     }
 
     public void addToUserBuyListCommand(String command) throws JsonProcessingException, UserNotFoundException, OutOfStockException, CommodityExistenceException, CommodityNotFoundException {
         ObjectNode node = parser.modifyBuyListParser(command);
-        baloot.addCommodityToUserBuyList(node.get("username").asText(), node.get("commodityId").asText());
+        baloot.userManager.addCommodityToUserBuyList(node.get("username").asText(), node.get("commodityId").asText());
         printResponseMessage(true, "Commodity added to user buy list successfully.");
     }
 
     public void removeFromBuyListCommand(String command) throws JsonProcessingException, UserNotFoundException, CommodityExistenceException, CommodityNotFoundException {
         ObjectNode node = parser.modifyBuyListParser(command);
-        baloot.removeCommodityFromUserBuyList(node.get("username").asText(), node.get("commodityId").asText());
+        baloot.userManager.removeCommodityFromUserBuyList(node.get("username").asText(), node.get("commodityId").asText());
         printResponseMessage(true, "Commodity removed from user buy list successfully");
     }
 
     public void getCommodityCommand(String command) throws JsonProcessingException, CommodityNotFoundException {
         int id = parser.getCommodityByIdParser(command);
-        Commodity commodity = baloot.findByCommodityId(id);
+        Commodity commodity = baloot.getCommodityById(id);
         printOutput(commodity);
     }
     public void getCommoditiesByCategoryCommand(String command) throws JsonProcessingException {
         String category = parser.getCommodityByCategoryParser(command);
-        List<Commodity> commodities = baloot.getCommoditiesByCategory(category);
+        List<Commodity> commodities = baloot.commodityManager.getCommoditiesByCategory(category);
         ObjectNode commoditiesList = getCommoditiesList(commodities);
         printOutput(makeJsonFromObjectNode(true, commoditiesList));
     }

@@ -65,4 +65,20 @@ public class UserManager {
         }
         user.moveBuyToPurchased(cost);
     }
+    public void addCommodityToUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, OutOfStockException, UserNotFoundException, CommodityExistenceException {
+        Commodity commodityFound = db.findByCommodityId(Integer.parseInt(commodityId));
+        if (commodityFound.getInStock() == 0) {
+            throw new OutOfStockException("Commodity out of stock!");
+        }
+        User userFound = db.findByUsername(userId);
+        userFound.addToBuyList(Integer.parseInt(commodityId));
+        commodityFound.decreaseInStock();
+    }
+
+    public void removeCommodityFromUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, UserNotFoundException, CommodityExistenceException {
+        Commodity commodityFound = db.findByCommodityId(Integer.parseInt(commodityId));
+        User userFound = db.findByUsername(userId);
+        userFound.removeFromBuyList(Integer.parseInt(commodityId));
+        commodityFound.increaseInStock();
+    }
 }

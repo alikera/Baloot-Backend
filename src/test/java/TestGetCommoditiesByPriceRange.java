@@ -49,7 +49,7 @@ public class TestGetCommoditiesByPriceRange {
     public void testGetCommoditiesIfPriceRangeIsBigEnoughForAllCommodities() {
         String startPrice = "1";
         String endPrice = "10000000";
-        List<Commodity> actualCommodities = baloot.getCommoditiesByPriceRange(startPrice, endPrice);
+        List<Commodity> actualCommodities = baloot.commodityManager.getCommoditiesByPriceRange(startPrice, endPrice);
         List<Commodity> expectedCommodities = db.getCommodities();
         assertEquals(expectedCommodities, actualCommodities);
     }
@@ -58,7 +58,7 @@ public class TestGetCommoditiesByPriceRange {
     public void testGetCommoditiesIfPriceRangeIsAsBigAsOneCommodity() {
         String startPrice = "1";
         String endPrice = "305";
-        List<Commodity> actualCommodities = baloot.getCommoditiesByPriceRange(startPrice, endPrice);
+        List<Commodity> actualCommodities = baloot.commodityManager.getCommoditiesByPriceRange(startPrice, endPrice);
         List<Commodity> expectedCommodities = new ArrayList<>();
         expectedCommodities.add(commodity3);
         assertEquals(expectedCommodities, actualCommodities);
@@ -67,7 +67,7 @@ public class TestGetCommoditiesByPriceRange {
     public void testGetCommoditiesIfStartRangeIsBiggerThanEndRange() {
         String startPrice = "1000";
         String endPrice = "305";
-        List<Commodity> actualCommodities = baloot.getCommoditiesByPriceRange(startPrice, endPrice);
+        List<Commodity> actualCommodities = baloot.commodityManager.getCommoditiesByPriceRange(startPrice, endPrice);
         List<Commodity> expectedCommodities = new ArrayList<>();
         assertEquals(expectedCommodities, actualCommodities);
     }
@@ -75,7 +75,7 @@ public class TestGetCommoditiesByPriceRange {
     public void testGetCommoditiesIfPriceRangeDoesntContainAnyCommodity() {
         String startPrice = "1";
         String endPrice = "2";
-        List<Commodity> actualCommodities = baloot.getCommoditiesByPriceRange(startPrice, endPrice);
+        List<Commodity> actualCommodities = baloot.commodityManager.getCommoditiesByPriceRange(startPrice, endPrice);
         List<Commodity> expectedCommodities = new ArrayList<>();
         assertEquals(expectedCommodities, actualCommodities);
     }
@@ -84,6 +84,6 @@ public class TestGetCommoditiesByPriceRange {
         String startPrice = "a";
         String endPrice = "305";
 
-        assertThrows(NumberFormatException.class, () -> baloot.getCommoditiesByPriceRange(startPrice, endPrice));
+        assertThrows(NumberFormatException.class, () -> baloot.commodityManager.getCommoditiesByPriceRange(startPrice, endPrice));
     }
 }

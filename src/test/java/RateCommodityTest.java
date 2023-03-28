@@ -99,16 +99,16 @@ public class RateCommodityTest {
     }
     @Test
     public void testErrorInRateCommodityIfUserDoesNotExist() {
-        assertThrows(UserNotFoundException.class, () -> baloot.rateCommodity("user2", "1", "2"));
+        assertThrows(UserNotFoundException.class, () -> baloot.commodityManager.rateCommodity("user2", "1", "2"));
     }
 
     @Test
     public void testErrorInRateCommodityIfCommodityDoesNotExist() {
-        assertThrows(CommodityNotFoundException.class, () -> baloot.rateCommodity("user1", "4", "2"));
+        assertThrows(CommodityNotFoundException.class, () -> baloot.commodityManager.rateCommodity("user1", "4", "2"));
     }
     @Test
     public void testErrorInRateCommodityWhenRateIsNotNumerical() {
         String rate = "a";
-        assertThrows(NumberFormatException.class, () -> baloot.rateCommodity("user1", "1", rate));
+        assertThrows(NumberFormatException.class, () -> baloot.commodityManager.rateCommodity("user1", "1", rate));
     }
 }

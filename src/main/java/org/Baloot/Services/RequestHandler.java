@@ -296,7 +296,7 @@ public class RequestHandler {
 
     private Document addCredit(String username, String credit) throws IOException {
         try {
-            baloot.addCredit(username, credit);
+            baloot.userManager.addCredit(username, credit);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         } catch (UserNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
@@ -371,7 +371,7 @@ public class RequestHandler {
 
     private Document finalizePayment(String userId) throws IOException {
         try {
-            baloot.finalizePayment(userId);
+            baloot.userManager.finalizePayment(userId);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         } catch (UserNotFoundException | CommodityNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");

@@ -50,7 +50,7 @@ public class CommandHandler {
     }
     public void addUserCommand(String command) throws JsonProcessingException, InvalidUsernameException {
         User user = parser.addUserParser(command);
-        baloot.addUser(user);
+        baloot.userManager.addUser(user);
         printResponseMessage(true, "User added/modified successfully.");
     }
     public void addProviderCommand(String command) throws JsonProcessingException {
@@ -111,7 +111,7 @@ public class CommandHandler {
     }
     public void getBuyListCommand(String command) throws JsonProcessingException, UserNotFoundException, CommodityNotFoundException {
         String username = parser.getBuyListParser(command);
-        List<Commodity> commodities = baloot.getUserBuylist(username);
+        List<Commodity> commodities = baloot.userManager.getUserBuylist(username);
         ObjectNode commoditiesList = getCommoditiesList(commodities);
         printOutput(makeJsonFromObjectNode(true, commoditiesList));
     }

@@ -6,6 +6,7 @@ import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.Provider;
 import org.Baloot.Entities.User;
 import org.Baloot.Exception.*;
+import org.Baloot.Managers.CommentManager;
 import org.Baloot.Managers.CommodityManager;
 import org.Baloot.Managers.UserManager;
 
@@ -22,23 +23,18 @@ public class Baloot {
     private Database db;
     public UserManager userManager;
     public CommodityManager commodityManager;
-    public Baloot(Database _db) throws ProviderNotFoundException {
+    public CommentManager commentManager;
+    public Baloot(Database _db) {
         db = _db;
         userManager = new UserManager(_db);
+        commodityManager = new CommodityManager(_db);
+        commentManager = new CommentManager(_db);
+
     }
     public void addProvider(Provider provider) {
         db.insertProvider(provider);
     }
 
-    public List<Comment> getCommentsByCommodityId(int commodityId){
-        List<Comment> filteredComments = new ArrayList<>();
-        for (Comment comment : db.getComments()) {
-            if (comment.getCommodityId() == commodityId) {
-                filteredComments.add(comment);
-            }
-        }
-        return filteredComments;
-    }
 
     public Provider findByProviderId(int providerId) throws ProviderNotFoundException {
         for (Provider provider : db.getProviders()) {
@@ -47,19 +43,6 @@ public class Baloot {
             }
         }
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
-    }
-
-    public void voteComment(String userId, String commodityId, String vote) throws UserNotFoundException, CommodityNotFoundException, InvalidVoteException {
-        if (!Objects.equals(vote, "0") && !Objects.equals(vote, "1") && !Objects.equals(vote, "-1")) {
-            throw new InvalidVoteException("Invalid Vote");
-        }
-        User user = db.findByUsername(userId);
-        Commodity commodity = db.findByCommodityId(Integer.parseInt(commodityId));
-        for (Comment comment : db.getComments()){
-            if(comment.getCommodityId() == commodity.getId()){
-                comment.voteComment(userId, Integer.parseInt(vote));
-            }
-        }
     }
 
     public List<User> getUsers() {

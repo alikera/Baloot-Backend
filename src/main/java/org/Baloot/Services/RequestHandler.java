@@ -181,7 +181,7 @@ public class RequestHandler {
 
             String actionsHtml = showCommodityActions(commodityId);
             template.append(actionsHtml);
-            showAllComments(template, baloot.getCommentsByCommodityId(Integer.parseInt(commodityId)), commodityId);
+            showAllComments(template, baloot.commentManager.getCommentsByCommodityId(Integer.parseInt(commodityId)), commodityId);
             return template;
         }
         catch (CommodityNotFoundException e) {
@@ -360,7 +360,7 @@ public class RequestHandler {
 
     private Document voteComment(String userId, String commodityId, String vote) throws IOException {
         try {
-            baloot.voteComment(userId, commodityId, vote);
+            baloot.commentManager.voteComment(userId, commodityId, vote);
             return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
         } catch (UserNotFoundException | CommodityNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");

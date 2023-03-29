@@ -13,9 +13,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UserManager {
-    private Database db;
-    public UserManager(Database _db){
-        db = _db;
+    private User LoggedInUser;
+
+    public User getLoggedInUser() {
+        return LoggedInUser;
+    }
+
+    public void setLoggedInUser(User _loggedInUser) {
+        LoggedInUser = _loggedInUser;
+    }
+
+    public UserManager(){
     }
 
     public void addUser(User user) throws InvalidUsernameException {
@@ -23,23 +31,23 @@ public class UserManager {
         Matcher matcher = pattern.matcher(user.getUsername());
         try {
             if (matcher.matches()) {
-                User foundUser = db.findByUsername(user.getUsername());
+                User foundUser = Database.findByUsername(user.getUsername());
                 foundUser.modifyFields(user);
             } else {
                 throw new InvalidUsernameException("Invalid Username!");
             }
         }
         catch (UserNotFoundException e){
-            db.insertUser(user);
+            Database.insertUser(user);
         }
     }
 
     public List<Commodity> getUserBuylist(String username) throws UserNotFoundException, CommodityNotFoundException {
-        User user = db.findByUsername(username);
+        User user = Database.findByUsername(username);
         Set<Integer> buyListIds = user.getBuyList();
         List<Commodity> commodities = new ArrayList<>();
         for (int commodityId : buyListIds) {
-            Commodity commodity = db.findByCommodityId(commodityId);
+            Commodity commodity = Database.findByCommodityId(commodityId);
             commodities.add(commodity);
         }
         return commodities;
@@ -48,36 +56,36 @@ public class UserManager {
     public void addCredit(String username, String credit) throws UserNotFoundException, NegativeAmountException {
         double amount = Double.parseDouble(credit);
 
-        User user = db.findByUsername(username);
+        User user = Database.findByUsername(username);
         if (amount <= 0) {
             throw new NegativeAmountException();
         }
         user.increaseCredit(amount);
     }
     public void finalizePayment(String username) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException {
-        User user = db.findByUsername(username);
+        User user = Database.findByUsername(username);
         Set<Integer> commoditiesId = user.getBuyList();
         double cost = 0;
 
         for (Integer id: commoditiesId) {
-            Commodity commodity = db.findByCommodityId(id);
+            Commodity commodity = Database.findByCommodityId(id);
             cost += commodity.getPrice();
         }
         user.moveBuyToPurchased(cost);
     }
     public void addCommodityToUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, OutOfStockException, UserNotFoundException, CommodityExistenceException {
-        Commodity commodityFound = db.findByCommodityId(Integer.parseInt(commodityId));
+        Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
         if (commodityFound.getInStock() == 0) {
             throw new OutOfStockException("Commodity out of stock!");
         }
-        User userFound = db.findByUsername(userId);
+        User userFound = Database.findByUsername(userId);
         userFound.addToBuyList(Integer.parseInt(commodityId));
         commodityFound.decreaseInStock();
     }
 
     public void removeCommodityFromUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, UserNotFoundException, CommodityExistenceException {
-        Commodity commodityFound = db.findByCommodityId(Integer.parseInt(commodityId));
-        User userFound = db.findByUsername(userId);
+        Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
+        User userFound = Database.findByUsername(userId);
         userFound.removeFromBuyList(Integer.parseInt(commodityId));
         commodityFound.increaseInStock();
     }

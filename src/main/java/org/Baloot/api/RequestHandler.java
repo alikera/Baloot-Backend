@@ -381,12 +381,11 @@ public class RequestHandler {
         }
     }
     public static void main(String[] args) throws IOException, ExceptionHandler {
-        Database db = new Database();
 
         DataGetter dataGetter = new DataGetter();
-        dataGetter.getDataFromServer(db);
+        dataGetter.getDataFromServer();
 
-        Baloot baloot = Baloot.getBaloot(db);
+        Baloot baloot = Baloot.getBaloot();
         RequestHandler rh = new RequestHandler(baloot);
         rh.getRequest();
     }

@@ -13,13 +13,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class CommentManager {
-    private Database db;
-    public CommentManager(Database _db){
-        db = _db;
+    public CommentManager(){
+
     }
     public List<Comment> getCommentsByCommodityId(int commodityId){
         List<Comment> filteredComments = new ArrayList<>();
-        for (Comment comment : db.getComments()) {
+        for (Comment comment : Database.getComments()) {
             if (comment.getCommodityId() == commodityId) {
                 filteredComments.add(comment);
             }
@@ -30,9 +29,9 @@ public class CommentManager {
         if (!Objects.equals(vote, "0") && !Objects.equals(vote, "1") && !Objects.equals(vote, "-1")) {
             throw new InvalidVoteException("Invalid Vote");
         }
-        User user = db.findByUsername(userId);
-        Commodity commodity = db.findByCommodityId(Integer.parseInt(commodityId));
-        for (Comment comment : db.getComments()){
+        User user = Database.findByUsername(userId);
+        Commodity commodity = Database.findByCommodityId(Integer.parseInt(commodityId));
+        for (Comment comment : Database.getComments()){
             if(comment.getCommodityId() == commodity.getId()){
                 comment.voteComment(userId, Integer.parseInt(vote));
             }

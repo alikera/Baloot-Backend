@@ -14,27 +14,26 @@ public class TestGetCommoditiesByPriceRange {
     private Commodity commodity1, commodity2, commodity3;
     @Before
     public void setUp() throws ProviderNotFoundException {
-        db = new Database();
-        baloot = Baloot.getBaloot(db);
+        baloot = Baloot.getBaloot();
 
         List<String> categories1 = new ArrayList<>();
         categories1.add("Technology");
         commodity1 = new Commodity(1, "Headphone", 1, 35000, categories1, 0.0,
                 50);
-        db.insertCommodity(commodity1);
+        Database.insertCommodity(commodity1);
 
         List<String> categories2 = new ArrayList<>();
         categories2.add("Technology");
         categories2.add("Phone");
         commodity2 = new Commodity(2, "Apple", 1, 3000, categories2, 0.0,
                 0);
-        db.insertCommodity(commodity2);
+        Database.insertCommodity(commodity2);
 
         List<String> categories3 = new ArrayList<>();
         categories3.add("Fruit");
         commodity3 = new Commodity(3, "Apple", 1, 300, categories3, 0.0,
                 220);
-        db.insertCommodity(commodity3);
+        Database.insertCommodity(commodity3);
 
     }
 
@@ -50,7 +49,7 @@ public class TestGetCommoditiesByPriceRange {
         String startPrice = "1";
         String endPrice = "10000000";
         List<Commodity> actualCommodities = baloot.commodityManager.getCommoditiesByPriceRange(startPrice, endPrice);
-        List<Commodity> expectedCommodities = db.getCommodities();
+        List<Commodity> expectedCommodities = Database.getCommodities();
         assertEquals(expectedCommodities, actualCommodities);
     }
 

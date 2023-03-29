@@ -15,24 +15,23 @@ public class TestShowingBuyList {
     private Commodity commodity1, commodity2, commodity3;
     @Before
     public void setUp() throws ProviderNotFoundException, CommodityExistenceException, NotEnoughCreditException {
-        db = new Database();
-        baloot = Baloot.getBaloot(db);
+        baloot = Baloot.getBaloot();
 
         user = new User("user1", "1234", "user@gmail.com","1977-09-15",
                 "address1",1500);
-        db.insertUser(user);
+        Database.insertUser(user);
         user2 = new User("user2", "1234", "user2@gmail.com","1977-09-15",
                 "address2",5500);
-        db.insertUser(user2);
+        Database.insertUser(user2);
         user3 = new User("user3", "1234", "user3@gmail.com","1977-09-15",
                 "address2",5500);
-        db.insertUser(user3);
+        Database.insertUser(user3);
 
         List<String> categories1 = new ArrayList<>();
         categories1.add("Technology");
         commodity1 = new Commodity(1, "Headphone", 1, 35000, categories1, 0.0,
                 50);
-        db.insertCommodity(commodity1);
+        Database.insertCommodity(commodity1);
         user2.addToBuyList(commodity1.getId());
         user3.addToBuyList(commodity1.getId());
         user3.moveBuyToPurchased(0);
@@ -42,13 +41,13 @@ public class TestShowingBuyList {
         categories2.add("Phone");
         commodity2 = new Commodity(2, "Apple", 1, 3000, categories2, 0.0,
                 0);
-        db.insertCommodity(commodity2);
+        Database.insertCommodity(commodity2);
 
         List<String> categories3 = new ArrayList<>();
         categories3.add("Fruit");
         commodity3 = new Commodity(3, "Apple", 1, 300, categories3, 0.0,
                 220);
-        db.insertCommodity(commodity3);
+        Database.insertCommodity(commodity3);
     }
 
     @After

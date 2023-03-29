@@ -16,20 +16,17 @@ import java.util.List;
 
 public class Baloot {
     private static Baloot baloot = null;
-//    private Baloot() {
-//        // initialization code here
-//    }
-    private Baloot(Database _db) {
-        db = _db;
-        userManager = new UserManager(_db);
-        commodityManager = new CommodityManager(_db);
-        commentManager = new CommentManager(_db);
-        providerManager = new ProviderManager(_db);
+
+    private Baloot() {
+        userManager = new UserManager();
+        commodityManager = new CommodityManager();
+        commentManager = new CommentManager();
+        providerManager = new ProviderManager();
     }
     // public static method to get instance
-    public static Baloot getBaloot(Database _db) {
+    public static Baloot getBaloot() {
         if(baloot == null) {
-            baloot = new Baloot(_db);
+            baloot = new Baloot();
         }
         return baloot;
     }
@@ -41,21 +38,21 @@ public class Baloot {
 
 
     public List<User> getUsers() {
-        return db.getUsers();
+        return Database.getUsers();
     }
     public User getUserByUsername(String username) throws UserNotFoundException {
-        return db.findByUsername(username);
+        return Database.findByUsername(username);
     }
     public List<Provider> getProviders() {
-        return db.getProviders();
+        return Database.getProviders();
     }
     public Provider getProviderById(Integer id) throws ProviderNotFoundException {
-        return db.findByProviderId(id);
+        return Database.findByProviderId(id);
     }
     public List<Commodity> getCommodities() {
-        return db.getCommodities();
+        return Database.getCommodities();
     }
     public Commodity getCommodityById(Integer id) throws CommodityNotFoundException {
-        return db.findByCommodityId(id);
+        return Database.findByCommodityId(id);
     }
 }

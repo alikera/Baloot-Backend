@@ -139,11 +139,9 @@ public class CommandHandler {
         System.out.println(output);
     }
     public static void main(String[] args) throws IOException, ExceptionHandler {
-        Database db = new Database();
-
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String line;
-        Baloot baloot = Baloot.getBaloot(db);
+        Baloot baloot = Baloot.getBaloot();
         CommandHandler ch = new CommandHandler(baloot);
         while ((line = reader.readLine()) != null) {
             String[] seperatedLine = line.split(" ", 2);

@@ -14,19 +14,17 @@ import java.util.List;
 import java.util.Objects;
 
 public class CommodityManager {
-    private Database db;
-    public CommodityManager(Database _db){
-        db = _db;
+    public CommodityManager(){
     }
     public void addCommodity(Commodity commodity) throws ProviderNotFoundException {
-        db.insertCommodity(commodity);
+        Database.insertCommodity(commodity);
     }
     public List<Commodity> getCommoditiesByPriceRange(String _startPrice, String _endPrice) throws NumberFormatException {
         double startPrice = Double.parseDouble(_startPrice);
         double endPrice = Double.parseDouble(_endPrice);
 
         List<Commodity> filteredCommodities = new ArrayList<>();
-        for (Commodity commodity : db.getCommodities()) {
+        for (Commodity commodity : Database.getCommodities()) {
             if (commodity.getPrice() >= startPrice && commodity.getPrice() <= endPrice) {
                 filteredCommodities.add(commodity);
             }
@@ -35,7 +33,7 @@ public class CommodityManager {
     }
     public List<Commodity> getCommoditiesByCategory(String category) {
         List<Commodity> filteredCommodities = new ArrayList<>();
-        for (Commodity commodity : db.getCommodities()) {
+        for (Commodity commodity : Database.getCommodities()) {
             if (commodity.isInCategoryGiven(category)) {
                 filteredCommodities.add(commodity);
             }
@@ -44,8 +42,8 @@ public class CommodityManager {
     }
 
     public void rateCommodity(String userId, String commodityId, String rate) throws CommodityNotFoundException, UserNotFoundException, InvalidRatingException, NumberFormatException {
-        Commodity commodityFound = db.findByCommodityId(Integer.parseInt(commodityId));
-        User userFound = db.findByUsername(userId);
+        Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
+        User userFound = Database.findByUsername(userId);
         commodityFound.rateCommodity(userId, Integer.parseInt(rate));
     }
 

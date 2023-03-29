@@ -56,7 +56,7 @@ public class RequestHandler {
         app.get("/", ctx -> ctx.result("Welcome to IEMDB!"));
 
         app.error(404, ctx -> {
-            ctx.html(Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8").html());
+            ctx.html(Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8").html());
         });
 
         commoditiesRequest(app);
@@ -122,7 +122,7 @@ public class RequestHandler {
     }
 
     private Document getCommodities() throws IOException {
-        Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
+        Document template = Jsoup.parse(new File("src/main/Templates/CA2/Commodities.html"), "utf-8");
         Element table = template.selectFirst("tbody");
         showAllCommodities(table, baloot.getCommodities(), true);
         return template;
@@ -169,7 +169,7 @@ public class RequestHandler {
     }
     private Document getCommodity(String commodityId) throws IOException {
         try {
-            Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodity.html"), "utf-8");
+            Document template = Jsoup.parse(new File("src/main/Templates/CA2/Commodity.html"), "utf-8");
             Commodity commodity = baloot.getCommodityById(Integer.parseInt(commodityId));
             Objects.requireNonNull(template.selectFirst("#id")).html("Id: " + commodity.getId());
             Objects.requireNonNull(template.selectFirst("#name")).html("Name: " + commodity.getName());
@@ -186,7 +186,7 @@ public class RequestHandler {
             return template;
         }
         catch (CommodityNotFoundException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8");
         }
     }
 
@@ -221,7 +221,7 @@ public class RequestHandler {
 
     private Document getProvider(String provider_id) throws IOException {
         try {
-            Document template = Jsoup.parse(new File("src/main/Templates/Templates/Provider.html"), "utf-8");
+            Document template = Jsoup.parse(new File("src/main/Templates/CA2/Provider.html"), "utf-8");
             Provider provider = baloot.getProviderById(Integer.parseInt(provider_id));
             Objects.requireNonNull(template.selectFirst("#id")).html("Id: " + provider.getId());
             Objects.requireNonNull(template.selectFirst("#name")).html("Name: " + provider.getName());
@@ -234,12 +234,12 @@ public class RequestHandler {
             return template;
         }
         catch (ProviderNotFoundException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8");
         }
     }
     private Document getUser(String userId) throws IOException {
         try {
-            Document template = Jsoup.parse(new File("src/main/Templates/Templates/User.html"), "utf-8");
+            Document template = Jsoup.parse(new File("src/main/Templates/CA2/User.html"), "utf-8");
             User user = baloot.getUserByUsername(userId);
             Objects.requireNonNull(template.selectFirst("#username")).html("Username: " + user.getUsername());
             Objects.requireNonNull(template.selectFirst("#email")).html("Email: " + user.getEmail());
@@ -265,7 +265,7 @@ public class RequestHandler {
             return template;
         }
          catch (UserNotFoundException | CommodityNotFoundException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8");
         }
     }
 
@@ -298,49 +298,49 @@ public class RequestHandler {
     private Document addCredit(String username, String credit) throws IOException {
         try {
             baloot.userManager.addCredit(username, credit);
-            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/200.html"), "utf-8");
         } catch (UserNotFoundException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8");
         } catch (NegativeAmountException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/403.html"), "utf-8");
         }
     }
 
     private Document removeFromBuyList(String userId, String commodityId) throws IOException {
         try {
             baloot.userManager.removeCommodityFromUserBuyList(userId, commodityId);
-            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/200.html"), "utf-8");
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8");
         } catch (CommodityExistenceException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/403.html"), "utf-8");
         }
     }
     Document addToBuyList(String userId, String commodityId) throws IOException {
         try {
             baloot.userManager.addCommodityToUserBuyList(userId, commodityId);
-            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/200.html"), "utf-8");
         }
         catch (UserNotFoundException | CommodityNotFoundException exp) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8");
         } catch (CommodityExistenceException | OutOfStockException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/403.html"), "utf-8");
         }
     }
     private Document getFilteredCommoditiesByPriceRange(String startPrice, String endPrice) throws IOException {
         try {
-            Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
+            Document template = Jsoup.parse(new File("src/main/Templates/CA2/Commodities.html"), "utf-8");
             Element table = template.selectFirst("tbody");
             List<Commodity> filteredCommodities = baloot.commodityManager.getCommoditiesByPriceRange(startPrice, endPrice);
             showAllCommodities(table, filteredCommodities, true);
             return template;
         }catch (NumberFormatException e){
-            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/403.html"), "utf-8");
         }
     }
     private Document getFilteredCommoditiesByCategories(String category) throws IOException {
-        Document template = Jsoup.parse(new File("src/main/Templates/Templates/Commodities.html"), "utf-8");
+        Document template = Jsoup.parse(new File("src/main/Templates/CA2/Commodities.html"), "utf-8");
         Element table = template.selectFirst("tbody");
         List<Commodity> filteredCommodities = baloot.commodityManager.getCommoditiesByCategory(category);
         showAllCommodities(table, filteredCommodities, true);
@@ -350,34 +350,34 @@ public class RequestHandler {
     private Document rateCommodity(String userId, String commodityId, String rate) throws IOException {
         try{
             baloot.commodityManager.rateCommodity(userId, commodityId, rate);
-            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/200.html"), "utf-8");
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8");
         } catch (InvalidRatingException | NumberFormatException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/403.html"), "utf-8");
         }
     }
 
     private Document voteComment(String userId, String commodityId, String vote) throws IOException {
         try {
             baloot.commentManager.voteComment(userId, commodityId, vote);
-            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/200.html"), "utf-8");
         } catch (UserNotFoundException | CommodityNotFoundException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8");
         } catch (InvalidVoteException | NumberFormatException e){
-            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/403.html"), "utf-8");
         }
     }
 
     private Document finalizePayment(String userId) throws IOException {
         try {
             baloot.userManager.finalizePayment(userId);
-            return Jsoup.parse(new File("src/main/Templates/Templates/200.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/200.html"), "utf-8");
         } catch (UserNotFoundException | CommodityNotFoundException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/404.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8");
         } catch (NotEnoughCreditException e) {
-            return Jsoup.parse(new File("src/main/Templates/Templates/403.html"), "utf-8");
+            return Jsoup.parse(new File("src/main/Templates/CA2/403.html"), "utf-8");
         }
     }
     public static void main(String[] args) throws IOException, ExceptionHandler {

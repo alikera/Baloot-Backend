@@ -10,7 +10,7 @@
     Baloot baloot = Baloot.getBaloot();
     User loggedInUser = baloot.userManager.getLoggedInUser();
     Integer commodityId = Integer.valueOf(request.getParameter("commodityId"));
-    Commodity commodity = Database.findByCommodityId(commodityId);
+    Commodity commodityFound = Database.findByCommodityId(commodityId);
 %>
 <head>
     <meta charset="UTF-8" />
@@ -30,13 +30,13 @@
     <span>username:  <%=loggedInUser.getUsername()%> </span>
     <br>
     <ul>
-        <li id="id">Id: <%=commodity.getId()%></li>
-        <li id="name">Name: <%=commodity.getName()%></li>
-        <li id="providerName">Provider Name: <%=commodity.getProviderId()%></li>
-        <li id="price">Price: <%=commodity.getPrice()%></li>
-        <li id="categories">Categories: <%=String.join(", ", commodity.getCategories())%></li>
-        <li id="rating">Rating: <%=commodity.getRating()%></li>
-        <li id="inStock">In Stock: <%=commodity.getInStock()%></li>
+        <li id="id">Id: <%=commodityFound.getId()%></li>
+        <li id="name">Name: <%=commodityFound.getName()%></li>
+        <li id="providerName">Provider Name: <%=commodityFound.getProviderId()%></li>
+        <li id="price">Price: <%=commodityFound.getPrice()%></li>
+        <li id="categories">Categories: <%=String.join(", ", commodityFound.getCategories())%></li>
+        <li id="rating">Rating: <%=commodityFound.getRating()%></li>
+        <li id="inStock">In Stock: <%=commodityFound.getInStock()%></li>
     </ul>
 
     <form action="" method="post">
@@ -103,46 +103,19 @@
             <th>In Stock</th>
             <th>Links</th>
         </tr>
-<%--        <tr>--%>
-<%--            <td>2341</td>--%>
-<%--            <td>Galaxy S22</td>--%>
-<%--            <td>Phone Provider No.1</td>--%>
-<%--            <td>34000000</td>--%>
-<%--            <td>Technology, Phone</td>--%>
-<%--            <td>8.3</td>--%>
-<%--            <td>17</td>--%>
-<%--            <td><a href="/commodities/2341">Link</a></td>--%>
-<%--        </tr>--%>
-<%--        <tr>--%>
-<%--            <td>4231</td>--%>
-<%--            <td>Galaxy S22 Plus</td>--%>
-<%--            <td>Phone Provider No.1</td>--%>
-<%--            <td>43000000</td>--%>
-<%--            <td>Technology, Phone</td>--%>
-<%--            <td>8.7</td>--%>
-<%--            <td>12</td>--%>
-<%--            <td><a href="/commodities/4231">Link</a></td>--%>
-<%--        </tr>--%>
-<%--        <tr>--%>
-<%--            <td>1234</td>--%>
-<%--            <td>Galaxy S22 Ultra</td>--%>
-<%--            <td>Phone Provider No.2</td>--%>
-<%--            <td>50000000</td>--%>
-<%--            <td>Technology, Phone</td>--%>
-<%--            <td>8.9</td>--%>
-<%--            <td>5</td>--%>
-<%--            <td><a href="/commodities/1234">Link</a></td>--%>
-<%--        </tr>--%>
-<%--        <tr>--%>
-<%--            <td>4321</td>--%>
-<%--            <td>Galaxy A53</td>--%>
-<%--            <td>Phone Provider No.2</td>--%>
-<%--            <td>16000000</td>--%>
-<%--            <td>Technology, Phone</td>--%>
-<%--            <td>8.7</td>--%>
-<%--            <td>11</td>--%>
-<%--            <td><a href="/commodities/4321">Link</a></td>--%>
-<%--        </tr>--%>
+        <% List<Commodity> commodities = baloot.commodityManager.getSuggestedCommodities(commodityFound, commodityFound.getCategories());%>
+        <% for(Commodity commodity : commodities) { %>
+        <tr>
+            <td><%=commodity.getId()%></td>
+            <td><%=commodity.getName()%></td>
+            <td><%=commodity.getProviderId()%></td>
+            <td><%=commodity.getPrice()%></td>
+            <td><%=String.join(", ", commodity.getCategories())%></>
+            <td><%=commodity.getRating()%></td>
+            <td><%=commodity.getInStock()%></td>
+            <td><a href="/commodities/<%=commodity.getId()%>">Link</a></td>
+        </tr>
+        <% } %>
     </table>
 
 </body>

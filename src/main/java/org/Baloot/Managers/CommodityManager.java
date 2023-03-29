@@ -1,5 +1,6 @@
 package org.Baloot.Managers;
 
+import kotlin.Pair;
 import org.Baloot.Database.Database;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.Provider;
@@ -54,5 +55,28 @@ public class CommodityManager {
     }
     public void getSortedCommoditiesByRating(List<Commodity> _commodities){
         _commodities.sort(Comparator.comparingDouble(Commodity::getRating));
+    }
+    public List<Commodity> getSuggestedCommodities(Commodity currentCommodity ,Set<String> categories){
+        List<Pair<Commodity, Double>> weightedCommodities = new ArrayList<>();
+        for (Commodity commodity : Database.getCommodities()) {
+            if(currentCommodity.getId() != commodity.getId()) {
+                double score = calculateScoreForSuggestingCommodities(commodity, categories);
+                weightedCommodities.add(new Pair<>(commodity, score));
+            }
+        }
+        weightedCommodities.sort(Comparator.comparing(p -> -p.getSecond()));
+        List<Commodity> filteredCommodities = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            filteredCommodities.add(weightedCommodities.get(i).getFirst());
+        }
+
+        return filteredCommodities;
+    }
+    private double calculateScoreForSuggestingCommodities(Commodity commodity, Set<String> categories){
+        double score = commodity.getRating();
+        if(commodity.getCategories().equals(categories)){
+                score += 11;
+        }
+        return score;
     }
 }

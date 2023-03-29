@@ -1,9 +1,6 @@
 package org.Baloot.Database;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.Baloot.Entities.Comment;
-import org.Baloot.Entities.Commodity;
-import org.Baloot.Entities.Provider;
-import org.Baloot.Entities.User;
+import org.Baloot.Entities.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -18,6 +15,7 @@ public class DataGetter {
     private String getCommoditiesEndpoint = "commodities";
     private String getProvidersEndpoint = "providers";
     private String getCommentsEndpoint = "comments";
+    private String getDiscountCodesEndpoint = "discount";
 
     public void getDataFromServer() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -35,7 +33,10 @@ public class DataGetter {
         String commentsData = getRequest(httpClient, getCommentsEndpoint);
         Comment[] comments = mapper.readValue(commentsData, Comment[].class);
 
-        Database.insertInitialData(users, providers, commodities, comments);
+        String discountCodesData = getRequest(httpClient, getDiscountCodesEndpoint);
+        DiscountCode[] discountCodes = mapper.readValue(discountCodesData, DiscountCode[].class);
+
+        Database.insertInitialData(users, providers, commodities, comments, discountCodes);
     }
 
     public String getRequest(HttpClient httpClient, String address) throws IOException {

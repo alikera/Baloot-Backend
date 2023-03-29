@@ -1,34 +1,35 @@
 package org.Baloot.Database;
 
-import org.Baloot.Entities.Comment;
-import org.Baloot.Entities.Commodity;
-import org.Baloot.Entities.Provider;
-import org.Baloot.Entities.User;
+import org.Baloot.Entities.*;
 import org.Baloot.Exception.CommodityNotFoundException;
 import org.Baloot.Exception.ProviderNotFoundException;
 import org.Baloot.Exception.UserNotFoundException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Database {
     private static List<User> users = new ArrayList<>();
     private static List<Provider> providers = new ArrayList<>();
     private static List<Commodity> commodities = new ArrayList<>();
     private static List<Comment> comments = new ArrayList<>();
+    static HashMap<String, Double> discountCodes = new HashMap<>();
 
     public static List<User> getUsers() { return users; }
     public static List<Provider> getProviders() { return providers; }
     public static List<Commodity> getCommodities() { return commodities; }
     public static List<Comment> getComments() { return comments; }
 
-    public static void insertInitialData(User[] _users, Provider[] _providers, Commodity[] _commodities, Comment[] _comments) {
+
+    public static void insertInitialData(User[] _users, Provider[] _providers, Commodity[] _commodities,
+                                         Comment[] _comments, DiscountCode[] _discountCodes) {
         users.addAll(Arrays.asList(_users));
         providers.addAll(Arrays.asList(_providers));
         commodities.addAll(Arrays.asList(_commodities));
         comments.addAll(Arrays.asList(_comments));
+
+        for (DiscountCode discountCode: _discountCodes) {
+            discountCodes.put(discountCode.getCode(), discountCode.getDiscount());
+        }
     }
 
     public static void insertUser(User user) {

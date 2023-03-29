@@ -2,6 +2,8 @@
 <%@ page import="org.Baloot.Database.Database" %>
 <%@ page import="org.Baloot.Baloot" %>
 <%@ page import="org.Baloot.Entities.User" %>
+<%@ page import="org.Baloot.Entities.Comment" %>
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <%
@@ -25,7 +27,7 @@
 </head>
 <body>
     <a href="/">Home</a>
-    <span>username: loggedInUser</span>
+    <span>username:  <%=loggedInUser.getUsername()%> </span>
     <br>
     <ul>
         <li id="id">Id: <%=commodity.getId()%></li>
@@ -37,10 +39,10 @@
         <li id="inStock">In Stock: <%=commodity.getInStock()%></li>
     </ul>
 
-    <label>Add Your Comment:</label>
     <form action="" method="post">
+        <label>Add Your Comment:</label>
         <input type="text" name="comment" value="" />
-        <button type="submit">submit</button>
+        <button type="submit" name="action" value="comment">submit</button>
     </form>
     <br>
     <form action="" method="POST">
@@ -62,35 +64,31 @@
             <th>likes</th>
             <th>dislikes</th>
         </tr>
-<%--        <tr>--%>
-<%--            <td>user1</td>--%>
-<%--            <td>Good</td>--%>
-<%--            <td>2022-07-25</td>--%>
-<%--            <td>--%>
-<%--                <form action="" method="POST">--%>
-<%--                    <label for="">2</label>--%>
-<%--                    <input--%>
-<%--                            id="form_comment_id"--%>
-<%--                            type="hidden"--%>
-<%--                            name="comment_id"--%>
-<%--                            value="1"--%>
-<%--                    />--%>
-<%--                    <button type="submit">like</button>--%>
-<%--                </form>--%>
-<%--            </td>--%>
-<%--            <td>--%>
-<%--                <form action="" method="POST">--%>
-<%--                    <label for="">1</label>--%>
-<%--                    <input--%>
-<%--                            id="form_comment_id"--%>
-<%--                            type="hidden"--%>
-<%--                            name="comment_id"--%>
-<%--                            value="-1"--%>
-<%--                    />--%>
-<%--                    <button type="submit">dislike</button>--%>
-<%--                </form>--%>
-<%--            </td>--%>
-<%--        </tr>--%>
+        <% List<Comment> comments = baloot.commentManager.getCommentsByCommodityId(commodityId);%>
+        <% for (Comment comment : comments) {
+        %>
+        <tr>
+            <td><%=comment.getUserEmail()%></td>
+            <td><%=comment.getText()%></td>
+            <td><%=comment.getDate()%></td>
+            <td>
+                <form action="" method="POST">
+                    <label><%=comment.getLikes()%></label>
+                    <input type="hidden" name="comment_reaction" value="1"/>
+                    <input type="hidden" name="comment_id" value=<%=comment.getId()%>>
+                    <button type="submit" name="action" value="like">like</button>
+                </form>
+            </td>
+            <td>
+                <form action="" method="POST">
+                    <label><%=comment.getDislikes()%></label>
+                    <input type="hidden" name="comment_reaction" value="-1"/>
+                    <input type="hidden" name="comment_id" value=<%=comment.getId()%>>
+                    <button type="submit" name="action" value="like">dislike</button>
+                </form>
+            </td>
+        </tr>
+        <%  } %>
     </table>
     <br><br>
     <table>

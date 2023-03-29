@@ -25,14 +25,15 @@ public class CommentManager {
         }
         return filteredComments;
     }
-    public void voteComment(String userId, String commodityId, String vote) throws UserNotFoundException, CommodityNotFoundException, InvalidVoteException {
+    public void voteComment(String userId, String commodityId, String commentId, String vote) throws UserNotFoundException, CommodityNotFoundException, InvalidVoteException {
         if (!Objects.equals(vote, "0") && !Objects.equals(vote, "1") && !Objects.equals(vote, "-1")) {
             throw new InvalidVoteException("Invalid Vote");
         }
         User user = Database.findByUsername(userId);
         Commodity commodity = Database.findByCommodityId(Integer.parseInt(commodityId));
+        System.out.println(userId);
         for (Comment comment : Database.getComments()){
-            if(comment.getCommodityId() == commodity.getId()){
+            if(comment.getId() == Integer.parseInt(commentId)){
                 comment.voteComment(userId, Integer.parseInt(vote));
             }
         }

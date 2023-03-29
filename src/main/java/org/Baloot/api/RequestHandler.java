@@ -361,7 +361,8 @@ public class RequestHandler {
 
     private Document voteComment(String userId, String commodityId, String vote) throws IOException {
         try {
-            baloot.commentManager.voteComment(userId, commodityId, vote);
+            //voteComment Doesn't Work Because it has been changed in CA3!
+            baloot.commentManager.voteComment(userId, commodityId, "0",vote);
             return Jsoup.parse(new File("src/main/Templates/CA2/200.html"), "utf-8");
         } catch (UserNotFoundException | CommodityNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8");

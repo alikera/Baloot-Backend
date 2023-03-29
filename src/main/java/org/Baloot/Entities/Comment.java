@@ -8,12 +8,17 @@ import java.util.*;
 
 public class Comment {
     HashMap<String, Integer> votes;
-
+    private static int count = 0;
+    private int id;
     private String userEmail;
     private String username;
     private int commodityId;
     private String text;
     private String date;
+
+    public int getId() {
+        return id;
+    }
 
     public String getUserEmail() {
         return userEmail;
@@ -55,7 +60,8 @@ public class Comment {
         text = _text;
         date = _date;
         votes = new HashMap<>();
-
+        count++;
+        id = count;
     }
 
     public void print() {

@@ -41,18 +41,18 @@
 
     <form action="" method="post">
         <label>Add Your Comment:</label>
-        <input type="text" name="comment" value="" />
+        <input type="text" name="comment_text" value="" />
         <button type="submit" name="action" value="comment">submit</button>
     </form>
     <br>
     <form action="" method="POST">
         <label>Rate(between 1 and 10):</label>
-        <input type="number" id="quantity" name="rate" min="1" max="10">
+        <input type="number" id="quantity" name="quantity" min="1" max="10">
         <button type="submit" name="action" value="rate">Rate</button>
     </form>
     <br>
     <form action="" method="POST">
-        <button type="submit">Add to BuyList</button>
+        <button type="submit" name="action" value="add">Add to BuyList</button>
     </form>
     <br/>
     <table>
@@ -76,7 +76,7 @@
                     <label><%=comment.getLikes()%></label>
                     <input type="hidden" name="comment_reaction" value="1"/>
                     <input type="hidden" name="comment_id" value=<%=comment.getId()%>>
-                    <button type="submit" name="action" value="comment_reaction">like</button>
+                    <button type="submit" name="action" value="react">like</button>
                 </form>
             </td>
             <td>
@@ -84,7 +84,7 @@
                     <label><%=comment.getDislikes()%></label>
                     <input type="hidden" name="comment_reaction" value="-1"/>
                     <input type="hidden" name="comment_id" value=<%=comment.getId()%>>
-                    <button type="submit" name="action" value="comment_reaction">dislike</button>
+                    <button type="submit" name="action" value="react">dislike</button>
                 </form>
             </td>
         </tr>

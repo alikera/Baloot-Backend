@@ -57,61 +57,31 @@ public class CommodityServlet extends HttpServlet {
         String action = request.getParameter("action");
         String commodityId = path[1];
 
-        switch (action) {
-            case "comment" -> {
-                String commentStr = request.getParameter("comment");
-                Comment comment = new Comment(baloot.userManager.getLoggedInUser().getEmail(), Integer.parseInt(commodityId), commentStr, getCurrentDate());
-                Database.insertComment(comment);
-            }
-            case "comment_reaction" -> {
-                String commentReaction = request.getParameter("comment_reaction");
-                String commentId = request.getParameter("comment_id");
-                try {
-                    baloot.commentManager.voteComment(baloot.userManager.getLoggedInUser().getUsername(), commodityId, commentId, commentReaction);
-                } catch (UserNotFoundException | CommodityNotFoundException | InvalidVoteException e) {
-                    ExceptionHandler.setErrorMessage(e.getMessage());
-                    request.getRequestDispatcher("/jsps/Error.jsp").forward(request, response);
+        try {
+            switch (action) {
+                case "comment" -> {
+                    String commentStr = request.getParameter("comment_text");
+                    Comment comment = new Comment(baloot.userManager.getLoggedInUser().getEmail(), Integer.parseInt(commodityId), commentStr, getCurrentDate());
+                    Database.insertComment(comment);
                 }
-            }
-            case "rate" -> {
-                String rate = request.getParameter("rate");
-                try {
-                    baloot.commodityManager.rateCommodity(baloot.userManager.getLoggedInUser().getUsername(), commodityId, rate);
-                } catch (CommodityNotFoundException | UserNotFoundException | InvalidRatingException e) {
-                    ExceptionHandler.setErrorMessage(e.getMessage());
-                    request.getRequestDispatcher("/jsps/Error.jsp").forward(request, response);
-                }
+                case "react" -> {
+                    String commentReaction = request.getParameter("comment_reaction");
+                    String commentId = request.getParameter("comment_id");
 
+                    baloot.commentManager.voteComment(baloot.userManager.getLoggedInUser().getUsername(), commodityId, commentId, commentReaction);
+                }
+                case "rate" -> {
+                    String rate = request.getParameter("quantity");
+                    baloot.commodityManager.rateCommodity(baloot.userManager.getLoggedInUser().getUsername(), commodityId, rate);
+                }
+                case "add" -> {
+                    baloot.userManager.addCommodityToUserBuyList(baloot.userManager.getLoggedInUser().getUsername(), commodityId);
+                }
             }
-//            case "add" -> {
-//                try {
-//                    Integer movieId = Integer.valueOf(request.getParameter("movie_id"));
-//                    WatchListItem watchListItem = new WatchListItem(movieId, UserManager.getLoggedInUser().getEmail());
-//                    UserManager.addToWatchList(watchListItem);
-//                } catch (CommandException commandException) {
-//                    ErrorManager.error(request, response, commandException.getMessage());
-//                }
-//
-//            }
-//
-//            case "like" -> {
-//                try {
-//                    Integer commentId = Integer.valueOf(request.getParameter("comment_id"));
-//                    Vote vote = new Vote(UserManager.getLoggedInUser().getEmail(), commentId, 1);
-//                    UserManager.addVote(vote);
-//                } catch (CommandException commandException) {
-//                    ErrorManager.error(request, response, commandException.getMessage());
-//                }
-//            }
-//            case "dislike" -> {
-//                try {
-//                    Integer commentId = Integer.valueOf(request.getParameter("comment_id"));
-//                    Vote vote = new Vote(UserManager.getLoggedInUser().getEmail(), commentId, -1);
-//                    UserManager.addVote(vote);
-//                } catch (CommandException commandException) {
-//                    ErrorManager.error(request, response, commandException.getMessage());
-//                }
-//            }
+        } catch (UserNotFoundException | InvalidVoteException | InvalidRatingException |
+                 CommodityNotFoundException | CommodityExistenceException | OutOfStockException e) {
+            ExceptionHandler.setErrorMessage(e.getMessage());
+            request.getRequestDispatcher("/jsps/Error.jsp").forward(request, response);
         }
 
         response.sendRedirect("/commodities/" + path[1]);

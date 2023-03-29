@@ -47,8 +47,8 @@
     <br>
     <form action="" method="POST">
         <label>Rate(between 1 and 10):</label>
-        <input type="number" id="quantity" name="quantity" min="1" max="10">
-        <button type="submit">Rate</button>
+        <input type="number" id="quantity" name="rate" min="1" max="10">
+        <button type="submit" name="action" value="rate">Rate</button>
     </form>
     <br>
     <form action="" method="POST">
@@ -76,7 +76,7 @@
                     <label><%=comment.getLikes()%></label>
                     <input type="hidden" name="comment_reaction" value="1"/>
                     <input type="hidden" name="comment_id" value=<%=comment.getId()%>>
-                    <button type="submit" name="action" value="like">like</button>
+                    <button type="submit" name="action" value="comment_reaction">like</button>
                 </form>
             </td>
             <td>
@@ -84,7 +84,7 @@
                     <label><%=comment.getDislikes()%></label>
                     <input type="hidden" name="comment_reaction" value="-1"/>
                     <input type="hidden" name="comment_id" value=<%=comment.getId()%>>
-                    <button type="submit" name="action" value="like">dislike</button>
+                    <button type="submit" name="action" value="comment_reaction">dislike</button>
                 </form>
             </td>
         </tr>

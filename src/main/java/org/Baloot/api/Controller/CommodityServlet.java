@@ -6,10 +6,7 @@ import jakarta.servlet.annotation.*;
 import org.Baloot.Baloot;
 import org.Baloot.Database.Database;
 import org.Baloot.Entities.Comment;
-import org.Baloot.Exception.CommodityNotFoundException;
-import org.Baloot.Exception.ExceptionHandler;
-import org.Baloot.Exception.InvalidVoteException;
-import org.Baloot.Exception.UserNotFoundException;
+import org.Baloot.Exception.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -58,34 +55,34 @@ public class CommodityServlet extends HttpServlet {
         String[] path = currentPath.split("/");
 
         String action = request.getParameter("action");
-        int commodityId = Integer.parseInt(path[1]);
+        String commodityId = path[1];
 
         switch (action) {
             case "comment" -> {
                 String commentStr = request.getParameter("comment");
-                Comment comment = new Comment(baloot.userManager.getLoggedInUser().getEmail(), commodityId, commentStr, getCurrentDate());
+                Comment comment = new Comment(baloot.userManager.getLoggedInUser().getEmail(), Integer.parseInt(commodityId), commentStr, getCurrentDate());
                 Database.insertComment(comment);
             }
-            case "like" -> {
+            case "comment_reaction" -> {
                 String commentReaction = request.getParameter("comment_reaction");
                 String commentId = request.getParameter("comment_id");
                 try {
-                    baloot.commentManager.voteComment(baloot.userManager.getLoggedInUser().getUsername(), path[1], commentId, commentReaction);
+                    baloot.commentManager.voteComment(baloot.userManager.getLoggedInUser().getUsername(), commodityId, commentId, commentReaction);
                 } catch (UserNotFoundException | CommodityNotFoundException | InvalidVoteException e) {
                     ExceptionHandler.setErrorMessage(e.getMessage());
                     request.getRequestDispatcher("/jsps/Error.jsp").forward(request, response);
                 }
             }
-//            case "rate" -> {
-//                try {
-//                    Integer movieId = Integer.valueOf(request.getParameter("movie_id"));
-//                    Integer quantity = Integer.valueOf(request.getParameter("quantity"));
-//                    Rating rating = new Rating(UserManager.getLoggedInUser().getEmail(), movieId, quantity);
-//                    MovieManager.addRating(rating);
-//                } catch (CommandException commandException) {
-//                    ErrorManager.error(request, response, commandException.getMessage());
-//                }
-//            }
+            case "rate" -> {
+                String rate = request.getParameter("rate");
+                try {
+                    baloot.commodityManager.rateCommodity(baloot.userManager.getLoggedInUser().getUsername(), commodityId, rate);
+                } catch (CommodityNotFoundException | UserNotFoundException | InvalidRatingException e) {
+                    ExceptionHandler.setErrorMessage(e.getMessage());
+                    request.getRequestDispatcher("/jsps/Error.jsp").forward(request, response);
+                }
+
+            }
 //            case "add" -> {
 //                try {
 //                    Integer movieId = Integer.valueOf(request.getParameter("movie_id"));

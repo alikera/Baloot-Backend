@@ -1,3 +1,5 @@
+<%@ page import="org.Baloot.Baloot" %>
+<%@ page import="org.Baloot.Entities.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" import="org.Baloot.Managers.UserManager"%>
 <html>
 <head>
@@ -5,7 +7,12 @@
 </head>
 <body>
 <ul>
-<%--    <li id="username">Username: <%=.getLoggedInUser().getUsername()%></li>--%>
+    <%
+        Baloot baloot = Baloot.getBaloot();
+        User loggedInUser = baloot.userManager.getLoggedInUser();
+    %>
+    <li id="username">Username: <%=loggedInUser.getUsername()%></li>
+    <li id="credit">Credit: <%=loggedInUser.getCredit()%></li>
     <li>
         <a href="/commodities">commodities</a>
     </li>
@@ -13,7 +20,7 @@
         <a href="/buyList">Buy List</a>
     </li>
     <li>
-        <a href="/addCredit">Add Credit</a>
+        <a href="/credit">Add Credit</a>
     </li>
     <li>
         <a href="/logout">Log Out</a>

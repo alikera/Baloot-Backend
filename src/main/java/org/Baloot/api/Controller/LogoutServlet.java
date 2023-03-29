@@ -12,6 +12,10 @@ import java.io.IOException;
 public class LogoutServlet extends HttpServlet {
     private Baloot baloot;
     @Override
+    public void init() {
+        baloot = Baloot.getBaloot();
+    }
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (baloot.userManager.getLoggedInUser() != null) {
             baloot.userManager.setLoggedInUser(null);

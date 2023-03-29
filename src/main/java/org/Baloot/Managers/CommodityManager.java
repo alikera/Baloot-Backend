@@ -9,9 +9,7 @@ import org.Baloot.Exception.InvalidRatingException;
 import org.Baloot.Exception.ProviderNotFoundException;
 import org.Baloot.Exception.UserNotFoundException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class CommodityManager {
     public CommodityManager(){
@@ -40,11 +38,22 @@ public class CommodityManager {
         }
         return filteredCommodities;
     }
-
+    public List<Commodity> getCommoditiesByName(String name) {
+        List<Commodity> filteredCommodities = new ArrayList<>();
+        for (Commodity commodity : Database.getCommodities()) {
+            if (Objects.equals(commodity.getName(), name)) {
+                filteredCommodities.add(commodity);
+            }
+        }
+        return filteredCommodities;
+    }
     public void rateCommodity(String userId, String commodityId, String rate) throws CommodityNotFoundException, UserNotFoundException, InvalidRatingException, NumberFormatException {
         Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
         User userFound = Database.findByUsername(userId);
         commodityFound.rateCommodity(userId, Integer.parseInt(rate));
     }
-
+    public List<Commodity> getSortedCommoditiesByRating(List<Commodity> commodities){
+        commodities.sort(Comparator.comparingDouble(Commodity::getRating));
+        return commodities;
+    }
 }

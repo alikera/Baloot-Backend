@@ -1,4 +1,4 @@
-package org.Baloot.api.Servlets;
+package org.Baloot.api.Controller;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -14,9 +14,8 @@ import java.io.IOException;
 @WebServlet(name = "LoginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
     private Baloot baloot;
-
     @Override
-    public void init() throws ServletException {
+    public void init() {
         baloot = Baloot.getBaloot();
     }
 

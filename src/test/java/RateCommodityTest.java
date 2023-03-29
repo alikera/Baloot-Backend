@@ -1,6 +1,7 @@
 import org.Baloot.Baloot;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Database.Database;
+import org.Baloot.Entities.Provider;
 import org.Baloot.Exception.*;
 import org.Baloot.Entities.User;
 import org.junit.*;
@@ -12,7 +13,6 @@ import static org.junit.Assert.*;
 
 public class RateCommodityTest {
     private Baloot baloot;
-    private Database db;
     private User user;
     private Commodity commodity1, commodity2, commodity3;
     @Before
@@ -22,6 +22,8 @@ public class RateCommodityTest {
         user = new User("user1", "1234", "user@gmail.com","1977-09-15",
                 "address1",1500);
         Database.insertUser(user);
+        Provider provider = new Provider(1, "A", "2023-09-15");
+        Database.insertProvider(provider);
 
         List<String> categories1 = new ArrayList<>();
         categories1.add("Technology");

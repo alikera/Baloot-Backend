@@ -1,6 +1,7 @@
 import org.Baloot.Baloot;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Database.Database;
+import org.Baloot.Entities.Provider;
 import org.Baloot.Exception.*;
 import org.junit.*;
 
@@ -10,11 +11,12 @@ import java.util.List;
 import static org.junit.Assert.*;
 public class TestGetCommoditiesByPriceRange {
     private Baloot baloot;
-    private Database db;
     private Commodity commodity1, commodity2, commodity3;
     @Before
     public void setUp() throws ProviderNotFoundException {
         baloot = Baloot.getBaloot();
+        Provider provider = new Provider(1, "A", "2023-09-15");
+        Database.insertProvider(provider);
 
         List<String> categories1 = new ArrayList<>();
         categories1.add("Technology");

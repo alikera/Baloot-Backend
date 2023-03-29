@@ -30,7 +30,6 @@ public class Baloot {
         }
         return baloot;
     }
-    private Database db;
     public UserManager userManager;
     public CommodityManager commodityManager;
     public CommentManager commentManager;

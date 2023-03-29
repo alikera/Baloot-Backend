@@ -23,7 +23,7 @@ public class Baloot {
         commentManager = new CommentManager();
         providerManager = new ProviderManager();
     }
-    // public static method to get instance
+
     public static Baloot getBaloot() {
         if(baloot == null) {
             baloot = new Baloot();

@@ -7,22 +7,27 @@
 <%
     Baloot baloot = Baloot.getBaloot();
     User loggedInUser = baloot.userManager.getLoggedInUser();
-    String filter = request.getAttribute("filter").toString();
-    String[] search = filter.split(",");
-    List<Commodity> commodities;
-    switch (search[0]){
-        case "search_by_category": {
-            commodities = baloot.commodityManager.getCommoditiesByCategory(search[1]);
-        }
-        case "search_by_name":{
-            commodities = baloot.commodityManager.getCommoditiesByName(search[1]);
-        }
-        default:{
-            commodities = baloot.getCommodities();
+    List<Commodity> commodities = baloot.getCommodities();
+
+    if(request.getAttribute("filter") != null) {
+        String filter = request.getAttribute("filter").toString();
+        String[] search = filter.split(",");
+        switch (search[0]) {
+            case "search_by_category": {
+                commodities = baloot.commodityManager.getCommoditiesByCategory(search[1]);
+            }
+            case "search_by_name": {
+                commodities = baloot.commodityManager.getCommoditiesByName(search[1]);
+            }
+            default: {
+                commodities = baloot.getCommodities();
+            }
         }
     }
-    String sort = request.getAttribute("sort").toString();
-    baloot.commodityManager.getSortedCommoditiesByRating(commodities);
+    if(request.getAttribute("sort") != null) {
+        String sort = request.getAttribute("sort").toString();
+        baloot.commodityManager.getSortedCommoditiesByRating(commodities);
+    }
 %>
 <html>
 <head>
@@ -37,7 +42,7 @@
 </head>
 <body>
     <a href="/">Home</a>
-    <p id="username">username: <%=loggedInUser.getUsername()%></p>
+<%--    <p id="username">username: <%=loggedInUser.getUsername()%></p>--%>
     <br><br>
     <form action="" method="POST">
         <label>Search:</label>
@@ -62,16 +67,6 @@
             <th>Rating</th>
             <th>In Stock</th>
             <th>Links</th>
-        </tr>
-        <tr>
-            <td>2341</td>
-            <td>Galaxy S21</td>
-            <td>Phone Provider</td>
-            <td>21000000</td>
-            <td>Technology, Phone</td>
-            <td>8.3</td>
-            <td>17</td>
-            <td><a href="/commodities/2341">Link</a></td>
         </tr>
         <% for(Commodity commodity : commodities) { %>
         <tr>

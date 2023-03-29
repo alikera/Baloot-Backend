@@ -7,7 +7,8 @@
 <%
     Baloot baloot = Baloot.getBaloot();
     User loggedInUser = baloot.userManager.getLoggedInUser();
-    List<Commodity> commodities = baloot.getCommodities();
+
+    List<Commodity> commodities = new ArrayList<>(baloot.getCommodities());
 
     if(request.getAttribute("filter") != null) {
         String filter = request.getAttribute("filter").toString();
@@ -15,14 +16,20 @@
         switch (search[0]) {
             case "search_by_category": {
                 commodities = baloot.commodityManager.getCommoditiesByCategory(search[1]);
+                break;
             }
             case "search_by_name": {
                 commodities = baloot.commodityManager.getCommoditiesByName(search[1]);
+                 break;
             }
             default: {
                 commodities = baloot.getCommodities();
+                break;
             }
         }
+    }
+    else{
+        System.out.println("EE");
     }
     if(request.getAttribute("sort") != null) {
         String sort = request.getAttribute("sort").toString();
@@ -42,7 +49,7 @@
 </head>
 <body>
     <a href="/">Home</a>
-<%--    <p id="username">username: <%=loggedInUser.getUsername()%></p>--%>
+    <p id="username">username: <%=loggedInUser.getUsername()%></p>
     <br><br>
     <form action="" method="POST">
         <label>Search:</label>

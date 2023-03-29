@@ -26,9 +26,9 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String userEmail = request.getParameter("username");
+        String username = request.getParameter("username");
         try {
-            User user = Database.findByUsername(userEmail);
+            User user = Database.findByUsername(username);
             baloot.userManager.setLoggedInUser(user);
             response.sendRedirect("/");
         } catch (UserNotFoundException e) {

@@ -36,13 +36,20 @@ public class CommoditiesServlet extends HttpServlet {
             return;
         }
         String action = request.getParameter("action");
+        System.out.println("action: " + action);
+        System.out.println("filter: " + request.getAttribute("filter"));
+        System.out.println("sort: " + request.getAttribute("sort"));
+
         if(Objects.equals(action, "search_by_category") || Objects.equals(action, "search_by_name") || Objects.equals(action, "clear")){
             String filterValue = request.getParameter("search");
             request.setAttribute("filter", (action + "," + filterValue));
+
         } else if(Objects.equals(action, "sort_by_rate")){
+            String filter = (String) request.getAttribute("filter");
             request.setAttribute("sort", action);
+            request.setAttribute("filter", filter);
         }
-        response.sendRedirect("/commodities");
+        request.getRequestDispatcher("/jsps/Commodities.jsp").forward(request, response);
 
     }
 }

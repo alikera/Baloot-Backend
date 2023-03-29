@@ -5,7 +5,7 @@
 </head>
 <body>
 <ul>
-<%--    <li id="username">Username: <%=UserManager.getLoggedInUser().getUsername()%></li>--%>
+<%--    <li id="username">Username: <%=.getLoggedInUser().getUsername()%></li>--%>
     <li>
         <a href="/commodities">commodities</a>
     </li>

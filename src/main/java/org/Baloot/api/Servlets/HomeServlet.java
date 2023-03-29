@@ -13,7 +13,5 @@ public class HomeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getRequestDispatcher("jsps/Home.jsp").forward(request, response);
         ServletContext context = getServletContext();
-        String currentPath = context.getRealPath("/");
-        System.out.println("Current Path: " + currentPath);
     }
 }

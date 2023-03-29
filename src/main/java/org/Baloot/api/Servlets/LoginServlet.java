@@ -6,10 +6,12 @@ import jakarta.servlet.annotation.*;
 import org.Baloot.Baloot;
 import org.Baloot.Database.Database;
 import org.Baloot.Entities.User;
+import org.Baloot.Exception.ExceptionHandler;
+import org.Baloot.Exception.UserNotFoundException;
 
 import java.io.IOException;
 
-@WebServlet(name = "LoginServlet", value = "/LoginServlet")
+@WebServlet(name = "LoginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
     private Baloot baloot;
 
@@ -26,5 +28,13 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userEmail = request.getParameter("username");
+        try {
+            User user = Database.findByUsername(userEmail);
+            baloot.userManager.setLoggedInUser(user);
+            response.sendRedirect("/");
+        } catch (UserNotFoundException e) {
+            ExceptionHandler.setErrorMessage(e.getMessage());
+            request.getRequestDispatcher("/jsps/Error.jsp").forward(request, response);
+        }
     }
 }

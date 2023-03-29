@@ -22,10 +22,10 @@ public class CommoditiesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if(baloot.userManager.getLoggedInUser() != null){
-            response.sendRedirect("/login");
+            request.getRequestDispatcher("/jsps/Commodities.jsp").forward(request, response);
         }
         else {
-            request.getRequestDispatcher("/jsps/Commodities.jsp").forward(request, response);
+            response.sendRedirect("/login");
         }
     }
 

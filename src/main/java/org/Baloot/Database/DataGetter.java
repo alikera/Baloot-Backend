@@ -1,6 +1,5 @@
 package org.Baloot.Database;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.Baloot.Database.Database;
 import org.Baloot.Entities.Comment;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.Provider;
@@ -14,7 +13,6 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 
 public class DataGetter {
-
     private String baseEndpoint = "http://5.253.25.110:5000/api/";
     private String getUsersEndpoint = "users";
     private String getCommoditiesEndpoint = "commodities";

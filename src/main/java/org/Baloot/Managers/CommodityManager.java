@@ -52,8 +52,7 @@ public class CommodityManager {
         User userFound = Database.findByUsername(userId);
         commodityFound.rateCommodity(userId, Integer.parseInt(rate));
     }
-    public List<Commodity> getSortedCommoditiesByRating(List<Commodity> commodities){
-        commodities.sort(Comparator.comparingDouble(Commodity::getRating));
-        return commodities;
+    public void getSortedCommoditiesByRating(List<Commodity> _commodities){
+        _commodities.sort(Comparator.comparingDouble(Commodity::getRating));
     }
 }

@@ -2,38 +2,15 @@
 <%@ page import="org.Baloot.Entities.Commodity" %>
 <%@ page import="org.Baloot.Entities.User" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     Baloot baloot = Baloot.getBaloot();
     User loggedInUser = baloot.userManager.getLoggedInUser();
-
-    List<Commodity> commodities = new ArrayList<>(baloot.getCommodities());
-
-    if(request.getAttribute("filter") != null) {
-        String filter = request.getAttribute("filter").toString();
-        String[] search = filter.split(",");
-        switch (search[0]) {
-            case "search_by_category": {
-                commodities = baloot.commodityManager.getCommoditiesByCategory(search[1]);
-                break;
-            }
-            case "search_by_name": {
-                commodities = baloot.commodityManager.getCommoditiesByName(search[1]);
-                 break;
-            }
-            default: {
-                commodities = baloot.getCommodities();
-                break;
-            }
-        }
-    }
-    else{
-        System.out.println("EE");
-    }
-    if(request.getAttribute("sort") != null) {
-        String sort = request.getAttribute("sort").toString();
-        baloot.commodityManager.getSortedCommoditiesByRating(commodities);
+    List<Commodity> commodities;
+    if(request.getAttribute("commodities") != null) {
+        commodities = (List<Commodity>) request.getAttribute("commodities");
+    } else{
+        commodities = baloot.getCommodities();
     }
 %>
 <html>

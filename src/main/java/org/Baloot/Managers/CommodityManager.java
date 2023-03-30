@@ -42,7 +42,7 @@ public class CommodityManager {
     public List<Commodity> getCommoditiesByName(String name) {
         List<Commodity> filteredCommodities = new ArrayList<>();
         for (Commodity commodity : Database.getCommodities()) {
-            if (Objects.equals(commodity.getName(), name)) {
+            if (commodity.getName().indexOf(name) == 0) {
                 filteredCommodities.add(commodity);
             }
         }

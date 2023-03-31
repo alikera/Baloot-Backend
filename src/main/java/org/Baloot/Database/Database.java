@@ -2,6 +2,7 @@ package org.Baloot.Database;
 
 import org.Baloot.Entities.*;
 import org.Baloot.Exception.CommodityNotFoundException;
+import org.Baloot.Exception.DiscountCodeNotFoundException;
 import org.Baloot.Exception.ProviderNotFoundException;
 import org.Baloot.Exception.UserNotFoundException;
 
@@ -79,5 +80,12 @@ public class Database {
             }
         }
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
+    }
+
+    public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException {
+        if (discountCodes.containsKey(code))
+            return discountCodes.get(code);
+        else
+            throw new DiscountCodeNotFoundException("Discount code is not valid!");
     }
 }

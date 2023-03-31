@@ -17,6 +17,7 @@ public class User {
     private String address;
     private double credit;
     private Set<Integer> buyList = new HashSet<>();
+    private Set<String> usedDiscountCodes = new HashSet<>();
     private List<Integer> purchasedList = new ArrayList<>();
     public String getUsername() {
         return username;
@@ -88,14 +89,21 @@ public class User {
         credit += amount;
     }
 
-    public void moveBuyToPurchased(double cost) throws NotEnoughCreditException {
+    public void moveBuyToPurchased(double cost, String discountCode) throws NotEnoughCreditException {
         if (credit < cost) {
             throw new NotEnoughCreditException("Not Enough Credit Exception!");
         }
-
         purchasedList.addAll(buyList);
         buyList.clear();
         credit -= cost;
+        usedDiscountCodes.add(discountCode);
+    }
+
+    public boolean isDiscountCodeUsed(String discountCode) {
+        if (usedDiscountCodes.contains(discountCode))
+            return true;
+        else
+            return false;
     }
 
     public void print() {

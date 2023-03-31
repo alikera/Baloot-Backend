@@ -37,7 +37,7 @@ public class TestShowingBuyList {
         Database.insertCommodity(commodity1);
         user2.addToBuyList(commodity1.getId());
         user3.addToBuyList(commodity1.getId());
-        user3.moveBuyToPurchased(0);
+        user3.moveBuyToPurchased(0, "");
 
         List<String> categories2 = new ArrayList<>();
         categories2.add("Technology");
@@ -89,7 +89,7 @@ public class TestShowingBuyList {
     }
     @Test
     public void testShowingBuyListIfUserHasFinalizedHisBuyListPaymentSuccessfully() throws NotEnoughCreditException, UserNotFoundException, CommodityNotFoundException {
-        baloot.userManager.finalizePayment("user1");
+        baloot.userManager.finalizePayment("user1", "", 0);
         Set<Integer> actual = user.getBuyList();
         Set<Integer> expected = Collections.emptySet();
         assertEquals(expected, actual);
@@ -97,11 +97,11 @@ public class TestShowingBuyList {
 
     @Test
     public void testErrorInShowingBuyListIfUserCreditIsNotEnough() {
-        assertThrows(NotEnoughCreditException.class, () -> user2.moveBuyToPurchased(10000));
+        assertThrows(NotEnoughCreditException.class, () -> user2.moveBuyToPurchased(10000, ""));
     }
     @Test
     public void testErrorInShowingBuyListIfUserCreditIsNotEnoughWhenFinalizingPayment() {
-        assertThrows(NotEnoughCreditException.class, () -> baloot.userManager.finalizePayment("user2"));
+        assertThrows(NotEnoughCreditException.class, () -> baloot.userManager.finalizePayment("user2", "", 0));
     }
 
 }

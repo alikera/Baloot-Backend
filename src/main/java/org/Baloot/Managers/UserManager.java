@@ -5,6 +5,7 @@ import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.User;
 import org.Baloot.Exception.*;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -62,7 +63,7 @@ public class UserManager {
         }
         user.increaseCredit(amount);
     }
-    public void finalizePayment(String username) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException {
+    public void finalizePayment(String username, String discountCode, double discountValue) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException {
         User user = Database.findByUsername(username);
         Set<Integer> commoditiesId = user.getBuyList();
         double cost = 0;
@@ -71,7 +72,7 @@ public class UserManager {
             Commodity commodity = Database.findByCommodityId(id);
             cost += commodity.getPrice();
         }
-        user.moveBuyToPurchased(cost);
+        user.moveBuyToPurchased(cost * (1 - discountValue), discountCode);
     }
     public void addCommodityToUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, OutOfStockException, UserNotFoundException, CommodityExistenceException {
         Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));

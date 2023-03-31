@@ -373,7 +373,7 @@ public class RequestHandler {
 
     private Document finalizePayment(String userId) throws IOException {
         try {
-            baloot.userManager.finalizePayment(userId);
+            baloot.userManager.finalizePayment(userId, "", 0);
             return Jsoup.parse(new File("src/main/Templates/CA2/200.html"), "utf-8");
         } catch (UserNotFoundException | CommodityNotFoundException e) {
             return Jsoup.parse(new File("src/main/Templates/CA2/404.html"), "utf-8");

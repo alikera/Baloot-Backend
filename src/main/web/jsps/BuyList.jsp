@@ -17,6 +17,7 @@
   </style>
 </head>
 <body>
+<a href="/">Home</a>
 <ul>
   <%
     Baloot baloot = Baloot.getBaloot();
@@ -37,6 +38,18 @@
     }
   %>
   <li>Current Buy List Price: <%=currentBuyListPrice%></li>
+  <%
+    double discountValue = 0;
+    String discountCode = null;
+    Object discountValueObject = request.getAttribute("discountValue");
+    Object discountCodeObject = request.getAttribute("discountCode");
+    if (discountCodeObject != null) {
+      discountValue = (double) discountValueObject;
+      discountCode = discountCodeObject.toString();
+    }
+  %>
+  <li>Discount: <%=discountValue%></li>
+  <li>Must Pay: <%=(1-discountValue) * currentBuyListPrice%></li>
   <li>
     <a href="${pageContext.request.contextPath}/credit">Add Credit</a>
   </li>
@@ -44,9 +57,16 @@
     <form action="" method="POST">
       <label>Submit & Pay</label>
       <input id="form_payment" type="hidden" name="userId" value=<%=loggedInUser.getUsername()%>>
-      <button type="submit">Payment</button>
+      <input type="hidden" name="discountCode" value=<%=discountCode%>>
+      <input type="hidden" name="discountValue" value=<%=discountValue%>>
+      <button type="submit" name="action" value="pay">Payment</button>
     </form>
   </li>
+  <form action="" method="post">
+    <label>Discount Code:</label>
+    <input type="text" name="code" value="" />
+    <button type="submit" name="action" value="discount">submit</button>
+  </form>
 </ul>
 <table>
   <caption>
@@ -76,7 +96,7 @@
     <td>
       <form action="" method="POST">
         <input id="form_commodity_id" type="hidden" name="commodityId" value="<%=commodity.getId()%>">
-        <button type="submit">Remove</button>
+        <button type="submit" name="action" value="remove">Remove</button>
       </form>
     </td>
   </tr>

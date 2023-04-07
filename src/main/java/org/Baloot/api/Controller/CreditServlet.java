@@ -34,7 +34,7 @@ public class CreditServlet extends HttpServlet {
         try {
             baloot.userManager.addCredit(baloot.userManager.getLoggedInUser().getUsername(), credit);
             response.sendRedirect("/");
-        } catch (UserNotFoundException | NegativeAmountException e) {
+        } catch (UserNotFoundException | NegativeAmountException | NumberFormatException e) {
             ExceptionHandler.setErrorMessage(e.getMessage());
             request.getRequestDispatcher("/jsps/Error.jsp").forward(request, response);
         }

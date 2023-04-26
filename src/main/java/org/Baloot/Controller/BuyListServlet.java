@@ -1,4 +1,4 @@
-package org.Baloot.api.Controller;
+package org.Baloot.Controller;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;

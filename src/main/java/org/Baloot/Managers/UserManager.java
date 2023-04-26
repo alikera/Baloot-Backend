@@ -90,4 +90,20 @@ public class UserManager {
         userFound.removeFromBuyList(Integer.parseInt(commodityId));
         commodityFound.increaseInStock();
     }
+
+    public void login(String username, String password) {
+        try {
+            User user = Database.findByUsername(username);
+            if (Objects.equals(password, user.getPassword())) {
+                System.out.println("True");
+            }
+            else {
+                System.out.println("False");
+            }
+        }
+        catch (UserNotFoundException e) {
+            System.out.println("Not Found");
+        }
+
+    }
 }

@@ -31,9 +31,6 @@ public class Database {
 //        for (DiscountCode discountCode: _discountCodes) {
 //            discountCodes.put(discountCode.getCode(), discountCode.getDiscount());
 //        }
-        for (User user: users) {
-            user.print();
-        }
     }
 
     public static void insertUser(User user) {

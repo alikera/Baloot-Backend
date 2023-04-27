@@ -98,21 +98,14 @@ public class UserManager {
         commodityFound.increaseInStock();
     }
 
-    public User login(String username, String password) {
-        System.out.println(username + " " + password);
-        try {
-            User user = Database.findByUsername(username);
-            if (Objects.equals(password, user.getPassword())) {
-                System.out.println("True");
-                return user;
-            }
-            else {
-                System.out.println("False");
-            }
+    public void login(String username, String password) throws UserNotFoundException, IncorrectPasswordException {
+        User user = Database.findByUsername(username);
+        if (Objects.equals(password, user.getPassword())) {
+            System.out.println("True");
         }
-        catch (UserNotFoundException e) {
-            System.out.println("Not Found");
+        else {
+            System.out.println("False");
+            throw new IncorrectPasswordException("Password is not Correct");
         }
-        return null;
     }
 }

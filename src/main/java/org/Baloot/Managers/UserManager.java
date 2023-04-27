@@ -92,11 +92,13 @@ public class UserManager {
         commodityFound.increaseInStock();
     }
 
-    public void login(String username, String password) {
+    public User login(String username, String password) {
+        System.out.println(username + " " + password);
         try {
             User user = Database.findByUsername(username);
             if (Objects.equals(password, user.getPassword())) {
                 System.out.println("True");
+                return user;
             }
             else {
                 System.out.println("False");
@@ -105,6 +107,6 @@ public class UserManager {
         catch (UserNotFoundException e) {
             System.out.println("Not Found");
         }
-
+        return null;
     }
 }

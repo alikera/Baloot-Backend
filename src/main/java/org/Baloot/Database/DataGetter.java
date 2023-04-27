@@ -17,7 +17,14 @@ public class DataGetter {
     private String getCommentsEndpoint = "comments";
     private String getDiscountCodesEndpoint = "discount";
 
-    public void getDataFromServer() throws IOException {
+    public DataGetter() {
+        try {
+            getDataFromServer();
+        }
+        catch (IOException e) {}
+    }
+
+    private void getDataFromServer() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         HttpClient httpClient = HttpClientBuilder.create().build();
 
@@ -33,13 +40,14 @@ public class DataGetter {
         String commentsData = getRequest(httpClient, getCommentsEndpoint);
         Comment[] comments = mapper.readValue(commentsData, Comment[].class);
 
-        String discountCodesData = getRequest(httpClient, getDiscountCodesEndpoint);
-        DiscountCode[] discountCodes = mapper.readValue(discountCodesData, DiscountCode[].class);
+//        String discountCodesData = getRequest(httpClient, getDiscountCodesEndpoint);
+//        DiscountCode[] discountCodes = mapper.readValue(discountCodesData, DiscountCode[].class);
+        DiscountCode[] discountCodes = null;
 
         Database.insertInitialData(users, providers, commodities, comments, discountCodes);
     }
 
-    public String getRequest(HttpClient httpClient, String address) throws IOException {
+    private String getRequest(HttpClient httpClient, String address) throws IOException {
         HttpGet httpGet = new HttpGet(baseEndpoint + address);
         HttpResponse response = httpClient.execute(httpGet);
 

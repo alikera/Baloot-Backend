@@ -1,5 +1,6 @@
 package org.Baloot;
 
+import org.Baloot.Database.DataGetter;
 import org.Baloot.Database.Database;
 import org.Baloot.Entities.Comment;
 import org.Baloot.Entities.Commodity;

@@ -28,8 +28,11 @@ public class Database {
         commodities.addAll(Arrays.asList(_commodities));
         comments.addAll(Arrays.asList(_comments));
 
-        for (DiscountCode discountCode: _discountCodes) {
-            discountCodes.put(discountCode.getCode(), discountCode.getDiscount());
+//        for (DiscountCode discountCode: _discountCodes) {
+//            discountCodes.put(discountCode.getCode(), discountCode.getDiscount());
+//        }
+        for (User user: users) {
+            user.print();
         }
     }
 

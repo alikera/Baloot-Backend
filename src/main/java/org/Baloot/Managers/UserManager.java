@@ -6,10 +6,7 @@ import org.Baloot.Entities.User;
 import org.Baloot.Exception.*;
 
 import javax.xml.crypto.Data;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +24,15 @@ public class UserManager {
     public UserManager(){
     }
 
+    public void registerNewUser(String username, String password, String email, String address, String date){
+        User newUser = new User(username, password, email, date, address, 0);
+        try {
+            addUser(newUser);
+        }
+        catch (InvalidUsernameException e){
+
+        }
+    }
     public void addUser(User user) throws InvalidUsernameException {
         Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");
         Matcher matcher = pattern.matcher(user.getUsername());

@@ -63,6 +63,7 @@ public class UserManager {
         }
         user.increaseCredit(amount);
     }
+
     public void finalizePayment(String username, String discountCode, double discountValue) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException {
         User user = Database.findByUsername(username);
         Set<Integer> commoditiesId = user.getBuyList();

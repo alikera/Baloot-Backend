@@ -9,6 +9,7 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:8080")
+@RequestMapping("/api/user")
 public class LoginController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public User login(@RequestBody Map<String, String> body) {

@@ -24,14 +24,14 @@ public class UserManager {
     public UserManager(){
     }
 
-    public void registerNewUser(String username, String password, String email, String address, String date){
+    public User registerNewUser(String username, String password, String email, String address, String date){
         User newUser = new User(username, password, email, date, address, 0);
         try {
             addUser(newUser);
         }
         catch (InvalidUsernameException e){
-
         }
+        return newUser;
     }
     public void addUser(User user) throws InvalidUsernameException {
         Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");

@@ -42,7 +42,10 @@ public class DataGetter {
 
 //        String discountCodesData = getRequest(httpClient, getDiscountCodesEndpoint);
 //        DiscountCode[] discountCodes = mapper.readValue(discountCodesData, DiscountCode[].class);
-        DiscountCode[] discountCodes = null;
+        DiscountCode[] discountCodes = new DiscountCode[3];
+        discountCodes[0] = new DiscountCode("XXX", 0.1);
+        discountCodes[1] = new DiscountCode("ALI", 0.3);
+        discountCodes[2] = new DiscountCode("KIR", 0.8);
 
         Database.insertInitialData(users, providers, commodities, comments, discountCodes);
     }

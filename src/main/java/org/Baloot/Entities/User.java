@@ -4,21 +4,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.Baloot.Exception.CommodityExistenceException;
 import org.Baloot.Exception.NotEnoughCreditException;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-public class User {
+import java.util.*;
 
+public class User {
     private String username;
     private String password;
     private String email;
     private Date birthDate;
     private String address;
     private double credit;
-    private Set<Integer> buyList = new HashSet<>();
+    HashMap<Integer, Integer> buyList = new HashMap<>();
     private Set<String> usedDiscountCodes = new HashSet<>();
     private List<Integer> purchasedList = new ArrayList<>();
+    private List<Integer> purchasedCounts = new ArrayList<>();
     public String getUsername() {
         return username;
     }
@@ -46,11 +44,12 @@ public class User {
         return credit;
     }
 
-    public Set<Integer> getBuyList() {
+    public HashMap<Integer, Integer> getBuyList() {
         return buyList;
     }
 
     public List<Integer> getPurchasedList() { return purchasedList; }
+    public List<Integer> getPurchasedCounts() { return purchasedCounts; }
 
     public User(@JsonProperty("username") String _username, @JsonProperty("password") String _password,
                 @JsonProperty("email") String _email, @JsonProperty("birthDate") String _birthDate,
@@ -70,16 +69,17 @@ public class User {
         address = user.getAddress();
         credit = user.getCredit();
     }
-    public void addToBuyList(int commodityId) throws CommodityExistenceException {
-        if(buyList.contains(commodityId)){
-            throw new CommodityExistenceException("Commodity already exists in your BuyList!");
+    public void addToBuyList(int commodityId) {
+        if(buyList.containsKey(commodityId)){
+            int value = buyList.get(commodityId);
+            buyList.put(commodityId, value + 1);
         }
         else {
-            buyList.add(commodityId);
+            buyList.put(commodityId, 1);
         }
     }
     public void removeFromBuyList(int commodityId) throws CommodityExistenceException {
-        if (buyList.contains(commodityId)) {
+        if (buyList.containsKey(commodityId)) {
             buyList.remove(commodityId);
         } else {
             throw new CommodityExistenceException("Commodity does not exists in your BuyList!");
@@ -93,17 +93,19 @@ public class User {
         if (credit < cost) {
             throw new NotEnoughCreditException("Not Enough Credit Exception!");
         }
-        purchasedList.addAll(buyList);
+        for (Integer key: buyList.keySet()) {
+            purchasedList.add(key);
+            purchasedCounts.add(buyList.get(key));
+        }
         buyList.clear();
         credit -= cost;
-        usedDiscountCodes.add(discountCode);
+        if (!Objects.equals(discountCode, "")) {
+            usedDiscountCodes.add(discountCode);
+        }
     }
 
     public boolean isDiscountCodeUsed(String discountCode) {
-        if (usedDiscountCodes.contains(discountCode))
-            return true;
-        else
-            return false;
+        return usedDiscountCodes.contains(discountCode);
     }
 
     public void print() {

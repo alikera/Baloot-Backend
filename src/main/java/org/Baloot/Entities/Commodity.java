@@ -11,7 +11,6 @@ import java.util.*;
 
 public class Commodity {
     HashMap<String, Double> Ratings;
-
     private int id;
     private String name;
     private int providerId;

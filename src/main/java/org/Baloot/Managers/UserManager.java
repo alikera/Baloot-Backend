@@ -48,24 +48,25 @@ public class UserManager {
         }
     }
 
-    public List<Commodity> getUserBuylist(String username) throws UserNotFoundException, CommodityNotFoundException {
+    public HashMap<Commodity, Integer> getUserBuyList(String username) throws UserNotFoundException, CommodityNotFoundException {
         User user = Database.findByUsername(username);
-        Set<Integer> buyListIds = user.getBuyList();
-        List<Commodity> commodities = new ArrayList<>();
-        for (int commodityId : buyListIds) {
+        HashMap<Integer, Integer> buyList = user.getBuyList();
+        HashMap<Commodity, Integer> commodities = new HashMap<>();
+        for (int commodityId: buyList.keySet()) {
             Commodity commodity = Database.findByCommodityId(commodityId);
-            commodities.add(commodity);
+            commodities.put(commodity, buyList.get(commodityId));
         }
         return commodities;
     }
 
-    public List<Commodity> getUserPurchasedList(String username) throws UserNotFoundException, CommodityNotFoundException {
+    public HashMap<Commodity, Integer> getUserPurchasedList(String username) throws UserNotFoundException, CommodityNotFoundException {
         User user = Database.findByUsername(username);
         List<Integer> purchasedListIds = user.getPurchasedList();
-        List<Commodity> commodities = new ArrayList<>();
-        for (int commodityId : purchasedListIds) {
-            Commodity commodity = Database.findByCommodityId(commodityId);
-            commodities.add(commodity);
+        List<Integer> purchasedCounts = user.getPurchasedCounts();
+        HashMap<Commodity, Integer> commodities = new HashMap<>();
+        for (int i = 0; i < purchasedListIds.size(); i++) {
+            Commodity commodity = Database.findByCommodityId(purchasedListIds.get(i));
+            commodities.put(commodity, purchasedCounts.get(i));
         }
         return commodities;
     }
@@ -82,12 +83,13 @@ public class UserManager {
 
     public void finalizePayment(String username, String discountCode, double discountValue) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException {
         User user = Database.findByUsername(username);
-        Set<Integer> commoditiesId = user.getBuyList();
+        HashMap<Integer, Integer> buyList = user.getBuyList();
+        Set<Integer> commoditiesId = buyList.keySet();
         double cost = 0;
 
         for (Integer id: commoditiesId) {
             Commodity commodity = Database.findByCommodityId(id);
-            cost += commodity.getPrice();
+            cost += (commodity.getPrice() * buyList.get(id));
         }
         user.moveBuyToPurchased(cost * (1 - discountValue), discountCode);
     }
@@ -111,6 +113,7 @@ public class UserManager {
     public void login(String username, String password) throws UserNotFoundException, IncorrectPasswordException {
         User user = Database.findByUsername(username);
         if (Objects.equals(password, user.getPassword())) {
+            setLoggedInUser(user);
             System.out.println("True");
         }
         else {

@@ -2,6 +2,7 @@ package org.Baloot.Application;
 
 
 import org.Baloot.Baloot;
+import org.Baloot.Database.Database;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.User;
 import org.Baloot.Exception.*;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,10 +31,10 @@ public class UserController {
     }
 
     @RequestMapping(value = "/buyList/{username}", method = RequestMethod.GET)
-    public ResponseEntity<List<Commodity>> getUserBuyList(@PathVariable String username) {
+    public ResponseEntity<List<Object>> getUserBuyList(@PathVariable String username) {
         try {
-            List<Commodity> commodities= Baloot.getBaloot().userManager.getUserBuylist(username);
-            return ResponseEntity.ok(commodities);
+            HashMap<Commodity, Integer> commoditiesMap = Baloot.getBaloot().userManager.getUserBuyList(username);
+            return ResponseEntity.ok(hashToList(commoditiesMap));
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -40,18 +42,10 @@ public class UserController {
     }
 
     @RequestMapping(value = "/purchasedList/{username}", method = RequestMethod.GET)
-    public ResponseEntity<List<Commodity>> getUserPurchasedList(@PathVariable String username) {
-//        User user = Baloot.getBaloot().getUserByUsername("amir");
-//        Baloot.getBaloot().userManager.addCredit("amir", "40000");
-//        user.addToBuyList(1);
-//        user.addToBuyList(2);
-//        Baloot.getBaloot().userManager.finalizePayment("amir", "", 0);
-//        user.addToBuyList(3);
-//        user.addToBuyList(4);
-//        user.addToBuyList(5);
+    public ResponseEntity<List<Object>> getUserPurchasedList(@PathVariable String username) {
         try {
-            List<Commodity> commodities= Baloot.getBaloot().userManager.getUserPurchasedList(username);
-            return ResponseEntity.ok(commodities);
+            HashMap<Commodity, Integer> commoditiesMap = Baloot.getBaloot().userManager.getUserPurchasedList(username);
+            return ResponseEntity.ok(hashToList(commoditiesMap));
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -73,10 +67,14 @@ public class UserController {
     }
 
     @RequestMapping(value = "/pay/{username}", method = RequestMethod.POST)
-    public ResponseEntity<?> pay(@PathVariable String username) {
-        System.out.println("HERE");
+    public ResponseEntity<?> pay(@PathVariable String username,
+                                 @RequestParam (value = "discountCode") String discountCode,
+                                 @RequestParam (value = "discountValue") String discountValue) {
+        System.out.println(username);
+        System.out.println(discountCode);
+        System.out.println(discountValue);
         try {
-            Baloot.getBaloot().userManager.finalizePayment(username, "", 0);
+            Baloot.getBaloot().userManager.finalizePayment(username, discountCode, Double.parseDouble(discountValue));
             return ResponseEntity.status(HttpStatus.OK).build();
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {
@@ -85,4 +83,33 @@ public class UserController {
             return ResponseEntity.badRequest().body("Not Enough Credit");
         }
     }
+
+    @RequestMapping(value = "/discount", method = RequestMethod.GET)
+    public ResponseEntity<?> applyDiscount(@RequestParam (value = "code") String discountCode) {
+        System.out.println(discountCode);
+        try {
+            if (Baloot.getBaloot().userManager.getLoggedInUser().isDiscountCodeUsed(discountCode)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            } else {
+                double discountValue = Database.getDiscountFromCode(discountCode);
+                return ResponseEntity.ok(discountValue);
+            }
+        } catch (DiscountCodeNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    private List<Object> hashToList(HashMap<Commodity, Integer> commoditiesMap) {
+        List<Object> commoditiesList = new ArrayList<>();
+        for (Map.Entry<Commodity, Integer> entry : commoditiesMap.entrySet()) {
+            Commodity commodity = entry.getKey();
+            Integer quantity = entry.getValue();
+            Map<String, Object> commodityInfo = new HashMap<>();
+            commodityInfo.put("info", commodity);
+            commodityInfo.put("quantity", quantity.hashCode());
+            commoditiesList.add(commodityInfo);
+        }
+        return commoditiesList;
+    }
 }
+

@@ -44,6 +44,7 @@ public class CommodityManager {
         for (Commodity commodity : Database.getCommodities()) {
             if (commodity.getName().toLowerCase().startsWith(name.toLowerCase())) {
                 filteredCommodities.add(commodity);
+                System.out.println("here");
             }
         }
         return filteredCommodities;
@@ -55,6 +56,15 @@ public class CommodityManager {
     }
     public void getSortedCommoditiesByRating(List<Commodity> _commodities){
         _commodities.sort(Comparator.comparingDouble(Commodity::getRating));
+    }
+    public List<Commodity> getAvailableCommodities(List<Commodity> _commodities){
+        List<Commodity> filteredCommodities = new ArrayList<>();
+        for(Commodity commodity : _commodities){
+            if(commodity.getInStock() > 0){
+                filteredCommodities.add(commodity);
+            }
+        }
+        return filteredCommodities;
     }
 //
 //    public List<Commodity> getSuggestedCommodities(Commodity currentCommodity ,Set<String> categories){

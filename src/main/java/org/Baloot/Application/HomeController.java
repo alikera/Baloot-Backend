@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +19,18 @@ import java.util.Map;
 @RequestMapping("/api")
 public class HomeController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ResponseEntity<?> getCommodities(@RequestParam(value = "search") String search, @RequestParam(value = "option") String option) {
+    public ResponseEntity<?> getCommodities(@RequestParam(value = "search") String search, @RequestParam(value = "option") String option,
+                                            @RequestParam(value = "available") Boolean available, @RequestParam(value = "sort") String sortBy,
+                                            @RequestParam(value = "page", defaultValue = "0") int page) {
 
         System.out.println(search);
         System.out.println(option);
-        List<Commodity> commodities = null;
+        System.out.println(available);
+        System.out.println(page);
+        System.out.println(sortBy);
+        System.out.println("\n");
+
+        List<Commodity> commodities = Baloot.getBaloot().getCommodities();
         if(option.equals("category")) {
             commodities = Baloot.getBaloot().commodityManager.getCommoditiesByCategory(search);
             System.out.println(commodities.size());
@@ -30,7 +38,27 @@ public class HomeController {
         else if (option.equals("name")) {
             commodities = Baloot.getBaloot().commodityManager.getCommoditiesByName(search);
         }
-        return ResponseEntity.ok(commodities);
+        if(available){
+            commodities = Baloot.getBaloot().commodityManager.getAvailableCommodities(commodities);
+        }
+
+        page = page -1;
+        int size = 12;
+        int totalItems = commodities.size();
+        int totalPages = (int) Math.ceil((double) totalItems / size);
+
+        if (page < 0 || page >= totalPages) {
+            return ResponseEntity.badRequest().build();
+        }
+        int startIndex = page * size;
+        int endIndex = Math.min(startIndex + size, totalItems);
+
+        commodities = commodities.subList(startIndex, endIndex);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("commodities", commodities);
+        responseMap.put("totalPages", totalPages);
+
+        return ResponseEntity.ok(responseMap);
     }
 
 }

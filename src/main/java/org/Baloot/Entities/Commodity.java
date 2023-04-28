@@ -77,7 +77,7 @@ public class Commodity {
     }
     public boolean isInCategoryGiven(String category){
         for(String cat : categories){
-            if(Objects.equals(category, cat)){
+            if(cat.equalsIgnoreCase(category)){
                 return true;
             }
         }

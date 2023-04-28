@@ -2,17 +2,14 @@ package org.Baloot.Application;
 
 import org.Baloot.Baloot;
 import org.Baloot.Entities.Commodity;
-import org.Baloot.Entities.Date;
-import org.Baloot.Entities.User;
-import org.Baloot.Exception.IncorrectPasswordException;
-import org.Baloot.Exception.UserNotFoundException;
-import org.springframework.http.HttpStatus;
+import org.Baloot.Exception.ProviderNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -37,11 +34,21 @@ public class HomeController {
         }
         else if (option.equals("name")) {
             commodities = Baloot.getBaloot().commodityManager.getCommoditiesByName(search);
+        } else if (option.equals("provider")) {
+            try {
+                commodities = Baloot.getBaloot().commodityManager.getCommoditiesByProvider(search);
+            }catch (ProviderNotFoundException e){
+
+            }
         }
         if(available){
             commodities = Baloot.getBaloot().commodityManager.getAvailableCommodities(commodities);
         }
-
+        if (Objects.equals(sortBy, "name")) {
+            Baloot.getBaloot().commodityManager.getSortedCommoditiesByName(commodities);
+        } else if (Objects.equals(sortBy, "price")) {
+            Baloot.getBaloot().commodityManager.getSortedCommoditiesByPrice(commodities);
+        }
         page = page -1;
         int size = 12;
         int totalItems = commodities.size();

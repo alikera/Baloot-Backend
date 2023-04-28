@@ -1,6 +1,7 @@
 package org.Baloot.Managers;
 
 //import kotlin.Pair;
+import org.Baloot.Baloot;
 import org.Baloot.Database.Database;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.Provider;
@@ -49,6 +50,16 @@ public class CommodityManager {
         }
         return filteredCommodities;
     }
+
+    public List<Commodity> getCommoditiesByProvider(String name) throws ProviderNotFoundException {
+        List<Commodity> filteredCommodities = new ArrayList<>();
+        for (Commodity commodity : Database.getCommodities()) {
+            if (Baloot.getBaloot().getProviderById(commodity.getProviderId()).getName().equals(name)) {
+                filteredCommodities.add(commodity);
+            }
+        }
+        return filteredCommodities;
+    }
     public void rateCommodity(String userId, String commodityId, String rate) throws CommodityNotFoundException, UserNotFoundException, InvalidRatingException, NumberFormatException {
         Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
         User userFound = Database.findByUsername(userId);
@@ -56,6 +67,12 @@ public class CommodityManager {
     }
     public void getSortedCommoditiesByRating(List<Commodity> _commodities){
         _commodities.sort(Comparator.comparingDouble(Commodity::getRating));
+    }
+    public void getSortedCommoditiesByName(List<Commodity> _commodities){
+        _commodities.sort(Comparator.comparing(Commodity::getName));
+    }
+    public void getSortedCommoditiesByPrice(List<Commodity> _commodities){
+        _commodities.sort(Comparator.comparing(Commodity::getPrice));
     }
     public List<Commodity> getAvailableCommodities(List<Commodity> _commodities){
         List<Commodity> filteredCommodities = new ArrayList<>();

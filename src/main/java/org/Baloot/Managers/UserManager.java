@@ -24,22 +24,21 @@ public class UserManager {
     public UserManager(){
     }
 
-    public User registerNewUser(String username, String password, String email, String address, String date){
+    public void registerNewUser(String username, String password, String email, String address, String date) throws DuplicateUsernameException{
         User newUser = new User(username, password, email, date, address, 0);
         try {
             addUser(newUser);
         }
         catch (InvalidUsernameException e){
         }
-        return newUser;
     }
-    public void addUser(User user) throws InvalidUsernameException {
+    public void addUser(User user) throws InvalidUsernameException , DuplicateUsernameException{
         Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");
         Matcher matcher = pattern.matcher(user.getUsername());
         try {
             if (matcher.matches()) {
                 User foundUser = Database.findByUsername(user.getUsername());
-                foundUser.modifyFields(user);
+                throw new DuplicateUsernameException("Username already exists");
             } else {
                 throw new InvalidUsernameException("Invalid Username!");
             }
@@ -54,6 +53,17 @@ public class UserManager {
         Set<Integer> buyListIds = user.getBuyList();
         List<Commodity> commodities = new ArrayList<>();
         for (int commodityId : buyListIds) {
+            Commodity commodity = Database.findByCommodityId(commodityId);
+            commodities.add(commodity);
+        }
+        return commodities;
+    }
+
+    public List<Commodity> getUserPurchasedList(String username) throws UserNotFoundException, CommodityNotFoundException {
+        User user = Database.findByUsername(username);
+        List<Integer> purchasedListIds = user.getPurchasedList();
+        List<Commodity> commodities = new ArrayList<>();
+        for (int commodityId : purchasedListIds) {
             Commodity commodity = Database.findByCommodityId(commodityId);
             commodities.add(commodity);
         }

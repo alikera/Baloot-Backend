@@ -69,12 +69,22 @@ public class UserController {
     @RequestMapping(value = "/pay/{username}", method = RequestMethod.POST)
     public ResponseEntity<?> pay(@PathVariable String username,
                                  @RequestParam (value = "discountCode") String discountCode,
-                                 @RequestParam (value = "discountValue") String discountValue) {
+                                 @RequestParam (value = "discountValue") String discountValue,
+                                 @RequestBody Map<String, List<String>> requestBody) {
         System.out.println(username);
         System.out.println(discountCode);
         System.out.println(discountValue);
+
+        List<String> keys = requestBody.get("keys");
+        List<String> values = requestBody.get("values");
+        Map<Integer, Integer> commodityCounts = new HashMap<>();
+
+        for(int i=0; i<keys.size(); i++) {
+            Map<Integer, Integer> map = new HashMap<>();
+            commodityCounts.put(Integer.parseInt(keys.get(i)), Integer.parseInt(values.get(i)));
+        }
         try {
-            Baloot.getBaloot().userManager.finalizePayment(username, discountCode, Double.parseDouble(discountValue));
+            Baloot.getBaloot().userManager.finalizePayment(username, discountCode, Double.parseDouble(discountValue), commodityCounts);
             return ResponseEntity.status(HttpStatus.OK).build();
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {

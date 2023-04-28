@@ -104,6 +104,16 @@ public class User {
         }
     }
 
+    public void updateBuyListQuantities(Map<Integer, Integer> commodityCounts) {
+        if (commodityCounts == null)
+            return;
+        for (Map.Entry<Integer, Integer> entry : commodityCounts.entrySet()) {
+            Integer id = entry.getKey();
+            Integer quantity = entry.getValue();
+            buyList.put(id, quantity);
+        }
+    }
+
     public boolean isDiscountCodeUsed(String discountCode) {
         return usedDiscountCodes.contains(discountCode);
     }

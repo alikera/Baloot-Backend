@@ -81,8 +81,9 @@ public class UserManager {
         user.increaseCredit(amount);
     }
 
-    public void finalizePayment(String username, String discountCode, double discountValue) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException {
+    public void finalizePayment(String username, String discountCode, double discountValue, Map<Integer, Integer> commodityCounts) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException {
         User user = Database.findByUsername(username);
+        user.updateBuyListQuantities(commodityCounts);
         HashMap<Integer, Integer> buyList = user.getBuyList();
         Set<Integer> commoditiesId = buyList.keySet();
         double cost = 0;

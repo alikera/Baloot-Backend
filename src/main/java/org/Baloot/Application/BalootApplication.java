@@ -17,7 +17,7 @@ public class BalootApplication {
         Baloot.getBaloot().userManager.addCredit("amir", "40000");
         user.addToBuyList(1);
         user.addToBuyList(2);
-        Baloot.getBaloot().userManager.finalizePayment("amir", "", 0);
+        Baloot.getBaloot().userManager.finalizePayment("amir", "", 0, null);
         user.addToBuyList(3);
         user.addToBuyList(4);
         user.addToBuyList(5);

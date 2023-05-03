@@ -45,7 +45,6 @@ public class CommodityManager {
         for (Commodity commodity : Database.getCommodities()) {
             if (commodity.getName().toLowerCase().startsWith(name.toLowerCase())) {
                 filteredCommodities.add(commodity);
-                System.out.println("here");
             }
         }
         return filteredCommodities;

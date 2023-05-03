@@ -31,6 +31,13 @@ public class Database {
         for (DiscountCode discountCode: _discountCodes) {
             discountCodes.put(discountCode.getCode(), discountCode.getDiscount());
         }
+        for (Commodity commodity : commodities){
+            try {
+                addToProviderCommodityList(commodity);
+            }catch (ProviderNotFoundException e){
+
+            }
+        }
     }
 
     public static void insertUser(User user) {
@@ -50,7 +57,7 @@ public class Database {
 
     public static void addToProviderCommodityList(Commodity commodity) throws ProviderNotFoundException {
         for(Provider provider : providers){
-            if(Objects.equals(provider.getId(), commodity.getProviderId())){
+            if(provider.getId() == commodity.getProviderId()){
                 provider.addToCommodities(commodity);
                 return;
             }

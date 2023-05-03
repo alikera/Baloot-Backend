@@ -12,8 +12,8 @@ import java.io.IOException;
 public class DataGetter {
     private String baseEndpoint = "http://5.253.25.110:5000/api/";
     private String getUsersEndpoint = "users";
-    private String getCommoditiesEndpoint = "commodities";
-    private String getProvidersEndpoint = "providers";
+    private String getCommoditiesEndpoint = "v2/commodities";
+    private String getProvidersEndpoint = "v2/providers";
     private String getCommentsEndpoint = "comments";
     private String getDiscountCodesEndpoint = "discount";
 

@@ -20,12 +20,12 @@ public class HomeController {
                                             @RequestParam(value = "available") Boolean available, @RequestParam(value = "sort") String sortBy,
                                             @RequestParam(value = "page", defaultValue = "0") int page) {
 
-        System.out.println(search);
-        System.out.println(option);
-        System.out.println(available);
-        System.out.println(page);
-        System.out.println(sortBy);
-        System.out.println("\n");
+//        System.out.println(search);
+//        System.out.println(option);
+//        System.out.println(available);
+//        System.out.println(page);
+//        System.out.println(sortBy);
+//        System.out.println("\n");
 
         List<Commodity> commodities = Baloot.getBaloot().getCommodities();
         if(option.equals("category")) {

@@ -10,7 +10,8 @@ public class Provider {
     private String name;
     private Date registryDate;
 
-    private List<Commodity> myCommodities = new ArrayList<>();
+    private List<Commodity> myCommodities;
+    private String image;
 
     public int getId() {
         return id;
@@ -23,9 +24,13 @@ public class Provider {
     public String getRegistryDate() {
         return registryDate.getAsString();
     }
-
+    public Date getDate(){return registryDate;}
     public List<Commodity> getMyCommodities() {
         return myCommodities;
+    }
+
+    public String getImage() {
+        return image;
     }
 
     public double getAverageRatingCommodities() {
@@ -40,10 +45,13 @@ public class Provider {
     }
     public Provider(@JsonProperty("id") int _id,
                     @JsonProperty("name") String _name,
-                    @JsonProperty("registryDate") String _registryDate) {
+                    @JsonProperty("registryDate") String _registryDate,
+                    @JsonProperty("image") String _image) {
         this.id = _id;
         this.name = _name;
         this.registryDate = new Date(_registryDate);
+        myCommodities = new ArrayList<>();
+        this.image = _image;
     }
 
     public void print() {

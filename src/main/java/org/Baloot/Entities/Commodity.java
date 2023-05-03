@@ -18,6 +18,7 @@ public class Commodity {
     private Set<String> categories;
     private double rating;
     private int inStock;
+    private String image;
 
     public int getId() {
         return id;
@@ -45,6 +46,7 @@ public class Commodity {
 
     public double getRating() { return rating; }
 
+    public String getImage(){return image;}
     public int getCountOfRatings(){ return Ratings.size(); }
     public void decreaseInStock(){
         inStock--;
@@ -64,7 +66,7 @@ public class Commodity {
     public Commodity(@JsonProperty ("id") int _id, @JsonProperty ("name") String _name,
                      @JsonProperty ("providerId") int _providerId, @JsonProperty ("price") double _price,
                      @JsonProperty ("categories") List<String> _categories, @JsonProperty ("rating") double _rating,
-                     @JsonProperty ("inStock") int _inStock) {
+                     @JsonProperty ("inStock") int _inStock,@JsonProperty("image") String _image) {
         id = _id;
         name = _name;
         providerId = _providerId;
@@ -73,6 +75,7 @@ public class Commodity {
         rating = _rating;
         inStock = _inStock;
         Ratings = new HashMap<>();
+        image = _image;
     }
     public boolean isInCategoryGiven(String category){
         for(String cat : categories){

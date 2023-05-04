@@ -3,6 +3,7 @@ package org.Baloot.Managers;
 //import kotlin.Pair;
 import org.Baloot.Baloot;
 import org.Baloot.Database.Database;
+import org.Baloot.Entities.Comment;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.Provider;
 import org.Baloot.Entities.User;
@@ -122,5 +123,16 @@ public class CommodityManager {
                 score += 11;
         }
         return score;
+    }
+
+    public List<Comment> getCommentsOfCommodity(int id) {
+        List<Comment> comments = Database.getComments();
+        List<Comment> commodityComments = new ArrayList<>();
+        for (Comment comment: comments) {
+            if (id == comment.getCommodityId()) {
+                commodityComments.add(comment);
+            }
+        }
+        return commodityComments;
     }
 }

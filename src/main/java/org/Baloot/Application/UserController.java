@@ -71,9 +71,6 @@ public class UserController {
                                  @RequestParam (value = "discountCode") String discountCode,
                                  @RequestParam (value = "discountValue") String discountValue,
                                  @RequestBody Map<String, List<String>> requestBody) {
-        System.out.println(username);
-        System.out.println(discountCode);
-        System.out.println(discountValue);
 
         List<String> keys = requestBody.get("keys");
         List<String> values = requestBody.get("values");
@@ -96,7 +93,6 @@ public class UserController {
 
     @RequestMapping(value = "/discount", method = RequestMethod.GET)
     public ResponseEntity<?> applyDiscount(@RequestParam (value = "code") String discountCode) {
-        System.out.println(discountCode);
         try {
             if (Baloot.getBaloot().userManager.getLoggedInUser().isDiscountCodeUsed(discountCode)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

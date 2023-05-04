@@ -1,5 +1,6 @@
 package org.Baloot.Database;
 
+import org.Baloot.Baloot;
 import org.Baloot.Entities.*;
 import org.Baloot.Exception.CommodityNotFoundException;
 import org.Baloot.Exception.DiscountCodeNotFoundException;

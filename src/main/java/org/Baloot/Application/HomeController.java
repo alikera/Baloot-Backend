@@ -1,11 +1,18 @@
 package org.Baloot.Application;
 
 import org.Baloot.Baloot;
+import org.Baloot.Database.Database;
+import org.Baloot.Entities.Comment;
 import org.Baloot.Entities.Commodity;
+import org.Baloot.Entities.Provider;
+import org.Baloot.Exception.CommodityNotFoundException;
+import org.Baloot.Exception.DiscountCodeNotFoundException;
 import org.Baloot.Exception.ProviderNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,5 +74,22 @@ public class HomeController {
 
         return ResponseEntity.ok(responseMap);
     }
-
+    @RequestMapping(value = "/commodity/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getCommodity(@PathVariable (value = "id") String id) {
+        try {
+            System.out.println(id);
+            Commodity commodity = Database.findByCommodityId(Integer.parseInt(id));
+            List<Comment> comments = Baloot.getBaloot().commodityManager.getCommentsOfCommodity(Integer.parseInt(id));
+            String providerName = Baloot.getBaloot().getProviderById(commodity.getProviderId()).getName();
+            HashMap<String, Object> response = new HashMap<>();
+            response.put("info", commodity);
+            response.put("comments", comments);
+            response.put("providerName", providerName);
+            return ResponseEntity.ok(response);
+        } catch (CommodityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
 }

@@ -4,15 +4,11 @@ import org.Baloot.Baloot;
 import org.Baloot.Database.Database;
 import org.Baloot.Entities.Comment;
 import org.Baloot.Entities.Commodity;
-import org.Baloot.Entities.Date;
-import org.Baloot.Entities.Provider;
 import org.Baloot.Exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -77,14 +73,18 @@ public class HomeController {
         try {
             int cartCounter = Baloot.getBaloot().userManager.getUserBuyList(username).keySet().size();
             responseMap.put("cartCount", cartCounter);
+            HashMap<Integer, Integer> userBuylist = Baloot.getBaloot().getUserByUsername(username).getBuyList();
+            responseMap.put("buylist", userBuylist);
+            System.out.println(userBuylist.size());
             return ResponseEntity.ok(responseMap);
         }
         catch (UserNotFoundException | CommodityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-    @RequestMapping(value = "/commodity/{id}", method = RequestMethod.GET)
-    public ResponseEntity<?> getCommodity(@PathVariable (value = "id") String id) {
+    @RequestMapping(value = "/commodity/{id}/{username}", method = RequestMethod.GET)
+    public ResponseEntity<?> getCommodity(@PathVariable (value = "id") String id,
+                                          @PathVariable (value = "username") String username) {
         try {
             Commodity commodity = Database.findByCommodityId(Integer.parseInt(id));
             List<Comment> comments = Baloot.getBaloot().commodityManager.getCommentsOfCommodity(Integer.parseInt(id));
@@ -95,6 +95,9 @@ public class HomeController {
             response.put("comments", comments);
             response.put("providerName", providerName);
             response.put("suggested", suggestedCommodities);
+            HashMap<Integer, Integer> userBuyList = Baloot.getBaloot().getUserByUsername(username).getBuyList();
+
+            response.put("buyList", userBuyList);
             return ResponseEntity.ok(response);
         } catch (CommodityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

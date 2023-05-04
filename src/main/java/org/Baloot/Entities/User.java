@@ -80,7 +80,13 @@ public class User {
     }
     public void removeFromBuyList(int commodityId) throws CommodityExistenceException {
         if (buyList.containsKey(commodityId)) {
-            buyList.remove(commodityId);
+            int value = buyList.get(commodityId);
+            if(value == 1){
+                buyList.remove(commodityId);
+            }
+            else {
+                buyList.put(commodityId, value - 1);
+            }
         } else {
             throw new CommodityExistenceException("Commodity does not exists in your BuyList!");
         }

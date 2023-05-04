@@ -18,6 +18,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/user")
+
 public class UserController {
     @RequestMapping(value = "/{username}", method = RequestMethod.GET)
     public ResponseEntity<User> getUserPage(@PathVariable String username) {
@@ -42,6 +43,29 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+    @RequestMapping(value = "/buyList/{username}", method = RequestMethod.PUT)
+    public ResponseEntity<?> modifyUserBuyList(@PathVariable String username,
+                                            @RequestBody Map<String, String> body) {
+        try {
+            String commodityId = body.get("commodityId");
+            int count = Integer.parseInt(body.get("count"));
+
+            System.out.println(count);
+            if(count == 1){
+                Baloot.getBaloot().userManager.addCommodityToUserBuyList(username, commodityId);
+            } else if (count == -1) {
+                Baloot.getBaloot().userManager.removeCommodityFromUserBuyList(username, commodityId);
+            }
+            Commodity commodity = Baloot.getBaloot().getCommodityById(Integer.parseInt(commodityId));
+            return ResponseEntity.ok(commodity.getInStock());
+        }
+        catch (UserNotFoundException | CommodityNotFoundException | CommodityExistenceException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (OutOfStockException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
 
     @RequestMapping(value = "/purchasedList/{username}", method = RequestMethod.GET)
     public ResponseEntity<List<Object>> getUserPurchasedList(@PathVariable String username) {

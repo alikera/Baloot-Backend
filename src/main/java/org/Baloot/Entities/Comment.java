@@ -32,8 +32,21 @@ public class Comment {
     public String getDate() {
         return date;
     }
-    public void voteComment(String username, int vote) {
-        votes.put(username, vote);
+    public int voteComment(String username, int vote) {
+        if (votes.containsKey(username)) {
+            if (votes.get(username) == vote) {
+                return 0;
+            }
+            else {
+                votes.put(username, vote);
+                return -1;
+            }
+        }
+        else {
+            votes.put(username, vote);
+            return 1;
+        }
+
     }
     public int getLikes(){
         int likesCounter = 0;

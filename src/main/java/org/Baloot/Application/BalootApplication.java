@@ -20,7 +20,6 @@ public class BalootApplication {
         Baloot.getBaloot().userManager.finalizePayment("amir", "", 0, null);
         user.addToBuyList(3);
         user.addToBuyList(4);
-        user.addToBuyList(5);
         SpringApplication.run(BalootApplication.class, args);
     }
 }

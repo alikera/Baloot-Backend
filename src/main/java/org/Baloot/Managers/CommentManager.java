@@ -25,7 +25,7 @@ public class CommentManager {
         }
         return filteredComments;
     }
-    public void voteComment(String userId, String commodityId, String commentId, String vote) throws UserNotFoundException, CommodityNotFoundException, InvalidVoteException {
+    public int voteComment(String userId, String commodityId, String commentId, String vote) throws UserNotFoundException, CommodityNotFoundException, InvalidVoteException {
         if (!Objects.equals(vote, "0") && !Objects.equals(vote, "1") && !Objects.equals(vote, "-1")) {
             throw new InvalidVoteException("Invalid Vote");
         }
@@ -34,8 +34,9 @@ public class CommentManager {
         System.out.println(userId);
         for (Comment comment : Database.getComments()){
             if(comment.getId() == Integer.parseInt(commentId)){
-                comment.voteComment(userId, Integer.parseInt(vote));
+                return comment.voteComment(userId, Integer.parseInt(vote));
             }
         }
+        throw new CommodityNotFoundException("");
     }
 }

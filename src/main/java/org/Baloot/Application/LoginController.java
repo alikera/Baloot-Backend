@@ -20,7 +20,7 @@ public class LoginController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         String username = body.get("username");
         String password = body.get("password");
-
+        System.out.println("here");
         try {
             Baloot.getBaloot().userManager.login(username, password);
             return ResponseEntity.status(HttpStatus.OK).build();
@@ -41,6 +41,7 @@ public class LoginController {
         String email = body.get("email");
         String address = body.get("address");
         String date = body.get("birthDate");
+        System.out.println(username+ password+email+ address+ date);
         try {
             Baloot.getBaloot().userManager.registerNewUser(username, password, email, address, date);
             return ResponseEntity.status(HttpStatus.OK).build();

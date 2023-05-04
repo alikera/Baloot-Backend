@@ -55,7 +55,6 @@ public class UserManager {
         for (int commodityId: buyList.keySet()) {
             Commodity commodity = Database.findByCommodityId(commodityId);
             commodities.put(commodity, buyList.get(commodityId));
-            System.out.println("X");
         }
         return commodities;
     }

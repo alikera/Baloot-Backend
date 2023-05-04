@@ -27,7 +27,7 @@ public class HomeController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<?> getCommodities(@RequestParam(value = "search") String search, @RequestParam(value = "option") String option,
                                             @RequestParam(value = "available") Boolean available, @RequestParam(value = "sort") String sortBy,
-                                            @RequestParam(value = "page", defaultValue = "0") int page) {
+                                            @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "username") String username) {
 
 //        System.out.println(search);
 //        System.out.println(option);
@@ -74,7 +74,14 @@ public class HomeController {
         responseMap.put("commodities", commodities);
         responseMap.put("totalPages", totalPages);
 
-        return ResponseEntity.ok(responseMap);
+        try {
+            int cartCounter = Baloot.getBaloot().userManager.getUserBuyList(username).keySet().size();
+            responseMap.put("cartCount", cartCounter);
+            return ResponseEntity.ok(responseMap);
+        }
+        catch (UserNotFoundException | CommodityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
     @RequestMapping(value = "/commodity/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getCommodity(@PathVariable (value = "id") String id) {

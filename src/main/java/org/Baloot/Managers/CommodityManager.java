@@ -14,6 +14,23 @@ import org.Baloot.Exception.UserNotFoundException;
 import java.util.*;
 
 public class CommodityManager {
+    public static class CommodityScore {
+        private Commodity commodity;
+        private double score;
+
+        public CommodityScore(Commodity commodity, double score) {
+            this.commodity = commodity;
+            this.score = score;
+        }
+
+        public Commodity getCommodity() {
+            return commodity;
+        }
+
+        public double getScore() {
+            return score;
+        }
+    }
     public CommodityManager(){
     }
     public void addCommodity(Commodity commodity) throws ProviderNotFoundException {
@@ -82,23 +99,23 @@ public class CommodityManager {
         }
         return filteredCommodities;
     }
-//
-//    public List<Commodity> getSuggestedCommodities(Commodity currentCommodity ,Set<String> categories){
-//        List<Pair<Commodity, Double>> weightedCommodities = new ArrayList<>();
-//        for (Commodity commodity : Database.getCommodities()) {
-//            if(currentCommodity.getId() != commodity.getId()) {
-//                double score = calculateScoreForSuggestingCommodities(commodity, categories);
-//                weightedCommodities.add(new Pair<>(commodity, score));
-//            }
-//        }
-//        weightedCommodities.sort(Comparator.comparing(p -> -p.getSecond()));
-//        List<Commodity> filteredCommodities = new ArrayList<>();
-//        for (int i = 0; i < 5; i++) {
-//            filteredCommodities.add(weightedCommodities.get(i).getFirst());
-//        }
-//
-//        return filteredCommodities;
-//    }
+
+    public List<Commodity> getSuggestedCommodities(Commodity currentCommodity, Set<String> categories) {
+        List<CommodityScore> weightedCommodities = new ArrayList<>();
+        for (Commodity commodity : Database.getCommodities()) {
+            if (currentCommodity.getId() != commodity.getId()) {
+                double score = calculateScoreForSuggestingCommodities(commodity, categories);
+                weightedCommodities.add(new CommodityScore(commodity, score));
+            }
+        }
+        weightedCommodities.sort(Comparator.comparing(cs -> -cs.getScore()));
+        List<Commodity> filteredCommodities = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            filteredCommodities.add(weightedCommodities.get(i).getCommodity());
+        }
+
+        return filteredCommodities;
+    }
     private double calculateScoreForSuggestingCommodities(Commodity commodity, Set<String> categories){
         double score = commodity.getRating();
         if(commodity.getCategories().equals(categories)){

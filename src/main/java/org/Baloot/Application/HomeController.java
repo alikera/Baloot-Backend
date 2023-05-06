@@ -96,7 +96,7 @@ public class HomeController {
             response.put("providerName", providerName);
             response.put("suggested", suggestedCommodities);
             HashMap<Integer, Integer> userBuyList = Baloot.getBaloot().getUserByUsername(username).getBuyList();
-
+            response.put("cartCount", userBuyList.keySet().size());
             response.put("buyList", userBuyList);
             return ResponseEntity.ok(response);
         } catch (CommodityNotFoundException e) {

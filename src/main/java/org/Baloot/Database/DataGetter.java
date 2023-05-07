@@ -40,12 +40,8 @@ public class DataGetter {
         String commentsData = getRequest(httpClient, getCommentsEndpoint);
         Comment[] comments = mapper.readValue(commentsData, Comment[].class);
 
-//        String discountCodesData = getRequest(httpClient, getDiscountCodesEndpoint);
-//        DiscountCode[] discountCodes = mapper.readValue(discountCodesData, DiscountCode[].class);
-        DiscountCode[] discountCodes = new DiscountCode[3];
-        discountCodes[0] = new DiscountCode("XXX", 0.1);
-        discountCodes[1] = new DiscountCode("ALI", 0.3);
-        discountCodes[2] = new DiscountCode("KIR", 0.8);
+        String discountCodesData = getRequest(httpClient, getDiscountCodesEndpoint);
+        DiscountCode[] discountCodes = mapper.readValue(discountCodesData, DiscountCode[].class);
 
         Database.insertInitialData(users, providers, commodities, comments, discountCodes);
     }

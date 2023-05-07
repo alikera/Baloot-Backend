@@ -71,7 +71,8 @@ public class CommodityManager {
     public List<Commodity> getCommoditiesByProvider(String name) throws ProviderNotFoundException {
         List<Commodity> filteredCommodities = new ArrayList<>();
         for (Commodity commodity : Database.getCommodities()) {
-            if (Baloot.getBaloot().getProviderById(commodity.getProviderId()).getName().equals(name)) {
+            System.out.println(Baloot.getBaloot().getProviderById(commodity.getProviderId()).getName());
+            if ((Baloot.getBaloot().getProviderById(commodity.getProviderId()).getName()).equals(name)) {
                 filteredCommodities.add(commodity);
             }
         }
@@ -111,7 +112,7 @@ public class CommodityManager {
         }
         weightedCommodities.sort(Comparator.comparing(cs -> -cs.getScore()));
         List<Commodity> filteredCommodities = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 4; i++) {
             filteredCommodities.add(weightedCommodities.get(i).getCommodity());
         }
 

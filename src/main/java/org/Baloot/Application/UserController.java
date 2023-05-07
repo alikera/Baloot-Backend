@@ -118,16 +118,19 @@ public class UserController {
     }
 
     @RequestMapping(value = "/discount", method = RequestMethod.GET)
-    public ResponseEntity<?> applyDiscount(@RequestParam (value = "code") String discountCode) {
+    public ResponseEntity<?> applyDiscount(@RequestParam (value = "code") String discountCode,
+                                           @RequestParam (value = "username") String username) {
         try {
-            if (Baloot.getBaloot().userManager.getLoggedInUser().isDiscountCodeUsed(discountCode)) {
+            if (Baloot.getBaloot().getUserByUsername(username).isDiscountCodeUsed(discountCode)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             } else {
                 double discountValue = Database.getDiscountFromCode(discountCode);
                 return ResponseEntity.ok(discountValue);
             }
         } catch (DiscountCodeNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.notFound().build();
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 

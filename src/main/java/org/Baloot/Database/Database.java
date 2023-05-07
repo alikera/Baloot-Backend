@@ -30,7 +30,7 @@ public class Database {
         comments.addAll(Arrays.asList(_comments));
 
         for (DiscountCode discountCode: _discountCodes) {
-            discountCodes.put(discountCode.getCode(), discountCode.getDiscount());
+            discountCodes.put(discountCode.getCode(), discountCode.getDiscount()/100);
         }
         for (Commodity commodity : commodities){
             try {

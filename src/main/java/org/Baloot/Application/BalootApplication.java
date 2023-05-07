@@ -13,13 +13,6 @@ import org.springframework.context.annotation.ComponentScan;
 public class BalootApplication {
     public static void main(String[] args) throws UserNotFoundException, NegativeAmountException, CommodityExistenceException, CommodityNotFoundException, NotEnoughCreditException {
         DataGetter dataGetter = new DataGetter();
-//        User user = Baloot.getBaloot().getUserByUsername("amir");
-//        Baloot.getBaloot().userManager.addCredit("amir", "40000");
-//        user.addToBuyList(1);
-//        user.addToBuyList(2);
-//        Baloot.getBaloot().userManager.finalizePayment("amir", "", 0, null);
-//        user.addToBuyList(3);
-//        user.addToBuyList(4);
         SpringApplication.run(BalootApplication.class, args);
     }
 }

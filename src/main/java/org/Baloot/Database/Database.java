@@ -6,7 +6,12 @@ import org.Baloot.Exception.CommodityNotFoundException;
 import org.Baloot.Exception.DiscountCodeNotFoundException;
 import org.Baloot.Exception.ProviderNotFoundException;
 import org.Baloot.Exception.UserNotFoundException;
+import org.Baloot.Repository.ConnectionPool;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 public class Database {
@@ -23,12 +28,22 @@ public class Database {
 
 
     public static void insertInitialData(User[] _users, Provider[] _providers, Commodity[] _commodities,
-                                         Comment[] _comments, DiscountCode[] _discountCodes) {
+                                         Comment[] _comments, DiscountCode[] _discountCodes) throws SQLException {
         users.addAll(Arrays.asList(_users));
         providers.addAll(Arrays.asList(_providers));
         commodities.addAll(Arrays.asList(_commodities));
         comments.addAll(Arrays.asList(_comments));
 
+        Connection con = ConnectionPool.getConnection();
+        Statement createTableStatement = con.createStatement();
+        createTableStatement.addBatch(
+                "CREATE TABLE IF NOT EXISTS Discount(did CHAR(50), code CHAR(50), value CHAR(10), " +
+                        "PRIMARY KEY (did))"
+        );
+
+        createTableStatement.executeBatch();
+        createTableStatement.close();
+        con.close();
         for (DiscountCode discountCode: _discountCodes) {
             discountCodes.put(discountCode.getCode(), discountCode.getDiscount()/100);
         }
@@ -40,6 +55,22 @@ public class Database {
             }
         }
     }
+//
+//    public void insert(DiscountCode discountCode) throws SQLException {
+//        Connection con = ConnectionPool.getConnection();
+//        PreparedStatement st = con.prepareStatement(getInsertStatement());
+//        fillInsertValues(st, student);
+//        try {
+//            st.execute();
+//            st.close();
+//            con.close();
+//        } catch (Exception e) {
+//            st.close();
+//            con.close();
+//            System.out.println("error in Repository.insert query.");
+//            e.printStackTrace();
+//        }
+//    }
 
     public static void insertUser(User user) {
         users.add(user);

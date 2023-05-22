@@ -43,7 +43,11 @@ public class DataGetter {
         String discountCodesData = getRequest(httpClient, getDiscountCodesEndpoint);
         DiscountCode[] discountCodes = mapper.readValue(discountCodesData, DiscountCode[].class);
 
-        Database.insertInitialData(users, providers, commodities, comments, discountCodes);
+        try {
+            Database.insertInitialData(users, providers, commodities, comments, discountCodes);
+        }catch (Exception e){
+
+        }
     }
 
     private String getRequest(HttpClient httpClient, String address) throws IOException {

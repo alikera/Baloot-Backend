@@ -7,6 +7,8 @@ import org.Baloot.Exception.DiscountCodeNotFoundException;
 import org.Baloot.Exception.ProviderNotFoundException;
 import org.Baloot.Exception.UserNotFoundException;
 import org.Baloot.Repository.ConnectionPool;
+import org.Baloot.Repository.DiscountRepository;
+import org.Baloot.Repository.ProviderRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,6 +28,9 @@ public class Database {
     public static List<Commodity> getCommodities() { return commodities; }
     public static List<Comment> getComments() { return comments; }
 
+    static DiscountRepository<DiscountCode> discountRepository = new DiscountRepository<>();
+    static ProviderRepository<Provider> providerRepository = new ProviderRepository<>();
+
 
     public static void insertInitialData(User[] _users, Provider[] _providers, Commodity[] _commodities,
                                          Comment[] _comments, DiscountCode[] _discountCodes) throws SQLException {
@@ -36,16 +41,19 @@ public class Database {
 
         Connection con = ConnectionPool.getConnection();
         Statement createTableStatement = con.createStatement();
-        createTableStatement.addBatch(
-                "CREATE TABLE IF NOT EXISTS Discount(did CHAR(50), code CHAR(50), value CHAR(10), " +
-                        "PRIMARY KEY (did))"
-        );
+        discountRepository.createTable(createTableStatement);
+        providerRepository.createTable(createTableStatement);
 
         createTableStatement.executeBatch();
         createTableStatement.close();
         con.close();
         for (DiscountCode discountCode: _discountCodes) {
-            discountCodes.put(discountCode.getCode(), discountCode.getDiscount()/100);
+            discountRepository.insert(discountCode);
+        }
+        for (Provider provider: _providers){
+            System.out.println("!>>>>>>>>>>>>>>provder SQL");
+
+            providerRepository.insert(provider);
         }
         for (Commodity commodity : commodities){
             try {
@@ -55,11 +63,10 @@ public class Database {
             }
         }
     }
-//
-//    public void insert(DiscountCode discountCode) throws SQLException {
+
+//    public static void insert(DiscountCode discountCode) throws SQLException {
 //        Connection con = ConnectionPool.getConnection();
-//        PreparedStatement st = con.prepareStatement(getInsertStatement());
-//        fillInsertValues(st, student);
+//        PreparedStatement st = con.prepareStatement(discountRepository.insertDiscountStatement(discountCode));
 //        try {
 //            st.execute();
 //            st.close();

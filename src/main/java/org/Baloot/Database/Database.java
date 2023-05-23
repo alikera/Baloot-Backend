@@ -31,6 +31,7 @@ public class Database {
 
     static UserRepository<User> userRepository = new UserRepository<>();
     static CommodityRepository<Commodity> commodityRepository = new CommodityRepository<>();
+    static CommentRepository<Comment> commentRepository = new CommentRepository<>();
 
     public static void insertInitialData(User[] _users, Provider[] _providers, Commodity[] _commodities,
                                          Comment[] _comments, DiscountCode[] _discountCodes) throws SQLException {
@@ -47,7 +48,7 @@ public class Database {
         userRepository.createTable(createTableStatement);
         userRepository.createWeakTable(createTableStatement, "BuyList");
         userRepository.createWeakTable(createTableStatement, "PurchasedList");
-
+        commentRepository.createTable(createTableStatement);
 
         System.out.println(_users.length);
         createTableStatement.executeBatch();
@@ -67,6 +68,9 @@ public class Database {
         for (User user: _users){
             System.out.println("hhhhhhhhhh");
             userRepository.insert(user);
+        }
+        for (Comment comment: _comments){
+            commentRepository.insert(comment);
         }
         for (Commodity commodity : commodities){
             try {

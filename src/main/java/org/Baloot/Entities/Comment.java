@@ -14,7 +14,7 @@ public class Comment {
     private String username;
     private int commodityId;
     private String text;
-    private String date;
+    private Date date;
 
     public int getId() {
         return id;
@@ -30,7 +30,10 @@ public class Comment {
         return text;
     }
     public String getDate() {
-        return date;
+        return date.getAsString();
+    }
+    public java.sql.Date getAsSqlDate(){
+        return date.getAsSqlDate();
     }
     public int voteComment(String username, int vote) {
         if (votes.containsKey(username)) {
@@ -71,7 +74,7 @@ public class Comment {
         userEmail = _userEmail;
         commodityId = _commodityId;
         text = _text;
-        date = _date;
+        date = new Date(_date);
         votes = new HashMap<>();
         count++;
         id = count;
@@ -81,14 +84,14 @@ public class Comment {
         System.out.println(this.userEmail + " " + this.commodityId + " " + this.text + " " + this.date);
     }
 
-    public ObjectNode toJson() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        ObjectNode node = mapper.createObjectNode();
-        node.put("userEmail", this.userEmail);
-        node.put("commodityId", this.commodityId);
-        node.put("text", this.text);
-        node.put("date", this.date);
-        return node;
-    }
+//    public ObjectNode toJson() {
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        ObjectNode node = mapper.createObjectNode();
+//        node.put("userEmail", this.userEmail);
+//        node.put("commodityId", this.commodityId);
+//        node.put("text", this.text);
+//        node.put("date", this.date);
+//        return node;
+//    }
 }

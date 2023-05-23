@@ -12,27 +12,18 @@ public class ProviderRepository<T> extends Repository<T> {
     @Override
     public void createTable(Statement createTableStatement) throws SQLException {
         createTableStatement.addBatch(
-                "CREATE TABLE IF NOT EXISTS Provider(pid CHAR(50), name CHAR(100), date DATE, image CHAR(400)," +
-                        "PRIMARY KEY (pid))"
+                "CREATE TABLE IF NOT EXISTS Provider(pid BIGINT PRIMARY KEY," +
+                        " name CHAR(100)," +
+                        " date DATE," +
+                        " image TEXT)"
         );
     }
 
     @Override
     public String insertStatement(T entity) {
-        System.out.println("provder SQL");
         Provider provider = (Provider) entity;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        try {
-            java.util.Date date = sdf.parse(provider.getDate().getAsString());
-            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-            return "INSERT INTO Provider(pid,name,date,image)"
-                    + " VALUES('" + provider.getId() + "','" + provider.getName() + "','" + sqlDate + "','" + provider.getImage() + "')"
-                    + "ON DUPLICATE KEY UPDATE pid = pid";
-
-        }catch (ParseException e){
-
-        }
-
-        return null;
+        return "INSERT INTO Provider(pid,name,date,image)"
+                + " VALUES('" + provider.getId() + "','" + provider.getName() + "','" + provider.getDate().getAsSqlDate() + "','" + provider.getImage() + "')"
+                + "ON DUPLICATE KEY UPDATE pid = pid";
     }
 }

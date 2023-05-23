@@ -10,8 +10,9 @@ public class DiscountRepository<T> extends Repository<T> {
     @Override
     public void createTable(Statement createTableStatement) throws SQLException {
         createTableStatement.addBatch(
-                "CREATE TABLE IF NOT EXISTS Discount(did CHAR(50), code CHAR(50), value CHAR(10), " +
-                        "PRIMARY KEY (did))"
+                "CREATE TABLE IF NOT EXISTS Discount(did BIGINT," +
+                        " code CHAR(50)," +
+                        " value CHAR(10))"
         );
     }
 

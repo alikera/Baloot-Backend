@@ -7,6 +7,9 @@ import org.Baloot.Exception.NotEnoughCreditException;
 import java.util.*;
 
 public class User {
+    private static int count = 0;
+
+    private Integer id;
     private String username;
     private String password;
     private String email;
@@ -17,6 +20,11 @@ public class User {
     private Set<String> usedDiscountCodes = new HashSet<>();
     private List<Integer> purchasedList = new ArrayList<>();
     private List<Integer> purchasedCounts = new ArrayList<>();
+
+    public Integer getId() {
+        return id;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -60,6 +68,8 @@ public class User {
         birthDate = new Date(_birthDate);
         address = _address;
         credit = _credit;
+        count++;
+        id = count;
     }
 
     public void modifyFields(User user) {

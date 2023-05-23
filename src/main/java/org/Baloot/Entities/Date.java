@@ -1,6 +1,8 @@
 package org.Baloot.Entities;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class Date {
     public int day;
@@ -19,4 +21,14 @@ public class Date {
         String _month = new DecimalFormat("00").format(month);
         return Integer.toString(year) + '/' + _month + '/' + _day;
     }
+    public java.sql.Date getAsSqlDate(){
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            java.util.Date date = sdf.parse(getAsString());
+            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+            return sqlDate;
+        }catch (ParseException e){}
+        return null;
+    }
+
 }

@@ -46,7 +46,7 @@ public class DataGetter {
         try {
             Database.insertInitialData(users, providers, commodities, comments, discountCodes);
         }catch (Exception e){
-
+            System.out.println(e.getMessage());
         }
     }
 

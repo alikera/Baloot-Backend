@@ -6,9 +6,7 @@ import org.Baloot.Exception.CommodityNotFoundException;
 import org.Baloot.Exception.DiscountCodeNotFoundException;
 import org.Baloot.Exception.ProviderNotFoundException;
 import org.Baloot.Exception.UserNotFoundException;
-import org.Baloot.Repository.ConnectionPool;
-import org.Baloot.Repository.DiscountRepository;
-import org.Baloot.Repository.ProviderRepository;
+import org.Baloot.Repository.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,6 +29,8 @@ public class Database {
     static DiscountRepository<DiscountCode> discountRepository = new DiscountRepository<>();
     static ProviderRepository<Provider> providerRepository = new ProviderRepository<>();
 
+    static UserRepository<User> userRepository = new UserRepository<>();
+    static CommodityRepository<Commodity> commodityRepository = new CommodityRepository<>();
 
     public static void insertInitialData(User[] _users, Provider[] _providers, Commodity[] _commodities,
                                          Comment[] _comments, DiscountCode[] _discountCodes) throws SQLException {
@@ -43,7 +43,13 @@ public class Database {
         Statement createTableStatement = con.createStatement();
         discountRepository.createTable(createTableStatement);
         providerRepository.createTable(createTableStatement);
+        commodityRepository.createTable(createTableStatement);
+        userRepository.createTable(createTableStatement);
+        userRepository.createWeakTable(createTableStatement, "BuyList");
+        userRepository.createWeakTable(createTableStatement, "PurchasedList");
 
+
+        System.out.println(_users.length);
         createTableStatement.executeBatch();
         createTableStatement.close();
         con.close();
@@ -51,9 +57,16 @@ public class Database {
             discountRepository.insert(discountCode);
         }
         for (Provider provider: _providers){
-            System.out.println("!>>>>>>>>>>>>>>provder SQL");
-
             providerRepository.insert(provider);
+        }
+
+        for (Commodity commodity: _commodities){
+            commodityRepository.insert(commodity);
+        }
+
+        for (User user: _users){
+            System.out.println("hhhhhhhhhh");
+            userRepository.insert(user);
         }
         for (Commodity commodity : commodities){
             try {

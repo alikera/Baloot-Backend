@@ -8,7 +8,6 @@ import java.sql.Statement;
 public abstract class Repository<T> {
     public abstract void createTable(Statement createTableStatement) throws SQLException;
     public abstract String insertStatement(T entity);
-
     public void insert(T entity) throws SQLException {
         Connection con = ConnectionPool.getConnection();
         PreparedStatement st = con.prepareStatement(this.insertStatement(entity));
@@ -23,4 +22,5 @@ public abstract class Repository<T> {
             e.printStackTrace();
         }
     }
+
 }

@@ -22,18 +22,22 @@ import java.util.Map;
 
 public class UserController {
     @RequestMapping(value = "/{username}", method = RequestMethod.GET)
-    public ResponseEntity<User> getUserPage(@PathVariable String username) {
+    public ResponseEntity<?> getUserPage(@PathVariable String username) {
         try {
             User user = Baloot.getBaloot().getUserByUsername(username);
             return ResponseEntity.ok(user);
         }
         catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
     }
 
     @RequestMapping(value = "/buyList/{username}", method = RequestMethod.GET)
-    public ResponseEntity<List<Object>> getUserBuyList(@PathVariable String username) {
+    public ResponseEntity<?> getUserBuyList(@PathVariable String username) {
         try {
             System.out.println(username);
             HashMap<Commodity, Integer> commoditiesMap = Baloot.getBaloot().userManager.getUserBuyList(username);
@@ -42,6 +46,10 @@ public class UserController {
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
     }
     @RequestMapping(value = "/buyList/{username}", method = RequestMethod.PUT)
@@ -64,18 +72,27 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (OutOfStockException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
     }
 
 
     @RequestMapping(value = "/purchasedList/{username}", method = RequestMethod.GET)
-    public ResponseEntity<List<Object>> getUserPurchasedList(@PathVariable String username) {
+    public ResponseEntity<?> getUserPurchasedList(@PathVariable String username) {
         try {
             HashMap<Commodity, Integer> commoditiesMap = Baloot.getBaloot().userManager.getUserPurchasedList(username);
             return ResponseEntity.ok(hashToList(commoditiesMap));
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
     }
 
@@ -90,6 +107,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (NegativeAmountException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
     }
 
@@ -115,6 +136,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (NotEnoughCreditException e) {
             return ResponseEntity.badRequest().body("Not Enough Credit");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
     }
 

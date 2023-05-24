@@ -12,6 +12,7 @@ import org.Baloot.Exception.InvalidRatingException;
 import org.Baloot.Exception.ProviderNotFoundException;
 import org.Baloot.Exception.UserNotFoundException;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class CommodityManager {
@@ -78,7 +79,7 @@ public class CommodityManager {
         }
         return filteredCommodities;
     }
-    public void rateCommodity(String userId, String commodityId, String rate) throws CommodityNotFoundException, UserNotFoundException, InvalidRatingException, NumberFormatException {
+    public void rateCommodity(String userId, String commodityId, String rate) throws CommodityNotFoundException, UserNotFoundException, InvalidRatingException, NumberFormatException, SQLException {
         Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
         User userFound = Database.findByUsername(userId);
         commodityFound.rateCommodity(userId, Integer.parseInt(rate));

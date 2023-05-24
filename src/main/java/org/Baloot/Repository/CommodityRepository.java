@@ -33,4 +33,9 @@ public class CommodityRepository<T> extends Repository<T> {
                                 commodity.getRating() + "','" + commodity.getInStock() +"','"+ commodity.getImage() + "')"
                 + "ON DUPLICATE KEY UPDATE cid = cid";
     }
+
+    @Override
+    public String selectOneStatement() {
+        return "";
+    }
 }

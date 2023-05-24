@@ -40,8 +40,8 @@ public class Database {
         Connection con = ConnectionPool.getConnection();
         Statement createTableStatement = con.createStatement();
         discountRepository.createTable(createTableStatement);
-//        providerRepository.createTable(createTableStatement);
-//        commodityRepository.createTable(createTableStatement);
+        providerRepository.createTable(createTableStatement);
+        commodityRepository.createTable(createTableStatement);
         userRepository.createTable(createTableStatement);
 //        userRepository.createWeakTable(createTableStatement, "BuyList");
 //        userRepository.createWeakTable(createTableStatement, "PurchasedList");
@@ -119,23 +119,31 @@ public class Database {
         }
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
-    public static User findByUsername(String username) throws UserNotFoundException {
+    public static User findByUsername(String username) throws UserNotFoundException, SQLException {
         User user = null;
+        Connection con = ConnectionPool.getConnection();
+        PreparedStatement prepStat = con.prepareStatement(userRepository.selectOneStatement());
         try {
-            ResultSet result = userRepository.selectOne(username);
+            prepStat.setString(1, username);
+            ResultSet result = prepStat.executeQuery();
             while (result.next()) {
                 user = new User(result.getString("username"),
                         result.getString("password"),
                         result.getString("email"),
-                        result.getDate("birthDate").toString(),
+                        result.getDate("birth_date").toString(),
                         result.getString("address"),
                         result.getDouble("credit"));
             }
             result.close();
+            prepStat.close();
+            con.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            prepStat.close();
+            con.close();
         }
-
+        prepStat.close();
+        con.close();
         if (user != null) {
             return user;
         } else {
@@ -173,5 +181,21 @@ public class Database {
             return Double.parseDouble(discountValue);
         else
             throw new DiscountCodeNotFoundException("Discount code is not valid!");
+    }
+
+    public static void increaseUserCredit(String username, double amount) throws SQLException {
+        Connection con = ConnectionPool.getConnection();
+        PreparedStatement prepStat = con.prepareStatement(userRepository.increaseCreditStatement());
+        try {
+            prepStat.setDouble(1, amount);
+            prepStat.setString(2, username);
+            prepStat.execute();
+            prepStat.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            prepStat.close();
+            con.close();
+        }
     }
 }

@@ -26,4 +26,9 @@ public class ProviderRepository<T> extends Repository<T> {
                 + " VALUES('" + provider.getId() + "','" + provider.getName() + "','" + provider.getDate().getAsSqlDate() + "','" + provider.getImage() + "')"
                 + "ON DUPLICATE KEY UPDATE pid = pid";
     }
+
+    @Override
+    public String selectOneStatement() {
+        return "";
+    }
 }

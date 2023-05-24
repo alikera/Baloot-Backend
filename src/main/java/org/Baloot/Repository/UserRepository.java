@@ -42,4 +42,10 @@ public class UserRepository<T> extends Repository<T> {
                 "FOREIGN KEY (cid) REFERENCES Commodity(cid))", tableName);
         createWeakTableStatement.addBatch(statement);
     }
+
+    public String increaseCreditStatement() {
+        return "UPDATE User " +
+                "SET credit = credit + ? " +
+                "WHERE username = ?";
+    }
 }

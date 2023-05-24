@@ -27,4 +27,8 @@ public class CommentRepository<T> extends Repository<T> {
                                 comment.getText() + "','" + comment.getAsSqlDate() + "')"
                 + "ON DUPLICATE KEY UPDATE tid = tid";
     }
+    @Override
+    public String selectOneStatement() {
+        return "";
+    }
 }

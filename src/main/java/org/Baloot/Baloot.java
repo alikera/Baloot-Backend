@@ -12,6 +12,7 @@ import org.Baloot.Managers.CommodityManager;
 import org.Baloot.Managers.ProviderManager;
 import org.Baloot.Managers.UserManager;
 
+import java.sql.SQLException;
 import java.util.List;
 
 
@@ -40,7 +41,7 @@ public class Baloot {
     public List<User> getUsers() {
         return Database.getUsers();
     }
-    public User getUserByUsername(String username) throws UserNotFoundException {
+    public User getUserByUsername(String username) throws UserNotFoundException, SQLException {
         return Database.findByUsername(username);
     }
     public List<Provider> getProviders() {

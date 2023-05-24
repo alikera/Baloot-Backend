@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -73,6 +74,10 @@ public class HomeController {
         }
         catch (UserNotFoundException | CommodityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
     }
     @RequestMapping(value = "/commodity/{id}/{username}", method = RequestMethod.GET)
@@ -117,6 +122,10 @@ public class HomeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (InvalidRatingException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
     }
 
@@ -146,6 +155,10 @@ public class HomeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (InvalidVoteException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
     }
 }

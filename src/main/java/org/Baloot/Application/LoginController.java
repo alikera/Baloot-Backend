@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 @RestController
@@ -30,8 +31,11 @@ public class LoginController {
         }
         catch (IncorrectPasswordException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
-
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)

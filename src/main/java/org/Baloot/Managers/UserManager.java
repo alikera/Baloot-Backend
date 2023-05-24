@@ -4,8 +4,10 @@ import org.Baloot.Database.Database;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.User;
 import org.Baloot.Exception.*;
+import org.springframework.http.ResponseEntity;
 
 import javax.xml.crypto.Data;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,9 +48,13 @@ public class UserManager {
         catch (UserNotFoundException e){
             Database.insertUser(user);
         }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    public HashMap<Commodity, Integer> getUserBuyList(String username) throws UserNotFoundException, CommodityNotFoundException {
+    public HashMap<Commodity, Integer> getUserBuyList(String username) throws UserNotFoundException, CommodityNotFoundException, SQLException {
         User user = Database.findByUsername(username);
         HashMap<Integer, Integer> buyList = user.getBuyList();
         HashMap<Commodity, Integer> commodities = new HashMap<>();
@@ -59,7 +65,7 @@ public class UserManager {
         return commodities;
     }
 
-    public HashMap<Commodity, Integer> getUserPurchasedList(String username) throws UserNotFoundException, CommodityNotFoundException {
+    public HashMap<Commodity, Integer> getUserPurchasedList(String username) throws UserNotFoundException, CommodityNotFoundException, SQLException {
         User user = Database.findByUsername(username);
         List<Integer> purchasedListIds = user.getPurchasedList();
         List<Integer> purchasedCounts = user.getPurchasedCounts();
@@ -71,17 +77,15 @@ public class UserManager {
         return commodities;
     }
 
-    public void addCredit(String username, String credit) throws UserNotFoundException, NegativeAmountException {
+    public void addCredit(String username, String credit) throws UserNotFoundException, NegativeAmountException, SQLException {
         double amount = Double.parseDouble(credit);
-
-        User user = Database.findByUsername(username);
         if (amount <= 0) {
             throw new NegativeAmountException();
         }
-        user.increaseCredit(amount);
+        Database.increaseUserCredit(username, amount);
     }
 
-    public void finalizePayment(String username, String discountCode, double discountValue, Map<Integer, Integer> commodityCounts) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException {
+    public void finalizePayment(String username, String discountCode, double discountValue, Map<Integer, Integer> commodityCounts) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException, SQLException {
         User user = Database.findByUsername(username);
         user.updateBuyListQuantities(commodityCounts);
         HashMap<Integer, Integer> buyList = user.getBuyList();
@@ -94,7 +98,7 @@ public class UserManager {
         }
         user.moveBuyToPurchased(cost * (1 - discountValue), discountCode);
     }
-    public void addCommodityToUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, OutOfStockException, UserNotFoundException, CommodityExistenceException {
+    public void addCommodityToUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, OutOfStockException, UserNotFoundException, CommodityExistenceException, SQLException {
         Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
         if (commodityFound.getInStock() == 0) {
             throw new OutOfStockException("Commodity out of stock!");
@@ -104,14 +108,14 @@ public class UserManager {
         commodityFound.decreaseInStock();
     }
 
-    public void removeCommodityFromUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, UserNotFoundException, CommodityExistenceException {
+    public void removeCommodityFromUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, UserNotFoundException, CommodityExistenceException, SQLException {
         Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
         User userFound = Database.findByUsername(userId);
         userFound.removeFromBuyList(Integer.parseInt(commodityId));
         commodityFound.increaseInStock();
     }
 
-    public void login(String username, String password) throws UserNotFoundException, IncorrectPasswordException {
+    public void login(String username, String password) throws UserNotFoundException, IncorrectPasswordException, SQLException {
         User user = Database.findByUsername(username);
         if (Objects.equals(password, user.getPassword())) {
             setLoggedInUser(user);

@@ -22,23 +22,23 @@ public abstract class Repository<T> {
     }
 
     public ResultSet selectOne(String uniqueFiled) throws SQLException {
-        Connection con = ConnectionPool.getConnection();
-        PreparedStatement prepStat = con.prepareStatement(this.selectOneStatement());
-        prepStat.setString(1, uniqueFiled);
-        ResultSet result = prepStat.executeQuery();
-        try {
-            result.close();
-            prepStat.close();
-            con.close();
-            return result;
-        } catch (Exception e) {
-            result.close();
-            prepStat.close();
-            con.close();
-            System.out.println("error in Repository.Select query.");
-            e.printStackTrace();
-            return null;
-        }
+        return null;
+//        Connection con = ConnectionPool.getConnection();
+//        PreparedStatement prepStat = con.prepareStatement(this.selectOneStatement());
+//        prepStat.setString(1, uniqueFiled);
+//        ResultSet result = prepStat.executeQuery();
+//        try {
+//            prepStat.close();
+//            con.close();
+//            return result;
+//        } catch (Exception e) {
+//            result.close();
+//            prepStat.close();
+//            con.close();
+//            System.out.println("error in Repository.Select query.");
+//            e.printStackTrace();
+//            return null;
+//        }
     }
 
 }

@@ -8,6 +8,7 @@ import org.Baloot.Exception.CommodityNotFoundException;
 import org.Baloot.Exception.InvalidVoteException;
 import org.Baloot.Exception.UserNotFoundException;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +26,7 @@ public class CommentManager {
         }
         return filteredComments;
     }
-    public int voteComment(String userId, String commodityId, String commentId, String vote) throws UserNotFoundException, CommodityNotFoundException, InvalidVoteException {
+    public int voteComment(String userId, String commodityId, String commentId, String vote) throws UserNotFoundException, CommodityNotFoundException, InvalidVoteException, SQLException {
         if (!Objects.equals(vote, "0") && !Objects.equals(vote, "1") && !Objects.equals(vote, "-1")) {
             throw new InvalidVoteException("Invalid Vote");
         }

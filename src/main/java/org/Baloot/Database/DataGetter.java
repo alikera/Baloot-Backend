@@ -21,7 +21,9 @@ public class DataGetter {
         try {
             getDataFromServer();
         }
-        catch (IOException e) {}
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void getDataFromServer() throws IOException {
@@ -37,8 +39,9 @@ public class DataGetter {
         String providersData = getRequest(httpClient, getProvidersEndpoint);
         Provider[] providers = mapper.readValue(providersData, Provider[].class);
 
-        String commentsData = getRequest(httpClient, getCommentsEndpoint);
-        Comment[] comments = mapper.readValue(commentsData, Comment[].class);
+//        String commentsData = getRequest(httpClient, getCommentsEndpoint);
+//        Comment[] comments = mapper.readValue(commentsData, Comment[].class);
+        Comment[] comments = new Comment[1];
 
         String discountCodesData = getRequest(httpClient, getDiscountCodesEndpoint);
         DiscountCode[] discountCodes = mapper.readValue(discountCodesData, DiscountCode[].class);

@@ -8,10 +8,7 @@ import org.Baloot.Exception.ProviderNotFoundException;
 import org.Baloot.Exception.UserNotFoundException;
 import org.Baloot.Repository.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 public class Database {
@@ -43,20 +40,22 @@ public class Database {
         Connection con = ConnectionPool.getConnection();
         Statement createTableStatement = con.createStatement();
         discountRepository.createTable(createTableStatement);
-        providerRepository.createTable(createTableStatement);
-        commodityRepository.createTable(createTableStatement);
+//        providerRepository.createTable(createTableStatement);
+//        commodityRepository.createTable(createTableStatement);
         userRepository.createTable(createTableStatement);
-        userRepository.createWeakTable(createTableStatement, "BuyList");
-        userRepository.createWeakTable(createTableStatement, "PurchasedList");
-        commentRepository.createTable(createTableStatement);
+//        userRepository.createWeakTable(createTableStatement, "BuyList");
+//        userRepository.createWeakTable(createTableStatement, "PurchasedList");
+//        commentRepository.createTable(createTableStatement);
 
         System.out.println(_users.length);
         createTableStatement.executeBatch();
         createTableStatement.close();
         con.close();
+
         for (DiscountCode discountCode: _discountCodes) {
             discountRepository.insert(discountCode);
         }
+
         for (Provider provider: _providers){
             providerRepository.insert(provider);
         }
@@ -121,12 +120,27 @@ public class Database {
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
     public static User findByUsername(String username) throws UserNotFoundException {
-        for (User user : users) {
-            if (Objects.equals(user.getUsername(), username)) {
-                return user;
+        User user = null;
+        try {
+            ResultSet result = userRepository.selectOne(username);
+            while (result.next()) {
+                user = new User(result.getString("username"),
+                        result.getString("password"),
+                        result.getString("email"),
+                        result.getDate("birthDate").toString(),
+                        result.getString("address"),
+                        result.getDouble("credit"));
             }
+            result.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-        throw new UserNotFoundException("Couldn't find user with the given Username!");
+
+        if (user != null) {
+            return user;
+        } else {
+            throw new UserNotFoundException("Couldn't find user with the given Username!");
+        }
     }
     public static Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException {
         for (Commodity commodity : commodities) {
@@ -145,9 +159,18 @@ public class Database {
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
 
-    public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException {
-        if (discountCodes.containsKey(code))
-            return discountCodes.get(code);
+    public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException, SQLException {
+
+        ResultSet result = discountRepository.selectOne(code);
+        String discountValue = "";
+        while (result.next()) {
+            discountValue = result.getString("value");
+        }
+
+        result.close();
+
+        if (!Objects.equals(discountValue, ""))
+            return Double.parseDouble(discountValue);
         else
             throw new DiscountCodeNotFoundException("Discount code is not valid!");
     }

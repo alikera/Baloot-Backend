@@ -31,6 +31,11 @@ public class UserRepository<T> extends Repository<T> {
                 + "ON DUPLICATE KEY UPDATE uid = uid";
     }
 
+    @Override
+    public String selectOneStatement() {
+        return "SELECT * FROM User WHERE username = ?";
+    }
+
     public void createWeakTable(Statement createWeakTableStatement, String tableName) throws SQLException {
         String statement = String.format("CREATE TABLE IF NOT EXISTS %s(id BIGINT PRIMARY KEY, uid BIGINT, cid BIGINT, quantity INT," +
                 "FOREIGN KEY (uid) REFERENCES User(uid)," +

@@ -15,62 +15,8 @@ public class Comment {
     private int commodityId;
     private String text;
     private Date date;
-
-    public int getId() {
-        return id;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-    public int getCommodityId() {
-        return commodityId;
-    }
-    public String getText() {
-        return text;
-    }
-    public String getDate() {
-        return date.getAsString();
-    }
-    public java.sql.Date getAsSqlDate(){
-        return date.getAsSqlDate();
-    }
-    public int voteComment(String username, int vote) {
-        if (votes.containsKey(username)) {
-            if (votes.get(username) == vote) {
-                return 0;
-            }
-            else {
-                votes.put(username, vote);
-                return -1;
-            }
-        }
-        else {
-            votes.put(username, vote);
-            return 1;
-        }
-
-    }
-    public int getLikes(){
-        int likesCounter = 0;
-        for (int vote : votes.values()){
-            if(vote == 1){
-                likesCounter++;
-            }
-        }
-        return likesCounter;
-    }
-    public int getDislikes(){
-        int dislikesCounter = 0;
-        for (int vote : votes.values()){
-            if(vote == -1){
-                dislikesCounter++;
-            }
-        }
-        return dislikesCounter;
-    }
-    public Comment(@JsonProperty ("userEmail") String _userEmail, @JsonProperty ("commodityId") int _commodityId,
-                     @JsonProperty ("text") String _text, @JsonProperty ("date") String _date) {
+    public Comment(@JsonProperty("userEmail") String _userEmail, @JsonProperty("commodityId") int _commodityId,
+                   @JsonProperty("text") String _text, @JsonProperty("date") String _date) {
         userEmail = _userEmail;
         commodityId = _commodityId;
         text = _text;
@@ -79,19 +25,78 @@ public class Comment {
         count++;
         id = count;
     }
+    public int getId() {
+        return id;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public int getCommodityId() {
+        return commodityId;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getDate() {
+        return date.getAsString();
+    }
+
+    public java.sql.Date getAsSqlDate() {
+        return date.getAsSqlDate();
+    }
+    public HashMap<String, String> getAttributes() {
+        HashMap<String, String> attributes = new HashMap<>();
+
+        attributes.put("id", String.valueOf(id));
+        attributes.put("userEmail", userEmail);
+        attributes.put("commodityId", String.valueOf(commodityId));
+        attributes.put("text", text);
+        attributes.put("date", date.getAsSqlDate().toString());
+
+        return attributes;
+    }
+
+
+    public int voteComment(String username, int vote) {
+        if (votes.containsKey(username)) {
+            if (votes.get(username) == vote) {
+                return 0;
+            } else {
+                votes.put(username, vote);
+                return -1;
+            }
+        } else {
+            votes.put(username, vote);
+            return 1;
+        }
+
+    }
+
+    public int getLikes() {
+        int likesCounter = 0;
+        for (int vote : votes.values()) {
+            if (vote == 1) {
+                likesCounter++;
+            }
+        }
+        return likesCounter;
+    }
+
+    public int getDislikes() {
+        int dislikesCounter = 0;
+        for (int vote : votes.values()) {
+            if (vote == -1) {
+                dislikesCounter++;
+            }
+        }
+        return dislikesCounter;
+    }
 
     public void print() {
         System.out.println(this.userEmail + " " + this.commodityId + " " + this.text + " " + this.date);
     }
-
-//    public ObjectNode toJson() {
-//        ObjectMapper mapper = new ObjectMapper();
-//
-//        ObjectNode node = mapper.createObjectNode();
-//        node.put("userEmail", this.userEmail);
-//        node.put("commodityId", this.commodityId);
-//        node.put("text", this.text);
-//        node.put("date", this.date);
-//        return node;
-//    }
 }

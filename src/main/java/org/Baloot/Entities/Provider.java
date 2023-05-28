@@ -3,6 +3,7 @@ package org.Baloot.Entities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Provider {
@@ -32,7 +33,16 @@ public class Provider {
     public String getImage() {
         return image;
     }
+    public HashMap<String, String> getAttributes() {
+        HashMap<String, String> attributes = new HashMap<>();
 
+        attributes.put("id", String.valueOf(id));
+        attributes.put("name", name);
+        attributes.put("registryDate", registryDate.getAsSqlDate().toString());
+        attributes.put("image", image);
+
+        return attributes;
+    }
     public double getAverageRatingCommodities() {
         return myCommodities.stream()
                 .mapToDouble(Commodity::getRating) // Extract the scores as an IntStream

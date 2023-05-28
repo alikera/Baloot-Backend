@@ -77,6 +77,21 @@ public class Commodity {
         Ratings = new HashMap<>();
         image = _image;
     }
+
+    public HashMap<String, String> getAttributes() {
+        HashMap<String, String> attributes = new HashMap<>();
+
+        attributes.put("id", String.valueOf(id));
+        attributes.put("name", name);
+        attributes.put("providerId", String.valueOf(providerId));
+        attributes.put("price", String.valueOf(price));
+        attributes.put("rating", String.valueOf(rating));
+        attributes.put("inStock", String.valueOf(inStock));
+        attributes.put("image", image);
+
+        return attributes;
+    }
+
     public boolean isInCategoryGiven(String category){
         for(String cat : categories){
             if(cat.equalsIgnoreCase(category)){

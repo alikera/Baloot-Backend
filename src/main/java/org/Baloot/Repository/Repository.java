@@ -12,9 +12,9 @@ public abstract class Repository<T> {
     public abstract String insertStatement(HashMap<String, String> values);
     public abstract String selectOneStatement();
     public abstract List<String> getColNames();
-    public void insert(HashMap<String, String> values) throws SQLException {
+    public void insert(String insertStatement) throws SQLException {
         Connection con = ConnectionPool.getConnection();
-        PreparedStatement st = con.prepareStatement(this.insertStatement(values));
+        PreparedStatement st = con.prepareStatement(insertStatement);
         try {
             st.execute();
             st.close();
@@ -37,9 +37,11 @@ public abstract class Repository<T> {
         try {
             prepStat.setString(1, uniqueCol);
             ResultSet result = prepStat.executeQuery();
-            int index = 0;
+
             while (result.next()) {
-                values.put(colNames.get(index), result.getString(colNames.get(index)));
+                for (int i = 0; i < colNames.size(); i++) {
+                    values.put(colNames.get(i), result.getString(colNames.get(i)));
+                }
             }
             result.close();
             prepStat.close();

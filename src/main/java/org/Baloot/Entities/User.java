@@ -21,6 +21,18 @@ public class User {
     private List<Integer> purchasedList = new ArrayList<>();
     private List<Integer> purchasedCounts = new ArrayList<>();
 
+    public User(@JsonProperty("username") String _username, @JsonProperty("password") String _password,
+                @JsonProperty("email") String _email, @JsonProperty("birthDate") String _birthDate,
+                @JsonProperty("address") String _address, @JsonProperty("credit") double _credit) {
+        username = _username;
+        password = _password;
+        email = _email;
+        birthDate = new Date(_birthDate);
+        address = _address;
+        credit = _credit;
+        count++;
+        id = count;
+    }
     public Integer getId() {
         return id;
     }
@@ -59,18 +71,20 @@ public class User {
     public List<Integer> getPurchasedList() { return purchasedList; }
     public List<Integer> getPurchasedCounts() { return purchasedCounts; }
 
-    public User(@JsonProperty("username") String _username, @JsonProperty("password") String _password,
-                @JsonProperty("email") String _email, @JsonProperty("birthDate") String _birthDate,
-                @JsonProperty("address") String _address, @JsonProperty("credit") double _credit) {
-        username = _username;
-        password = _password;
-        email = _email;
-        birthDate = new Date(_birthDate);
-        address = _address;
-        credit = _credit;
-        count++;
-        id = count;
+    public HashMap<String, String> getAttributes() {
+        HashMap<String, String> attributes = new HashMap<>();
+
+        attributes.put("id", id.toString());
+        attributes.put("username", username);
+        attributes.put("password", password);
+        attributes.put("email", email);
+        attributes.put("birthDate", birthDate.getAsSqlDate().toString());
+        attributes.put("address", address);
+        attributes.put("credit", String.valueOf(credit));
+
+        return attributes;
     }
+
 
     public void modifyFields(User user) {
         password = user.getPassword();

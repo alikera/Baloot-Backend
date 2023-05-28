@@ -39,9 +39,9 @@ public class DataGetter {
         String providersData = getRequest(httpClient, getProvidersEndpoint);
         Provider[] providers = mapper.readValue(providersData, Provider[].class);
 
-//        String commentsData = getRequest(httpClient, getCommentsEndpoint);
-//        Comment[] comments = mapper.readValue(commentsData, Comment[].class);
-        Comment[] comments = new Comment[1];
+        String commentsData = getRequest(httpClient, getCommentsEndpoint);
+        Comment[] comments = mapper.readValue(commentsData, Comment[].class);
+//        Comment[] comments = new Comment[1];
 
         String discountCodesData = getRequest(httpClient, getDiscountCodesEndpoint);
         DiscountCode[] discountCodes = mapper.readValue(discountCodesData, DiscountCode[].class);
@@ -49,6 +49,7 @@ public class DataGetter {
         try {
             Database.insertInitialData(users, providers, commodities, comments, discountCodes);
         }catch (Exception e){
+            System.out.println("XXXXXXXXXXXXXXXXX");
             System.out.println(e.getMessage());
         }
     }

@@ -10,10 +10,18 @@ public class Date {
     public int year;
 
     public Date(String registryDate) {
-        String[] parts = registryDate.split("-");
-        year = Integer.parseInt(parts[0]);
-        month = Integer.parseInt(parts[1]);
-        day = Integer.parseInt(parts[2]);
+        if (registryDate == ""){
+            year = 2022;
+            month = 1;
+            day = 1;
+        }
+        else{
+            String[] parts = registryDate.split("-");
+            year = Integer.parseInt(parts[0]);
+            month = Integer.parseInt(parts[1]);
+            day = Integer.parseInt(parts[2]);
+        }
+
     }
 
     public String getAsString() {

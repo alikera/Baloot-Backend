@@ -26,7 +26,7 @@ public class CommentRepository<T> extends Repository<T> {
     public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO Comment(tid,uid,cid,text,date)"
                 + " VALUES('" + values.get("tid") + "','" + values.get("uid") + "','" + values.get("cid") + "','" +
-                                values.get("text") + "','" + values.get("date") + "')"
+                                values.get("text") + "','" + java.sql.Date.valueOf(values.get("date")) + "')"
                 + "ON DUPLICATE KEY UPDATE tid = tid";
     }
     @Override

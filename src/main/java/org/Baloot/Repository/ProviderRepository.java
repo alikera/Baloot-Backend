@@ -25,7 +25,8 @@ public class ProviderRepository<T> extends Repository<T> {
     @Override
     public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO Provider(pid,name,date,image)"
-                + " VALUES('" + values.get("pid") + "','" + values.get("name") + "','" + values.get("date") + "','" + values.get("image") + "')"
+                + " VALUES('" + Integer.parseInt(values.get("pid")) + "','" + values.get("name") + "','"
+                + java.sql.Date.valueOf(values.get("date")) + "','" + values.get("image") + "')"
                 + "ON DUPLICATE KEY UPDATE pid = pid";
     }
 

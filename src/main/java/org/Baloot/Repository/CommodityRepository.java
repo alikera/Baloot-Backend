@@ -41,8 +41,10 @@ public class CommodityRepository<T> extends Repository<T> {
     @Override
     public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO Commodity(cid,name,pid,price,rating,in_stock,image)"
-                + " VALUES('" + values.get("cid") + "','" + values.get("name") + "','" + values.get("pid") + "','" + values.get("price") + "','" +
-                                values.get("rating") + "','" + values.get("in_stock") +"','"+ values.get("image") + "')"
+                + " VALUES('" + Integer.parseInt(values.get("cid")) + "','" + values.get("name") + "','"
+                + Integer.parseInt(values.get("pid")) + "','" + values.get("price") + "','"
+                + Double.parseDouble(values.get("rating")) + "','" + Integer.parseInt(values.get("in_stock"))
+                +"','"+ values.get("image") + "')"
                 + "ON DUPLICATE KEY UPDATE cid = cid";
     }
 

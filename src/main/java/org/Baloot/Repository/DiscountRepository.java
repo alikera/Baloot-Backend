@@ -22,7 +22,7 @@ public class DiscountRepository<T> extends Repository<T> {
     @Override
     public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO Discount(code,value) " +
-                "VALUES('" + values.get("code") + "' ," + values.get("value") + ") " +
+                "VALUES('" + values.get("code") + "' ," + Double.parseDouble(values.get("value")) + ") " +
                 "ON DUPLICATE KEY UPDATE code = code";
     }
 

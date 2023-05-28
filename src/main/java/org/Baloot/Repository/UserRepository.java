@@ -5,6 +5,8 @@ import org.Baloot.Entities.User;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserRepository<T> extends Repository<T> {
     @Override
@@ -47,5 +49,18 @@ public class UserRepository<T> extends Repository<T> {
         return "UPDATE User " +
                 "SET credit = credit + ? " +
                 "WHERE username = ?";
+    }
+
+    @Override
+    public List<String> getColNames() {
+        List<String> colNames = new ArrayList<>();
+        colNames.add("uid");
+        colNames.add("username");
+        colNames.add("password");
+        colNames.add("email");
+        colNames.add("birth_date");
+        colNames.add("address");
+        colNames.add("credit");
+        return colNames;
     }
 }

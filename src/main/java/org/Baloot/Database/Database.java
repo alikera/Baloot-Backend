@@ -65,7 +65,6 @@ public class Database {
         }
 
         for (User user: _users){
-            System.out.println("hhhhhhhhhh");
             userRepository.insert(user);
         }
         for (Comment comment: _comments){
@@ -79,21 +78,6 @@ public class Database {
             }
         }
     }
-
-//    public static void insert(DiscountCode discountCode) throws SQLException {
-//        Connection con = ConnectionPool.getConnection();
-//        PreparedStatement st = con.prepareStatement(discountRepository.insertDiscountStatement(discountCode));
-//        try {
-//            st.execute();
-//            st.close();
-//            con.close();
-//        } catch (Exception e) {
-//            st.close();
-//            con.close();
-//            System.out.println("error in Repository.insert query.");
-//            e.printStackTrace();
-//        }
-//    }
 
     public static void insertUser(User user) {
         users.add(user);
@@ -120,35 +104,17 @@ public class Database {
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
     public static User findByUsername(String username) throws UserNotFoundException, SQLException {
-        User user = null;
-        Connection con = ConnectionPool.getConnection();
-        PreparedStatement prepStat = con.prepareStatement(userRepository.selectOneStatement());
-        try {
-            prepStat.setString(1, username);
-            ResultSet result = prepStat.executeQuery();
-            while (result.next()) {
-                user = new User(result.getString("username"),
-                        result.getString("password"),
-                        result.getString("email"),
-                        result.getDate("birth_date").toString(),
-                        result.getString("address"),
-                        result.getDouble("credit"));
-            }
-            result.close();
-            prepStat.close();
-            con.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            prepStat.close();
-            con.close();
+        HashMap<String, String> userRow = discountRepository.selectOne(username);
+        if (userRow.isEmpty()) {
+            throw new UserNotFoundException("User not found!");
         }
-        prepStat.close();
-        con.close();
-        if (user != null) {
-            return user;
-        } else {
-            throw new UserNotFoundException("Couldn't find user with the given Username!");
-        }
+        User user = new User(userRow.get("username"),
+                userRow.get("password"),
+                userRow.get("email"),
+                userRow.get("birth_date"), userRow.get("address"),
+                Double.parseDouble(userRow.get("credit")));
+
+        return user;
     }
     public static Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException {
         for (Commodity commodity : commodities) {
@@ -168,19 +134,11 @@ public class Database {
     }
 
     public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException, SQLException {
-
-        ResultSet result = discountRepository.selectOne(code);
-        String discountValue = "";
-        while (result.next()) {
-            discountValue = result.getString("value");
+        HashMap<String, String> discount = discountRepository.selectOne(code);
+        if (discount.isEmpty()) {
+            throw new DiscountCodeNotFoundException("Discount code " + code + " is not exist");
         }
-
-        result.close();
-
-        if (!Objects.equals(discountValue, ""))
-            return Double.parseDouble(discountValue);
-        else
-            throw new DiscountCodeNotFoundException("Discount code is not valid!");
+        return Double.parseDouble(discount.get("value"));
     }
 
     public static void increaseUserCredit(String username, double amount) throws SQLException {

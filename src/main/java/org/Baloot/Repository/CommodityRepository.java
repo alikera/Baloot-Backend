@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommodityRepository<T> extends Repository<T> {
     @Override
@@ -37,5 +39,18 @@ public class CommodityRepository<T> extends Repository<T> {
     @Override
     public String selectOneStatement() {
         return "";
+    }
+
+    @Override
+    public List<String> getColNames() {
+        List<String> colNames = new ArrayList<>();
+        colNames.add("cid");
+        colNames.add("name");
+        colNames.add("pid");
+        colNames.add("price");
+        colNames.add("rating");
+        colNames.add("in_stock");
+        colNames.add("image");
+        return colNames;
     }
 }

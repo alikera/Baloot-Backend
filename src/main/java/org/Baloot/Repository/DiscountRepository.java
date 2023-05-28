@@ -5,6 +5,8 @@ import org.Baloot.Entities.DiscountCode;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DiscountRepository<T> extends Repository<T> {
     @Override
@@ -27,5 +29,13 @@ public class DiscountRepository<T> extends Repository<T> {
     @Override
     public String selectOneStatement() {
         return "SELECT * FROM discount WHERE code = ?";
+    }
+
+    @Override
+    public List<String> getColNames() {
+        List<String> colNames = new ArrayList<>();
+        colNames.add("code");
+        colNames.add("value");
+        return colNames;
     }
 }

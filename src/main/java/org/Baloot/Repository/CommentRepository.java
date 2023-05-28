@@ -6,6 +6,8 @@ import org.Baloot.Entities.DiscountCode;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommentRepository<T> extends Repository<T> {
     @Override
@@ -30,5 +32,16 @@ public class CommentRepository<T> extends Repository<T> {
     @Override
     public String selectOneStatement() {
         return "";
+    }
+
+    @Override
+    public List<String> getColNames() {
+        List<String> colNames = new ArrayList<>();
+        colNames.add("tid");
+        colNames.add("uid");
+        colNames.add("cid");
+        colNames.add("text");
+        colNames.add("date");
+        return colNames;
     }
 }

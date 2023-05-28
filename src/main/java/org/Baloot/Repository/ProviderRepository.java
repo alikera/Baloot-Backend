@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProviderRepository<T> extends Repository<T> {
     @Override
@@ -29,6 +31,16 @@ public class ProviderRepository<T> extends Repository<T> {
 
     @Override
     public String selectOneStatement() {
-        return "";
+        return "SELECT * FROM Provider WHERE pid = ?";
+    }
+
+    @Override
+    public List<String> getColNames() {
+        List<String> colNames = new ArrayList<>();
+        colNames.add("pid");
+        colNames.add("name");
+        colNames.add("date");
+        colNames.add("image");
+        return colNames;
     }
 }

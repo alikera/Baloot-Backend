@@ -69,7 +69,7 @@ public class CommodityManager {
         return filteredCommodities;
     }
 
-    public List<Commodity> getCommoditiesByProvider(String name) throws ProviderNotFoundException {
+    public List<Commodity> getCommoditiesByProvider(String name) throws ProviderNotFoundException, SQLException {
         List<Commodity> filteredCommodities = new ArrayList<>();
         for (Commodity commodity : Database.getCommodities()) {
             System.out.println(Baloot.getBaloot().getProviderById(commodity.getProviderId()).getName());

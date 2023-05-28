@@ -47,7 +47,7 @@ public class Baloot {
     public List<Provider> getProviders() {
         return Database.getProviders();
     }
-    public Provider getProviderById(Integer id) throws ProviderNotFoundException {
+    public Provider getProviderById(Integer id) throws ProviderNotFoundException, SQLException {
         return Database.findByProviderId(id);
     }
     public List<Commodity> getCommodities() {

@@ -104,7 +104,7 @@ public class Database {
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
     public static User findByUsername(String username) throws UserNotFoundException, SQLException {
-        HashMap<String, String> userRow = discountRepository.selectOne(username);
+        HashMap<String, String> userRow = userRepository.selectOne(username);
         if (userRow.isEmpty()) {
             throw new UserNotFoundException("User not found!");
         }
@@ -124,13 +124,17 @@ public class Database {
         }
         throw new CommodityNotFoundException("Couldn't find commodity with the given Id!");
     }
-    public static Provider findByProviderId(int providerId) throws ProviderNotFoundException {
-        for (Provider provider : providers) {
-            if (Objects.equals(provider.getId(), providerId)) {
-                return provider;
-            }
+    public static Provider findByProviderId(int providerId) throws ProviderNotFoundException, SQLException {
+        HashMap<String, String> providerRow = providerRepository.selectOne(String.valueOf(providerId));
+        if (providerRow.isEmpty()) {
+            throw new ProviderNotFoundException("Provider not found!");
         }
-        throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
+        Provider provider = new Provider(Integer.parseInt(providerRow.get("pid")),
+                providerRow.get("name"),
+                providerRow.get("date"),
+                providerRow.get("image"));
+
+        return provider;
     }
 
     public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException, SQLException {

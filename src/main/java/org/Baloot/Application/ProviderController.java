@@ -29,6 +29,10 @@ public class ProviderController {
         }
         catch (ProviderNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
         System.out.println("jere");
         Map<String, Object> responseMap = new HashMap<>();

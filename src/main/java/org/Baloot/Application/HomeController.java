@@ -38,6 +38,10 @@ public class HomeController {
                 commodities = Baloot.getBaloot().commodityManager.getCommoditiesByProvider(search);
             }catch (ProviderNotFoundException e){
 
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+                return ResponseEntity.status(408).body("Database Error");
             }
         }
         if(available){

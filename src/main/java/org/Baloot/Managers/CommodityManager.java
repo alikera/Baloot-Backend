@@ -35,7 +35,7 @@ public class CommodityManager {
     }
     public CommodityManager(){
     }
-    public void addCommodity(Commodity commodity) throws ProviderNotFoundException {
+    public void addCommodity(Commodity commodity) throws ProviderNotFoundException, SQLException {
         Database.insertCommodity(commodity);
     }
     public List<Commodity> getCommoditiesByPriceRange(String _startPrice, String _endPrice) throws NumberFormatException {

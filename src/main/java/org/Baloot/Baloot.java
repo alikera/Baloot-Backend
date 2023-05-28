@@ -53,7 +53,7 @@ public class Baloot {
     public List<Commodity> getCommodities() {
         return Database.getCommodities();
     }
-    public Commodity getCommodityById(Integer id) throws CommodityNotFoundException {
+    public Commodity getCommodityById(Integer id) throws CommodityNotFoundException, SQLException {
         return Database.findByCommodityId(id);
     }
 }

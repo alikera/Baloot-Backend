@@ -3,9 +3,7 @@ package org.Baloot.Repository;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.Provider;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,24 +39,42 @@ public class CommodityRepository<T> extends Repository<T> {
     @Override
     public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO Commodity(cid,name,pid,price,rating,in_stock,image)"
-                + " VALUES('" + Integer.parseInt(values.get("cid")) + "','" + values.get("name") + "','"
-                + Integer.parseInt(values.get("pid")) + "','" + values.get("price") + "','"
-                + Double.parseDouble(values.get("rating")) + "','" + Integer.parseInt(values.get("in_stock"))
+                + " VALUES('" + Integer.parseInt(values.get("id")) + "','" + values.get("name") + "','"
+                + Integer.parseInt(values.get("providerId")) + "','" + values.get("price") + "','"
+                + Double.parseDouble(values.get("rating")) + "','" + Integer.parseInt(values.get("inStock"))
                 +"','"+ values.get("image") + "')"
                 + "ON DUPLICATE KEY UPDATE cid = cid";
     }
 
-    public String insertWeak(HashMap<String, String> values) {
+    public String insertCategory(HashMap<String, String> values) {
         // TODO: On Update Category?
         return "INSERT INTO Category(cid, name)"
-                + " VALUES('" + values.get("cid") + "','" + values.get("name") + "')";
+                + " VALUES('" + values.get("cid") + "','" + values.get("name") + "')"
+                + "ON DUPLICATE KEY UPDATE name = name";
     }
 
     @Override
     public String selectOneStatement() {
-        return "";
+        return "SELECT * FROM Commodity WHERE cid = ?";
     }
 
+
+    public List<String> getCategories(int cid) throws SQLException {
+        String statement = "SELECT name " +
+                "FROM category " +
+                "WHERE cid = " + cid;
+        Connection con = ConnectionPool.getConnection();
+        PreparedStatement prepStat = con.prepareStatement(statement);
+        ResultSet result = prepStat.executeQuery();
+        List<String> categories = new ArrayList<>();
+        while (result.next()) {
+            categories.add(result.getString("name"));
+        }
+        result.close();
+        prepStat.close();
+        con.close();
+        return categories;
+    }
     @Override
     public List<String> getColNames() {
         List<String> colNames = new ArrayList<>();

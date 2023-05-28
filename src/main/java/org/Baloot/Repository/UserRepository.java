@@ -26,8 +26,8 @@ public class UserRepository<T> extends Repository<T> {
     @Override
     public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO User(uid,username,password,email,birth_date,address,credit)"
-                + " VALUES('" + Integer.parseInt(values.get("uid")) + "','" + values.get("username") + "','" + values.get("password") + "','" + values.get("email") +
-                        "','" + java.sql.Date.valueOf(values.get("birth_date")) + "','" + values.get("address") + "','" + Double.parseDouble(values.get("credit")) + "')"
+                + " VALUES('" + Integer.parseInt(values.get("id")) + "','" + values.get("username") + "','" + values.get("password") + "','" + values.get("email") +
+                        "','" + java.sql.Date.valueOf(values.get("birthDate")) + "','" + values.get("address") + "','" + Double.parseDouble(values.get("credit")) + "')"
                 + "ON DUPLICATE KEY UPDATE uid = uid";
     }
 

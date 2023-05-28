@@ -89,6 +89,9 @@ public class HomeController {
                                           @PathVariable (value = "username") String username) {
         try {
             Commodity commodity = Database.findByCommodityId(Integer.parseInt(id));
+            for (String cc:commodity.getCategories()){
+                System.out.println(cc);
+            }
             List<Comment> comments = Baloot.getBaloot().commodityManager.getCommentsOfCommodity(Integer.parseInt(id));
             String providerName = Baloot.getBaloot().getProviderById(commodity.getProviderId()).getName();
             List<Commodity> suggestedCommodities = Baloot.getBaloot().commodityManager.getSuggestedCommodities(commodity, commodity.getCategories());

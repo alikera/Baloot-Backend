@@ -6,6 +6,7 @@ import org.Baloot.Entities.User;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class UserRepository<T> extends Repository<T> {
@@ -23,13 +24,10 @@ public class UserRepository<T> extends Repository<T> {
     }
 
     @Override
-    public String insertStatement(T entity) {
-        System.out.println("ensfjhroihgqipuhgrliRUH");
-
-        User user = (User) entity;
+    public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO User(uid,username,password,email,birth_date,address,credit)"
-                + " VALUES('" + user.getId() + "','" + user.getUsername() + "','" + user.getPassword() + "','" + user.getEmail() +
-                        "','" + user.getDate().getAsSqlDate() + "','" + user.getAddress() + "','" + user.getCredit()+ "')"
+                + " VALUES('" + values.get("uid") + "','" + values.get("username") + "','" + values.get("password") + "','" + values.get("email") +
+                        "','" + java.sql.Date.valueOf(values.get("birth_date")) + "','" + values.get("address") + "','" + values.get("credit") + "')"
                 + "ON DUPLICATE KEY UPDATE uid = uid";
     }
 

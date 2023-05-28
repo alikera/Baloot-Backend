@@ -9,12 +9,12 @@ import java.util.List;
 
 public abstract class Repository<T> {
     public abstract void createTable(Statement createTableStatement) throws SQLException;
-    public abstract String insertStatement(T entity);
+    public abstract String insertStatement(HashMap<String, String> values);
     public abstract String selectOneStatement();
     public abstract List<String> getColNames();
-    public void insert(T entity) throws SQLException {
+    public void insert(HashMap<String, String> values) throws SQLException {
         Connection con = ConnectionPool.getConnection();
-        PreparedStatement st = con.prepareStatement(this.insertStatement(entity));
+        PreparedStatement st = con.prepareStatement(this.insertStatement(values));
         try {
             st.execute();
             st.close();

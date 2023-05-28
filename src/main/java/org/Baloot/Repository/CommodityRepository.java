@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CommodityRepository<T> extends Repository<T> {
@@ -27,13 +28,28 @@ public class CommodityRepository<T> extends Repository<T> {
         );
     }
 
+    public void createWeakTable(Statement createWeakTableStatement) throws SQLException {
+        createWeakTableStatement.addBatch(
+                "CREATE TABLE IF NOT EXISTS Category(" +
+                        "cid BIGINT, " +
+                        "name CHAR(100), " +
+                        "PRIMARY KEY (cid, name), " +
+                        "FOREIGN KEY (cid) REFERENCES Commodity(cid))"
+        );
+    }
+
     @Override
-    public String insertStatement(T entity) {
-        Commodity commodity = (Commodity) entity;
+    public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO Commodity(cid,name,pid,price,rating,in_stock,image)"
-                + " VALUES('" + commodity.getId() + "','" + commodity.getName() + "','" + commodity.getProviderId() + "','" + commodity.getPrice() + "','" +
-                                commodity.getRating() + "','" + commodity.getInStock() +"','"+ commodity.getImage() + "')"
+                + " VALUES('" + values.get("cid") + "','" + values.get("name") + "','" + values.get("pid") + "','" + values.get("price") + "','" +
+                                values.get("rating") + "','" + values.get("in_stock") +"','"+ values.get("image") + "')"
                 + "ON DUPLICATE KEY UPDATE cid = cid";
+    }
+
+    public String insertWeak(HashMap<String, String> values) {
+        // TODO: On Update Category?
+        return "INSERT INTO Category(cid, name)"
+                + " VALUES('" + values.get("cid") + "','" + values.get("name") + "')";
     }
 
     @Override

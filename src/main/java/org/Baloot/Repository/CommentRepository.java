@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CommentRepository<T> extends Repository<T> {
@@ -22,11 +23,10 @@ public class CommentRepository<T> extends Repository<T> {
     }
 
     @Override
-    public String insertStatement(T entity) {
-        Comment comment = (Comment) entity;
+    public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO Comment(tid,uid,cid,text,date)"
-                + " VALUES('" + comment.getId() + "','" + comment.getUserEmail() + "','" + comment.getCommodityId() + "','" +
-                                comment.getText() + "','" + comment.getAsSqlDate() + "')"
+                + " VALUES('" + values.get("tid") + "','" + values.get("uid") + "','" + values.get("cid") + "','" +
+                                values.get("text") + "','" + values.get("date") + "')"
                 + "ON DUPLICATE KEY UPDATE tid = tid";
     }
     @Override

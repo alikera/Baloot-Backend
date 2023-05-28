@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ProviderRepository<T> extends Repository<T> {
@@ -22,10 +23,9 @@ public class ProviderRepository<T> extends Repository<T> {
     }
 
     @Override
-    public String insertStatement(T entity) {
-        Provider provider = (Provider) entity;
+    public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO Provider(pid,name,date,image)"
-                + " VALUES('" + provider.getId() + "','" + provider.getName() + "','" + provider.getDate().getAsSqlDate() + "','" + provider.getImage() + "')"
+                + " VALUES('" + values.get("pid") + "','" + values.get("name") + "','" + values.get("date") + "','" + values.get("image") + "')"
                 + "ON DUPLICATE KEY UPDATE pid = pid";
     }
 

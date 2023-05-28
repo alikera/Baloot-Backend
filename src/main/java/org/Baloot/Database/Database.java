@@ -16,7 +16,7 @@ public class Database {
     private static List<Provider> providers = new ArrayList<>();
     private static List<Commodity> commodities = new ArrayList<>();
     private static List<Comment> comments = new ArrayList<>();
-    static HashMap<String, Double> discountCodes = new HashMap<>();
+//    static HashMap<String, Double> discountCodes = new HashMap<>();
 
     public static List<User> getUsers() { return users; }
     public static List<Provider> getProviders() { return providers; }
@@ -25,7 +25,6 @@ public class Database {
 
     static DiscountRepository<DiscountCode> discountRepository = new DiscountRepository<>();
     static ProviderRepository<Provider> providerRepository = new ProviderRepository<>();
-
     static UserRepository<User> userRepository = new UserRepository<>();
     static CommodityRepository<Commodity> commodityRepository = new CommodityRepository<>();
     static CommentRepository<Comment> commentRepository = new CommentRepository<>();
@@ -42,6 +41,7 @@ public class Database {
         discountRepository.createTable(createTableStatement);
         providerRepository.createTable(createTableStatement);
         commodityRepository.createTable(createTableStatement);
+        commodityRepository.createWeakTable(createTableStatement);
         userRepository.createTable(createTableStatement);
 //        userRepository.createWeakTable(createTableStatement, "BuyList");
 //        userRepository.createWeakTable(createTableStatement, "PurchasedList");

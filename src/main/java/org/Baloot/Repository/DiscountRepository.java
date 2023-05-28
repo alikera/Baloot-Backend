@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class DiscountRepository<T> extends Repository<T> {
@@ -19,10 +20,9 @@ public class DiscountRepository<T> extends Repository<T> {
     }
 
     @Override
-    public String insertStatement(T entity) {
-        DiscountCode discountCode = (DiscountCode) entity;
+    public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO Discount(code,value) " +
-                "VALUES('" + discountCode.getCode() + "' ," + discountCode.getDiscount() + ") " +
+                "VALUES('" + values.get("code") + "' ," + values.get("value") + ") " +
                 "ON DUPLICATE KEY UPDATE code = code";
     }
 

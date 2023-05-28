@@ -26,7 +26,7 @@ public class UserManager {
     public UserManager(){
     }
 
-    public void registerNewUser(String username, String password, String email, String address, String date) throws DuplicateUsernameException{
+    public void registerNewUser(String username, String password, String email, String address, String date) throws SQLException, DuplicateUsernameException{
         User newUser = new User(username, password, email, date, address, 0);
         try {
             addUser(newUser);
@@ -34,7 +34,7 @@ public class UserManager {
         catch (InvalidUsernameException e){
         }
     }
-    public void addUser(User user) throws InvalidUsernameException , DuplicateUsernameException{
+    public void addUser(User user) throws InvalidUsernameException, DuplicateUsernameException, SQLException {
         Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");
         Matcher matcher = pattern.matcher(user.getUsername());
         try {
@@ -47,10 +47,6 @@ public class UserManager {
         }
         catch (UserNotFoundException e){
             Database.insertUser(user);
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
         }
     }
 

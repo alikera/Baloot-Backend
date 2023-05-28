@@ -52,6 +52,10 @@ public class LoginController {
         }
         catch (DuplicateUsernameException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
     }
 }

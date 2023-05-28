@@ -79,12 +79,14 @@ public class Database {
         }
     }
 
-    public static void insertUser(User user) {
+    public static void insertUser(User user) throws SQLException {
         users.add(user);
+        userRepository.insert(user);
     }
 
-    public static void insertProvider(Provider provider) {
+    public static void insertProvider(Provider provider) throws SQLException {
         providers.add(provider);
+        providerRepository.insert(provider);
     }
 
     public static void insertCommodity(Commodity commodity) throws ProviderNotFoundException {

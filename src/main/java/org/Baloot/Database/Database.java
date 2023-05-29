@@ -158,14 +158,7 @@ public class Database {
 //
 //    }
     public static HashMap<Commodity, Integer> getUserBuyList(String username) throws SQLException{
-        List<String> colNames = new ArrayList<>();
-        colNames.add("cid");
-        colNames.add("name");
-        colNames.add("pid");
-        colNames.add("price");
-        colNames.add("rating");
-        colNames.add("in_stock");
-        colNames.add("image");
+        List<String> colNames = commodityRepository.getColNames();
         colNames.add("quantity");
         String selectStatement = userRepository.selectBuyListStatement();
         List<HashMap<String, String>> buyListRow = userRepository.select(new ArrayList<Object>() {{ add(username); }},
@@ -208,6 +201,55 @@ public class Database {
                 providerRow.get(0).get("name"),
                 providerRow.get(0).get("date"),
                 providerRow.get(0).get("image"));
+    }
+
+    public static List<Commodity> castToList(List<HashMap<String, String>> originalMap) throws SQLException {
+        List<Commodity> castedList = new ArrayList<>();
+        for(HashMap<String, String> hashMap: originalMap) {
+            Commodity commodity = new Commodity(Integer.parseInt(hashMap.get("cid")),
+                    hashMap.get("name"),
+                    Integer.parseInt(hashMap.get("pid")),
+                    Double.parseDouble(hashMap.get("price")),
+                    commodityRepository.getCategories(Integer.parseInt(hashMap.get("cid"))),
+                    Double.parseDouble(hashMap.get("rating")),
+                    Integer.parseInt(hashMap.get("in_stock")),
+                    hashMap.get("image"));
+            castedList.add(commodity);
+        }
+
+        return castedList;
+    }
+    public static List<Commodity> getCommoditiesByCategory(String category) throws SQLException {
+        String finalCategory = category + '%';
+
+        List<HashMap<String, String>> commodityRows = commodityRepository.select(
+                new ArrayList<Object>() {{ add(finalCategory); }},
+                commodityRepository.getColNames(),
+                commodityRepository.selectCommodities("category","cid")
+        );
+
+        return castToList(commodityRows);
+    }
+
+    public static List<Commodity> getCommoditiesByName(String name) throws SQLException {
+        String finalName = name + '%';
+        List<HashMap<String, String>> commodityRows = commodityRepository.select(
+                new ArrayList<Object>() {{ add(finalName); }},
+                commodityRepository.getColNames(),
+                commodityRepository.selectCommodities("commodity","cid")
+        );
+
+        return castToList(commodityRows);
+    }
+    public static List<Commodity> getCommoditiesByProvider(String providerName) throws SQLException {
+        String finalName = providerName + '%';
+        List<HashMap<String, String>> commodityRows = commodityRepository.select(
+                new ArrayList<Object>() {{ add(finalName); }},
+                commodityRepository.getColNames(),
+                commodityRepository.selectCommodities("provider", "pid")
+        );
+
+        return castToList(commodityRows);
     }
 
     public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException, SQLException {

@@ -59,6 +59,21 @@ public class CommodityRepository<T> extends Repository<T> {
     }
 
     public String selectCategories(){ return "SELECT name FROM category WHERE cid = ?"; }
+    public String selectCidFromCategories() { return "SELECT * FROM category WHERE category = ?"; }
+    public String selectCommodities(String tableName, String entity) {
+        return "SELECT *\n" +
+                "FROM (SELECT c.*, w.name AS name_2\n" +
+                "FROM Commodity c\n" +
+                "JOIN " +tableName+ " w ON c."+entity+ "= w."+entity+") AS joined_table\n" +
+                "WHERE joined_table.name_2 LIKE ?";
+    }
+    public String selectCommoditiesByProvider(String entity) {
+        return "SELECT *\n" +
+                "FROM (SELECT c.*, p.name AS provider_name\n" +
+                "FROM Commodity c\n" +
+                "JOIN Provider p ON p.pid = c.pid) AS joined_table\n" +
+                "WHERE joined_table." + entity + " LIKE ?";
+    }
     public List<String> extractValues(List<HashMap<String, String>> hashMapList) {
         List<String> valuesList = new ArrayList<>();
 

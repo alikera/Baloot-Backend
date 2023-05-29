@@ -83,7 +83,7 @@ public class UserManager {
 
     public void finalizePayment(String username, String discountCode, double discountValue, Map<Integer, Integer> commodityCounts) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException, SQLException {
         User user = Database.findByUsername(username);
-        user.updateBuyListQuantities(commodityCounts);
+//        user.updateBuyListQuantities(commodityCounts);
         HashMap<Integer, Integer> buyList = user.getBuyList();
         Set<Integer> commoditiesId = buyList.keySet();
         double cost = 0;
@@ -92,10 +92,11 @@ public class UserManager {
             Commodity commodity = Database.findByCommodityId(id);
             cost += (commodity.getPrice() * buyList.get(id));
         }
-        user.moveBuyToPurchased(cost * (1 - discountValue), discountCode);
+//        user.moveBuyToPurchased(cost * (1 - discountValue), discountCode);
         // Using discount
     }
     public void addCommodityToUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, OutOfStockException, UserNotFoundException, CommodityExistenceException, SQLException {
+        Database.insertToBuyList(userId, commodityId);
         Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
         if (commodityFound.getInStock() == 0) {
             throw new OutOfStockException("Commodity out of stock!");

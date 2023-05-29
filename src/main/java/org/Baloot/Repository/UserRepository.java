@@ -13,8 +13,7 @@ public class UserRepository<T> extends Repository<T> {
     @Override
     public void createTable(Statement createTableStatement) throws SQLException {
         createTableStatement.addBatch(
-                "CREATE TABLE IF NOT EXISTS User(uid BIGINT PRIMARY KEY," +
-                        " username CHAR(50)," +
+                "CREATE TABLE IF NOT EXISTS User(username CHAR(50) PRIMARY KEY," +
                         " password CHAR(50)," +
                         " email CHAR(50)," +
                         " birth_date DATE," +
@@ -22,26 +21,32 @@ public class UserRepository<T> extends Repository<T> {
                         " credit DOUBLE)"
         );
     }
+    public void createWeakTable(Statement createWeakTableStatement, String tableName) throws SQLException {
+        String statement = String.format("CREATE TABLE IF NOT EXISTS %s (id INT AUTO_INCREMENT PRIMARY KEY, username CHAR(50), cid BIGINT," +
+                "FOREIGN KEY (username) REFERENCES User(username)," +
+                "FOREIGN KEY (cid) REFERENCES Commodity(cid)) ", tableName);
+        createWeakTableStatement.addBatch(statement);
+    }
+
 
     @Override
     public String insertStatement(HashMap<String, String> values) {
-        return "INSERT INTO User(uid,username,password,email,birth_date,address,credit)"
-                + " VALUES('" + Integer.parseInt(values.get("id")) + "','" + values.get("username") + "','" + values.get("password") + "','" + values.get("email") +
+        return "INSERT INTO User(username,password,email,birth_date,address,credit)"
+                + " VALUES('" + values.get("username") + "','" + values.get("password") + "','" + values.get("email") +
                         "','" + java.sql.Date.valueOf(values.get("birthDate")) + "','" + values.get("address") + "','" + Double.parseDouble(values.get("credit")) + "')"
-                + "ON DUPLICATE KEY UPDATE uid = uid";
+                + "ON DUPLICATE KEY UPDATE username = username";
     }
 
+    public String insertBuyListStatement(HashMap<String, String> values) {
+        return "INSERT INTO BuyList(username,cid)"
+                + " VALUES('" + values.get("username") + "','" + Integer.parseInt(values.get("cid")) + "')";
+    }
     @Override
     public String selectOneStatement() {
         return "SELECT * FROM User WHERE username = ?";
     }
 
-    public void createWeakTable(Statement createWeakTableStatement, String tableName) throws SQLException {
-        String statement = String.format("CREATE TABLE IF NOT EXISTS %s(id BIGINT PRIMARY KEY, uid BIGINT, cid BIGINT, quantity INT," +
-                "FOREIGN KEY (uid) REFERENCES User(uid)," +
-                "FOREIGN KEY (cid) REFERENCES Commodity(cid))", tableName);
-        createWeakTableStatement.addBatch(statement);
-    }
+
 
     public String increaseCreditStatement() {
         return "UPDATE User " +
@@ -52,7 +57,6 @@ public class UserRepository<T> extends Repository<T> {
     @Override
     public List<String> getColNames() {
         List<String> colNames = new ArrayList<>();
-        colNames.add("uid");
         colNames.add("username");
         colNames.add("password");
         colNames.add("email");

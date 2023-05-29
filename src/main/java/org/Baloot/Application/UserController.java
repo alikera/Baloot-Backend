@@ -39,9 +39,7 @@ public class UserController {
     @RequestMapping(value = "/buyList/{username}", method = RequestMethod.GET)
     public ResponseEntity<?> getUserBuyList(@PathVariable String username) {
         try {
-            System.out.println(username);
             HashMap<Commodity, Integer> commoditiesMap = Baloot.getBaloot().userManager.getUserBuyList(username);
-            System.out.println(commoditiesMap.keySet());
             return ResponseEntity.ok(hashToList(commoditiesMap));
         }
         catch (UserNotFoundException | CommodityNotFoundException e) {
@@ -59,7 +57,6 @@ public class UserController {
             String commodityId = body.get("commodityId");
             int count = Integer.parseInt(body.get("count"));
 
-            System.out.println(count);
             if(count == 1){
                 Baloot.getBaloot().userManager.addCommodityToUserBuyList(username, commodityId);
             } else if (count == -1) {

@@ -38,7 +38,7 @@ public class Database {
         commodityRepository.createTable(createTableStatement);
         commodityRepository.createWeakTable(createTableStatement);
         userRepository.createTable(createTableStatement);
-//        userRepository.createWeakTable(createTableStatement, "BuyList");
+        userRepository.createWeakTable(createTableStatement, "BuyList");
 //        userRepository.createWeakTable(createTableStatement, "PurchasedList");
 //        commentRepository.createTable(createTableStatement);
 
@@ -73,7 +73,12 @@ public class Database {
 //            }
 //        }
     }
-
+    public static void insertToBuyList(String username, String commodityId) throws SQLException {
+        HashMap<String, String> values = new HashMap<>();
+        values.put("cid", commodityId);
+        values.put("username", username);
+        userRepository.insert(userRepository.insertBuyListStatement(values));
+    }
     public static void insertUser(User user) throws SQLException {
         users.add(user);
         userRepository.insert(userRepository.insertStatement(user.getAttributes()));
@@ -126,6 +131,10 @@ public class Database {
                 userRow.get(0).get("birth_date"), userRow.get(0).get("address"),
                 Double.parseDouble(userRow.get(0).get("credit")));
     }
+
+//    public static HashMap<Commodity, Integer> getUserBuyList(){
+//
+//    }
     public static Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException, SQLException {
         List<HashMap<String, String>> commodityRow = commodityRepository.select(
                 new ArrayList<Object>() {{ add(commodityId); }},
@@ -135,7 +144,6 @@ public class Database {
         if (commodityRow.isEmpty()) {
             throw new CommodityNotFoundException("Commodity not found!");
         }
-
 
         return new Commodity(Integer.parseInt(commodityRow.get(0).get("cid")),
                 commodityRow.get(0).get("name"),
@@ -152,7 +160,7 @@ public class Database {
                 providerRepository.getColNames(),
                 providerRepository.selectOneStatement()
         );
-        // TODO: Maybe Error in throwing
+        // TODO: Maybe Error in throwing(providerRow[0].isempty()
         if (providerRow.isEmpty()) {
             throw new ProviderNotFoundException("Provider not found!");
         }

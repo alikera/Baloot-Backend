@@ -10,9 +10,11 @@ import java.util.List;
 
 public abstract class Repository<T> {
     public abstract void createTable(Statement createTableStatement) throws SQLException;
+
     public abstract String insertStatement(HashMap<String, String> values);
     public abstract String selectOneStatement();
     public abstract List<String> getColNames();
+
     public void insert(String insertStatement) throws SQLException {
         Connection con = ConnectionPool.getConnection();
         PreparedStatement st = con.prepareStatement(insertStatement);

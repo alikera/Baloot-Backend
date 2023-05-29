@@ -51,8 +51,14 @@ public class UserRepository<T> extends Repository<T> {
     }
 
     public String selectBuyListStatement() {
-        return "SELECT cid, COUNT(*) AS quantity FROM BuyList WHERE username = ? " +
-                "GROUP BY cid";
+        return "SELECT c.*, b.quantity\n" +
+                "FROM Commodity c\n" +
+                "JOIN (\n" +
+                "  SELECT cid, COUNT(*) AS quantity\n" +
+                "  FROM BuyList\n" +
+                "  WHERE username = ?\n" +
+                "  GROUP BY cid\n" +
+                ") b ON c.cid = b.cid\n";
     }
     public String increaseCreditStatement() {
         return "UPDATE User " +

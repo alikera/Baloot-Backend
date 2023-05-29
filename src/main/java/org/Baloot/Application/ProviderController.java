@@ -42,7 +42,7 @@ public class ProviderController {
         responseMap.put("providerDate", provider.getDate().year);
         responseMap.put("providerImage", provider.getImage());
         try {
-            HashMap<Integer, Integer> userBuyList = Database.getUserBuyList(username);
+            HashMap<Integer, Integer> userBuyList = castToIntegerHashMap(Database.getUserBuyList(username));
             responseMap.put("cartCount", userBuyList.keySet().size());
             responseMap.put("buyList", userBuyList);
             return ResponseEntity.ok(responseMap);
@@ -52,6 +52,13 @@ public class ProviderController {
             return ResponseEntity.status(408).body("Database Error");
         }
 
+    }
+    public HashMap<Integer, Integer> castToIntegerHashMap(HashMap<Commodity, Integer> originalHashmap){
+        HashMap<Integer, Integer> newHashMap = new HashMap<>();
+        for(Commodity commodity: originalHashmap.keySet()){
+            newHashMap.put(commodity.getId(),originalHashmap.get(commodity));
+        }
+        return newHashMap;
     }
 
 }

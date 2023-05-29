@@ -69,7 +69,7 @@ public class HomeController {
         responseMap.put("totalPages", totalPages);
 
         try {
-            HashMap<Integer, Integer> userBuylist = Database.getUserBuyList(username);
+            HashMap<Integer, Integer> userBuylist = castToIntegerHashMap(Database.getUserBuyList(username));
             int cartCounter = userBuylist.keySet().size();
             responseMap.put("cartCount", cartCounter);
             responseMap.put("buylist", userBuylist);
@@ -82,6 +82,14 @@ public class HomeController {
             e.printStackTrace();
             return ResponseEntity.status(408).body("Database Error");
         }
+    }
+
+    public HashMap<Integer, Integer> castToIntegerHashMap(HashMap<Commodity, Integer> originalHashmap){
+        HashMap<Integer, Integer> newHashMap = new HashMap<>();
+        for(Commodity commodity: originalHashmap.keySet()){
+            newHashMap.put(commodity.getId(),originalHashmap.get(commodity));
+        }
+        return newHashMap;
     }
     @RequestMapping(value = "/commodity/{id}/{username}", method = RequestMethod.GET)
     public ResponseEntity<?> getCommodity(@PathVariable (value = "id") String id,
@@ -99,7 +107,7 @@ public class HomeController {
             response.put("comments", comments);
             response.put("providerName", providerName);
             response.put("suggested", suggestedCommodities);
-            HashMap<Integer, Integer> userBuyList =Database.getUserBuyList(username);
+            HashMap<Integer, Integer> userBuyList = castToIntegerHashMap(Database.getUserBuyList(username));
             response.put("cartCount", userBuyList.keySet().size());
             response.put("buyList", userBuyList);
             return ResponseEntity.ok(response);

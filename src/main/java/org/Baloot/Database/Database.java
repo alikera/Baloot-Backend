@@ -137,24 +137,42 @@ public class Database {
                 userRow.get(0).get("birth_date"), userRow.get(0).get("address"),
                 Double.parseDouble(userRow.get(0).get("credit")));
     }
-    public static HashMap<Integer, Integer> castHashMap(List<HashMap<String, String>> originalMap) {
-        HashMap<Integer, Integer> castedMap = new HashMap<>();
+    public static HashMap<Commodity, Integer> castHashMap(List<HashMap<String, String>> originalMap) throws SQLException {
+        HashMap<Commodity, Integer> castedMap = new HashMap<>();
         for(HashMap<String, String> hashMap: originalMap) {
-            castedMap.put(Integer.parseInt(hashMap.get("cid")),Integer.parseInt(hashMap.get("quantity")));
+            Commodity commodity = new Commodity(Integer.parseInt(hashMap.get("cid")),
+                    hashMap.get("name"),
+                    Integer.parseInt(hashMap.get("pid")),
+                    Double.parseDouble(hashMap.get("price")),
+                    commodityRepository.getCategories(Integer.parseInt(hashMap.get("cid"))),
+                    Double.parseDouble(hashMap.get("rating")),
+                    Integer.parseInt(hashMap.get("in_stock")),
+                    hashMap.get("image"));
+            castedMap.put(commodity,Integer.parseInt(hashMap.get("quantity")));
         }
 
         return castedMap;
     }
-    public static HashMap<Integer, Integer> getUserBuyList(String username) throws SQLException{
+
+//    public static HashMap<Commodity, Integer> joinWithCommodity(){
+//
+//    }
+    public static HashMap<Commodity, Integer> getUserBuyList(String username) throws SQLException{
         List<String> colNames = new ArrayList<>();
         colNames.add("cid");
+        colNames.add("name");
+        colNames.add("pid");
+        colNames.add("price");
+        colNames.add("rating");
+        colNames.add("in_stock");
+        colNames.add("image");
         colNames.add("quantity");
         String selectStatement = userRepository.selectBuyListStatement();
-        List<HashMap<String, String>> categoryRow = userRepository.select(new ArrayList<Object>() {{ add(username); }},
+        List<HashMap<String, String>> buyListRow = userRepository.select(new ArrayList<Object>() {{ add(username); }},
                 colNames,
                 selectStatement);
 
-        return castHashMap(categoryRow);
+        return castHashMap(buyListRow);
     }
     public static Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException, SQLException {
         List<HashMap<String, String>> commodityRow = commodityRepository.select(

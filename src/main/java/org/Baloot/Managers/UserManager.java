@@ -49,16 +49,14 @@ public class UserManager {
             Database.insertUser(user);
         }
     }
-
+    // TODO: bacham gayide shod
     public HashMap<Commodity, Integer> getUserBuyList(String username) throws UserNotFoundException, CommodityNotFoundException, SQLException {
-        User user = Database.findByUsername(username);
-        HashMap<Integer, Integer> buyList = Database.getUserBuyList(username);
-        HashMap<Commodity, Integer> commodities = new HashMap<>();
-        for (int commodityId: buyList.keySet()) {
-            Commodity commodity = Database.findByCommodityId(commodityId);
-            commodities.put(commodity, buyList.get(commodityId));
-        }
-        return commodities;
+        //        HashMap<Commodity, Integer> commodities = new HashMap<>();
+//        for (int commodityId: buyList.keySet()) {
+//            Commodity commodity = Database.findByCommodityId(commodityId);
+//            commodities.put(commodity, buyList.get(commodityId));
+//        }
+        return Database.getUserBuyList(username);
     }
 
     public HashMap<Commodity, Integer> getUserPurchasedList(String username) throws UserNotFoundException, CommodityNotFoundException, SQLException {
@@ -84,13 +82,12 @@ public class UserManager {
     public void finalizePayment(String username, String discountCode, double discountValue, Map<Integer, Integer> commodityCounts) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException, SQLException {
         User user = Database.findByUsername(username);
 //        user.updateBuyListQuantities(commodityCounts);
-        HashMap<Integer, Integer> buyList = Database.getUserBuyList(username);
-        Set<Integer> commoditiesId = buyList.keySet();
+        HashMap<Commodity, Integer> buyList = Database.getUserBuyList(username);
+        Set<Commodity> commoditiesId = buyList.keySet();
         double cost = 0;
 
-        for (Integer id: commoditiesId) {
-            Commodity commodity = Database.findByCommodityId(id);
-            cost += (commodity.getPrice() * buyList.get(id));
+        for (Commodity commodity: commoditiesId) {
+            cost += (commodity.getPrice() * buyList.get(commodity));
         }
 //        user.moveBuyToPurchased(cost * (1 - discountValue), discountCode);
         // Using discount

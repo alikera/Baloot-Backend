@@ -35,7 +35,16 @@ public class CommodityRepository<T> extends Repository<T> {
                         "FOREIGN KEY (cid) REFERENCES Commodity(cid))"
         );
     }
-
+    public void createRatingTable(Statement createWeakTableStatement) throws SQLException {
+        createWeakTableStatement.addBatch(
+                "CREATE TABLE IF NOT EXISTS Rating(" +
+                        "cid BIGINT, " +
+                        "username CHAR(100), " +
+                        "rate INT, " +
+                        "PRIMARY KEY (cid, username), " +
+                        "FOREIGN KEY (cid) REFERENCES Commodity(cid))"
+        );
+    }
     @Override
     public String insertStatement(HashMap<String, String> values) {
         return "INSERT INTO Commodity(cid,name,pid,price,rating,in_stock,image)"
@@ -45,20 +54,30 @@ public class CommodityRepository<T> extends Repository<T> {
                 +"','"+ values.get("image") + "')"
                 + "ON DUPLICATE KEY UPDATE cid = cid";
     }
-
     public String insertCategory(HashMap<String, String> values) {
         // TODO: On Update Category?
         return "INSERT INTO Category(cid, name)"
                 + " VALUES('" + values.get("cid") + "','" + values.get("name") + "')"
                 + "ON DUPLICATE KEY UPDATE name = name";
     }
-
+    public String insertRatingStatement(HashMap<String, String> values) {
+        return "INSERT INTO Rating(cid, username, rate)"
+                + " VALUES(" + Integer.parseInt(values.get("cid")) + ", '"
+                + values.get("username") + "', "
+                + Integer.parseInt(values.get("rate")) + ")"
+                + "ON DUPLICATE KEY UPDATE rate = " + Double.parseDouble(values.get("rate"));
+    }
+    public String updateRatingStatement() {
+        return "UPDATE Commodity " +
+                "SET  rating = ? " +
+                "WHERE cid = ?";
+    }
     @Override
     public String selectOneStatement() {
         return "SELECT * FROM Commodity WHERE cid = ?";
     }
-
-    public String selectCategories(){ return "SELECT name FROM category WHERE cid = ?"; }
+    public String selectCategories() { return "SELECT name FROM category WHERE cid = ?"; }
+    public String selectRatingStatement() { return "SELECT rate FROM rating WHERE cid = ?"; }
     public List<String> extractValues(List<HashMap<String, String>> hashMapList) {
         List<String> valuesList = new ArrayList<>();
 

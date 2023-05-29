@@ -60,6 +60,8 @@ public class UserManager {
     }
 
     public HashMap<Commodity, Integer> getUserPurchasedList(String username) throws UserNotFoundException, CommodityNotFoundException, SQLException {
+        Database.getPurchasedList(username);
+
         User user = Database.findByUsername(username);
         List<Integer> purchasedListIds = user.getPurchasedList();
         List<Integer> purchasedCounts = user.getPurchasedCounts();
@@ -94,6 +96,7 @@ public class UserManager {
     }
     public void addCommodityToUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, OutOfStockException, UserNotFoundException, CommodityExistenceException, SQLException {
         Database.insertToBuyList(userId, commodityId);
+
         Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
         if (commodityFound.getInStock() == 0) {
             throw new OutOfStockException("Commodity out of stock!");

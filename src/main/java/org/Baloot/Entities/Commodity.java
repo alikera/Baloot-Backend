@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.Baloot.Database.Database;
 import org.Baloot.Exception.InvalidRatingException;
+
+import java.sql.SQLException;
 import java.util.*;
 
 public class Commodity {
@@ -100,10 +103,7 @@ public class Commodity {
         }
         return false;
     }
-    public void rateCommodity(String username, int score) throws InvalidRatingException {
-        if (score < 0 || score > 10) {
-            throw new InvalidRatingException("Invalid Rating");
-        }
+    public void rateCommodity(String username, int score) throws InvalidRatingException, SQLException {
         Ratings.put(username, (double) score);
         rating = calculateAverageOfRatings();
     }

@@ -111,32 +111,40 @@ public class Database {
         throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
     }
     public static User findByUsername(String username) throws UserNotFoundException, SQLException {
-        HashMap<String, String> userRow = userRepository.selectOne(username);
+        List<HashMap<String, String>> userRow = userRepository.select(
+                username,
+                userRepository.getColNames(),
+                userRepository.selectOneStatement()
+        );
         if (userRow.isEmpty()) {
             throw new UserNotFoundException("User not found!");
         }
 
-        return new User(userRow.get("username"),
-                userRow.get("password"),
-                userRow.get("email"),
-                userRow.get("birth_date"), userRow.get("address"),
-                Double.parseDouble(userRow.get("credit")));
+        return new User(userRow.get(0).get("username"),
+                userRow.get(0).get("password"),
+                userRow.get(0).get("email"),
+                userRow.get(0).get("birth_date"), userRow.get(0).get("address"),
+                Double.parseDouble(userRow.get(0).get("credit")));
     }
     public static Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException, SQLException {
-        HashMap<String, String> commodityRow = commodityRepository.selectOne(Integer.toString(commodityId));
+        List<HashMap<String, String>> commodityRow = commodityRepository.select(
+                Integer.toString(commodityId),
+                commodityRepository.getColNames(),
+                commentRepository.selectOneStatement()
+        );
         if (commodityRow.isEmpty()) {
             throw new CommodityNotFoundException("Commodity not found!");
         }
 
 
-        return new Commodity(Integer.parseInt(commodityRow.get("cid")),
-                commodityRow.get("name"),
-                Integer.parseInt(commodityRow.get("pid")),
-                Double.parseDouble(commodityRow.get("price")),
+        return new Commodity(Integer.parseInt(commodityRow.get(0).get("cid")),
+                commodityRow.get(0).get("name"),
+                Integer.parseInt(commodityRow.get(0).get("pid")),
+                Double.parseDouble(commodityRow.get(0).get("price")),
                 commodityRepository.getCategories(commodityId),
-                Double.parseDouble(commodityRow.get("rating")),
-                Integer.parseInt(commodityRow.get("in_stock")),
-                commodityRow.get("image"));
+                Double.parseDouble(commodityRow.get(0).get("rating")),
+                Integer.parseInt(commodityRow.get(0).get("in_stock")),
+                commodityRow.get(0).get("image"));
 
 //        for (Commodity commodity : commodities) {
 //            if (commodity.getId() == commodityId) {
@@ -146,24 +154,32 @@ public class Database {
 //        throw new CommodityNotFoundException("Couldn't find commodity with the given Id!");
     }
     public static Provider findByProviderId(int providerId) throws ProviderNotFoundException, SQLException {
-        HashMap<String, String> providerRow = providerRepository.selectOne(String.valueOf(providerId));
+        List<HashMap<String, String>> providerRow = providerRepository.select(
+                String.valueOf(providerId),
+                providerRepository.getColNames(),
+                providerRepository.selectOneStatement()
+        );
+        // TODO: Maybe Error in throwing
         if (providerRow.isEmpty()) {
             throw new ProviderNotFoundException("Provider not found!");
         }
-        Provider provider = new Provider(Integer.parseInt(providerRow.get("pid")),
-                providerRow.get("name"),
-                providerRow.get("date"),
-                providerRow.get("image"));
 
-        return provider;
+        return new Provider(Integer.parseInt(providerRow.get(0).get("pid")),
+                providerRow.get(0).get("name"),
+                providerRow.get(0).get("date"),
+                providerRow.get(0).get("image"));
     }
 
     public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException, SQLException {
-        HashMap<String, String> discount = discountRepository.selectOne(code);
+        List<HashMap<String, String>> discount = discountRepository.select(
+                code,
+                discountRepository.getColNames(),
+                discountRepository.selectOneStatement()
+        );
         if (discount.isEmpty()) {
             throw new DiscountCodeNotFoundException("Discount code " + code + " is not exist");
         }
-        return Double.parseDouble(discount.get("value"));
+        return Double.parseDouble(discount.get(0).get("value"));
     }
 
     public static void increaseUserCredit(String username, double amount) throws SQLException {

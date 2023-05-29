@@ -4,6 +4,7 @@ import org.Baloot.Entities.User;
 import org.Baloot.Exception.UserNotFoundException;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,21 +28,20 @@ public abstract class Repository<T> {
         }
     }
 
-    public HashMap<String, String> selectOne(String uniqueCol) throws SQLException {
-        String statement = this.selectOneStatement();
-        List<String> colNames = this.getColNames();
+    public List<HashMap<String, String>> select(String uniqueCol, List<String> colNames, String statement) throws SQLException {
         Connection con = ConnectionPool.getConnection();
         PreparedStatement prepStat = con.prepareStatement(statement);
-
-        HashMap<String, String> values = new HashMap<>();
+        List<HashMap<String, String>> selectedRows = new ArrayList<>();
         try {
             prepStat.setString(1, uniqueCol);
             ResultSet result = prepStat.executeQuery();
 
             while (result.next()) {
-                for (int i = 0; i < colNames.size(); i++) {
-                    values.put(colNames.get(i), result.getString(colNames.get(i)));
+                HashMap<String, String> values = new HashMap<>();
+                for (String colName : colNames) {
+                    values.put(colName, result.getString(colName));
                 }
+                selectedRows.add(values);
             }
             result.close();
             prepStat.close();
@@ -51,6 +51,6 @@ public abstract class Repository<T> {
             prepStat.close();
             con.close();
         }
-        return values;
+        return selectedRows;
     }
 }

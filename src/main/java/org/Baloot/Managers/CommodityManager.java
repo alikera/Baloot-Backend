@@ -80,9 +80,23 @@ public class CommodityManager {
         return filteredCommodities;
     }
     public void rateCommodity(String userId, String commodityId, String rate) throws CommodityNotFoundException, UserNotFoundException, InvalidRatingException, NumberFormatException, SQLException {
-        Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
-        User userFound = Database.findByUsername(userId);
-        commodityFound.rateCommodity(userId, Integer.parseInt(rate));
+//        Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
+//        User userFound = Database.findByUsername(userId);
+        if (Integer.parseInt(rate) < 0 || Integer.parseInt(rate) > 10) {
+            throw new InvalidRatingException("Invalid Rating");
+        }
+//        commodityFound.rateCommodity(userId, Integer.parseInt(rate));
+
+        Database.insertRating(commodityId, userId, rate);
+        List<String> ratings = Database.getRatings(commodityId);
+        Database.updateRating(commodityId, calculateAvgRating(ratings));
+    }
+    public double calculateAvgRating(List<String> ratings) {
+        double sum = 0.0;
+        for (String rating : ratings) {
+            sum += Double.parseDouble(rating);
+        }
+        return (ratings.size() == 0) ? 0 : sum / ratings.size();
     }
     public void getSortedCommoditiesByRating(List<Commodity> _commodities){
         _commodities.sort(Comparator.comparingDouble(Commodity::getRating));

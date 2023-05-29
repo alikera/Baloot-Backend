@@ -10,7 +10,7 @@ public class ConnectionPool {
     private static final BasicDataSource ds = new BasicDataSource();
     private final static String dbURL = "jdbc:mysql://localhost:3306/Baloot";
     private final static String dbUserName = "root";
-    private final static String dbPassword = "21jantue";
+    private final static String dbPassword = "root";
 
     static {
         try {

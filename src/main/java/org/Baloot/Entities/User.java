@@ -86,8 +86,6 @@ public class User {
 
         return attributes;
     }
-
-
     public void modifyFields(User user) {
         password = user.getPassword();
         email = user.getEmail();
@@ -129,6 +127,9 @@ public class User {
             purchasedList.add(key);
             purchasedCounts.add(buyList.get(key));
         }
+
+        // DELETE USER BUY LIST
+
         buyList.clear();
         credit -= cost;
         if (!Objects.equals(discountCode, "")) {

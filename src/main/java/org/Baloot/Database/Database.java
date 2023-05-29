@@ -10,6 +10,7 @@ import org.Baloot.Repository.*;
 
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Database {
     private static List<User> users = new ArrayList<>();
@@ -37,6 +38,7 @@ public class Database {
         providerRepository.createTable(createTableStatement);
         commodityRepository.createTable(createTableStatement);
         commodityRepository.createWeakTable(createTableStatement);
+        commodityRepository.createRatingTable(createTableStatement);
         userRepository.createTable(createTableStatement);
         userRepository.createWeakTable(createTableStatement, "BuyList");
 //        userRepository.createWeakTable(createTableStatement, "PurchasedList");
@@ -264,19 +266,7 @@ public class Database {
         return Double.parseDouble(discount.get(0).get("value"));
     }
     public static void increaseUserCredit(String username, double amount) throws SQLException {
-        Connection con = ConnectionPool.getConnection();
-        PreparedStatement prepStat = con.prepareStatement(userRepository.increaseCreditStatement());
-        try {
-            prepStat.setDouble(1, amount);
-            prepStat.setString(2, username);
-            prepStat.execute();
-            prepStat.close();
-            con.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            prepStat.close();
-            con.close();
-        }
+
     }
 
     public static boolean findDiscount(String username, String code) throws SQLException {
@@ -293,4 +283,30 @@ public class Database {
         ));
     }
 
+    public static void getPurchasedList(String username) {
+
+    }
+
+    public static void insertRating(String commodityId, String username, String score) throws SQLException {
+        HashMap<String, String> values = new HashMap<>() {{
+            put("cid", commodityId);
+            put("username", username);
+            put("rate", score);}};
+        commodityRepository.insert(commodityRepository.insertRatingStatement(values));
+    }
+
+    public static List<String> getRatings(String commodityId) throws SQLException {
+        List<Object> values = new ArrayList<Object>() {{add(commodityId);}};
+        List<String> colNames = new ArrayList<String>() {{add("rate");}};
+        List<HashMap<String, String>> ratings = commodityRepository.select(values, colNames, commodityRepository.selectRatingStatement());
+        return ratings.stream()
+                .flatMap(map -> map.values().stream())
+                .collect(Collectors.toList());
+    }
+
+    public static void updateRating(String commodityId, double rating) throws SQLException {
+        String statement = commodityRepository.updateRatingStatement();
+        List<Object> values = new ArrayList<Object>() {{add(rating); add(commodityId);}};
+        commodityRepository.update(statement, values);
+    }
 }

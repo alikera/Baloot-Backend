@@ -41,13 +41,19 @@ public class UserRepository<T> extends Repository<T> {
         return "INSERT INTO BuyList(username,cid)"
                 + " VALUES('" + values.get("username") + "','" + Integer.parseInt(values.get("cid")) + "')";
     }
+    public String removeFromBuyListStatement(HashMap<String, String> values) {
+        return "DELETE FROM BuyList " +
+                "WHERE username = '" + values.get("username") + "' AND cid = " + Integer.parseInt(values.get("cid"));
+    }
     @Override
     public String selectOneStatement() {
         return "SELECT * FROM User WHERE username = ?";
     }
 
-
-
+    public String selectBuyListStatement() {
+        return "SELECT cid, COUNT(*) AS quantity FROM BuyList WHERE username = ? " +
+                "GROUP BY cid";
+    }
     public String increaseCreditStatement() {
         return "UPDATE User " +
                 "SET credit = credit + ? " +
@@ -65,4 +71,6 @@ public class UserRepository<T> extends Repository<T> {
         colNames.add("credit");
         return colNames;
     }
+
+
 }

@@ -1,6 +1,7 @@
 package org.Baloot.Application;
 
 import org.Baloot.Baloot;
+import org.Baloot.Database.Database;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.Provider;
 import org.Baloot.Exception.ProviderNotFoundException;
@@ -41,13 +42,10 @@ public class ProviderController {
         responseMap.put("providerDate", provider.getDate().year);
         responseMap.put("providerImage", provider.getImage());
         try {
-            HashMap<Integer, Integer> userBuyList = Baloot.getBaloot().getUserByUsername(username).getBuyList();
+            HashMap<Integer, Integer> userBuyList = Database.getUserBuyList(username);
             responseMap.put("cartCount", userBuyList.keySet().size());
             responseMap.put("buyList", userBuyList);
             return ResponseEntity.ok(responseMap);
-        }
-        catch (UserNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();

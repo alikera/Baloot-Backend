@@ -69,15 +69,14 @@ public class HomeController {
         responseMap.put("totalPages", totalPages);
 
         try {
-            int cartCounter = Baloot.getBaloot().userManager.getUserBuyList(username).keySet().size();
+            HashMap<Integer, Integer> userBuylist = Database.getUserBuyList(username);
+            int cartCounter = userBuylist.keySet().size();
             responseMap.put("cartCount", cartCounter);
-            HashMap<Integer, Integer> userBuylist = Baloot.getBaloot().getUserByUsername(username).getBuyList();
             responseMap.put("buylist", userBuylist);
-            System.out.println(userBuylist.size());
+            System.out.println("hereeeeeee:" + userBuylist.size());
+            System.out.println("username:" + username);
+
             return ResponseEntity.ok(responseMap);
-        }
-        catch (UserNotFoundException | CommodityNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -100,7 +99,7 @@ public class HomeController {
             response.put("comments", comments);
             response.put("providerName", providerName);
             response.put("suggested", suggestedCommodities);
-            HashMap<Integer, Integer> userBuyList = Baloot.getBaloot().getUserByUsername(username).getBuyList();
+            HashMap<Integer, Integer> userBuyList =Database.getUserBuyList(username);
             response.put("cartCount", userBuyList.keySet().size());
             response.put("buyList", userBuyList);
             return ResponseEntity.ok(response);

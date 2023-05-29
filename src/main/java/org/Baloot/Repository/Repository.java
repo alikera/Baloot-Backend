@@ -35,11 +35,11 @@ public abstract class Repository<T> {
         PreparedStatement prepStat = con.prepareStatement(statement);
         List<HashMap<String, String>> selectedRows = new ArrayList<>();
         try {
-            for (int i = 1; i < mustFill.size(); i++) {
+            for (int i = 0; i < mustFill.size(); i++) {
                 if (mustFill.get(i) instanceof String) {
-                    prepStat.setString(i, (String) mustFill.get(i));
+                    prepStat.setString(i + 1, (String) mustFill.get(i));
                 } else if (mustFill.get(i) instanceof Integer) {
-                    prepStat.setInt(i, (Integer) mustFill.get(i));
+                    prepStat.setInt(i + 1, (Integer) mustFill.get(i));
                 } else {
                     throw new IllegalArgumentException("Unsupported data type for uniqueCol");
                 }

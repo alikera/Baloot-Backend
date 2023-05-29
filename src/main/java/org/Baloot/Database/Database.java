@@ -79,6 +79,12 @@ public class Database {
         values.put("username", username);
         userRepository.insert(userRepository.insertBuyListStatement(values));
     }
+    public static void removeFromBuyList(String username, String commodityId) throws SQLException {
+        HashMap<String, String> values = new HashMap<>();
+        values.put("cid", commodityId);
+        values.put("username", username);
+        userRepository.insert(userRepository.removeFromBuyListStatement(values));
+    }
     public static void insertUser(User user) throws SQLException {
         users.add(user);
         userRepository.insert(userRepository.insertStatement(user.getAttributes()));
@@ -131,10 +137,25 @@ public class Database {
                 userRow.get(0).get("birth_date"), userRow.get(0).get("address"),
                 Double.parseDouble(userRow.get(0).get("credit")));
     }
+    public static HashMap<Integer, Integer> castHashMap(List<HashMap<String, String>> originalMap) {
+        HashMap<Integer, Integer> castedMap = new HashMap<>();
+        for(HashMap<String, String> hashMap: originalMap) {
+            castedMap.put(Integer.parseInt(hashMap.get("cid")),Integer.parseInt(hashMap.get("quantity")));
+        }
 
-//    public static HashMap<Commodity, Integer> getUserBuyList(){
-//
-//    }
+        return castedMap;
+    }
+    public static HashMap<Integer, Integer> getUserBuyList(String username) throws SQLException{
+        List<String> colNames = new ArrayList<>();
+        colNames.add("cid");
+        colNames.add("quantity");
+        String selectStatement = userRepository.selectBuyListStatement();
+        List<HashMap<String, String>> categoryRow = userRepository.select(new ArrayList<Object>() {{ add(username); }},
+                colNames,
+                selectStatement);
+
+        return castHashMap(categoryRow);
+    }
     public static Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException, SQLException {
         List<HashMap<String, String>> commodityRow = commodityRepository.select(
                 new ArrayList<Object>() {{ add(commodityId); }},
@@ -211,4 +232,5 @@ public class Database {
                 new HashMap<String, String>() {{ put("uid", username); put("code", code);}}
         ));
     }
+
 }

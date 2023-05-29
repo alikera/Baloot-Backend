@@ -52,7 +52,7 @@ public class UserManager {
 
     public HashMap<Commodity, Integer> getUserBuyList(String username) throws UserNotFoundException, CommodityNotFoundException, SQLException {
         User user = Database.findByUsername(username);
-        HashMap<Integer, Integer> buyList = user.getBuyList();
+        HashMap<Integer, Integer> buyList = Database.getUserBuyList(username);
         HashMap<Commodity, Integer> commodities = new HashMap<>();
         for (int commodityId: buyList.keySet()) {
             Commodity commodity = Database.findByCommodityId(commodityId);
@@ -84,7 +84,7 @@ public class UserManager {
     public void finalizePayment(String username, String discountCode, double discountValue, Map<Integer, Integer> commodityCounts) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException, SQLException {
         User user = Database.findByUsername(username);
 //        user.updateBuyListQuantities(commodityCounts);
-        HashMap<Integer, Integer> buyList = user.getBuyList();
+        HashMap<Integer, Integer> buyList = Database.getUserBuyList(username);
         Set<Integer> commoditiesId = buyList.keySet();
         double cost = 0;
 
@@ -107,6 +107,8 @@ public class UserManager {
     }
 
     public void removeCommodityFromUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, UserNotFoundException, CommodityExistenceException, SQLException {
+        Database.removeFromBuyList(userId, commodityId);
+
         Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
         User userFound = Database.findByUsername(userId);
         userFound.removeFromBuyList(Integer.parseInt(commodityId));

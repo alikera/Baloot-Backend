@@ -94,7 +94,6 @@ public class CommodityRepository<T> extends Repository<T> {
                 "JOIN Provider p ON p.pid = c.pid) AS joined_table\n" +
                 "WHERE joined_table." + entity + " LIKE ?";
     }
-    public String selectCategories() { return "SELECT name FROM category WHERE cid = ?"; }
     public String selectRatingStatement() { return "SELECT rate FROM rating WHERE cid = ?"; }
     public List<String> extractValues(List<HashMap<String, String>> hashMapList) {
         List<String> valuesList = new ArrayList<>();

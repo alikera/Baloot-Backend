@@ -1,9 +1,11 @@
 package org.Baloot.Entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.Baloot.Database.Database;
 import org.Baloot.Exception.CommodityExistenceException;
 import org.Baloot.Exception.NotEnoughCreditException;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class User {
@@ -105,7 +107,7 @@ public class User {
     public void removeFromBuyList(int commodityId) throws CommodityExistenceException {
         if (buyList.containsKey(commodityId)) {
             int value = buyList.get(commodityId);
-            if(value == 1){
+            if (value == 1){
                 buyList.remove(commodityId);
             }
             else {
@@ -119,7 +121,7 @@ public class User {
         credit += amount;
     }
 
-    public void moveBuyToPurchased(double cost, String discountCode) throws NotEnoughCreditException {
+    public void moveBuyToPurchased(double cost, String discountCode) throws NotEnoughCreditException, SQLException {
         if (credit < cost) {
             throw new NotEnoughCreditException("Not Enough Credit Exception!");
         }
@@ -131,6 +133,7 @@ public class User {
         credit -= cost;
         if (!Objects.equals(discountCode, "")) {
             usedDiscountCodes.add(discountCode);
+            Database.insertToUsedCode(username, discountCode);
         }
     }
 

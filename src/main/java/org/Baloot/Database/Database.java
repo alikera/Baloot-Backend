@@ -112,7 +112,7 @@ public class Database {
     }
     public static User findByUsername(String username) throws UserNotFoundException, SQLException {
         List<HashMap<String, String>> userRow = userRepository.select(
-                username,
+                new ArrayList<Object>() {{ add(username); }},
                 userRepository.getColNames(),
                 userRepository.selectOneStatement()
         );
@@ -128,7 +128,7 @@ public class Database {
     }
     public static Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException, SQLException {
         List<HashMap<String, String>> commodityRow = commodityRepository.select(
-                Integer.toString(commodityId),
+                new ArrayList<Object>() {{ add(commodityId); }},
                 commodityRepository.getColNames(),
                 commodityRepository.selectOneStatement()
         );
@@ -148,7 +148,7 @@ public class Database {
     }
     public static Provider findByProviderId(int providerId) throws ProviderNotFoundException, SQLException {
         List<HashMap<String, String>> providerRow = providerRepository.select(
-                String.valueOf(providerId),
+                new ArrayList<Object>() {{ add(providerId); }},
                 providerRepository.getColNames(),
                 providerRepository.selectOneStatement()
         );
@@ -165,7 +165,7 @@ public class Database {
 
     public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException, SQLException {
         List<HashMap<String, String>> discount = discountRepository.select(
-                code,
+                new ArrayList<Object>() {{ add(code); }},
                 discountRepository.getColNames(),
                 discountRepository.selectOneStatement()
         );
@@ -174,7 +174,6 @@ public class Database {
         }
         return Double.parseDouble(discount.get(0).get("value"));
     }
-
     public static void increaseUserCredit(String username, double amount) throws SQLException {
         Connection con = ConnectionPool.getConnection();
         PreparedStatement prepStat = con.prepareStatement(userRepository.increaseCreditStatement());
@@ -189,5 +188,19 @@ public class Database {
             prepStat.close();
             con.close();
         }
+    }
+
+    public static boolean findDiscount(String username, String code) throws SQLException {
+        List<HashMap<String, String>> rows = discountRepository.select(new ArrayList<Object>() {{ add(username); add(code);}},
+                new ArrayList<String>() {{ add(username); add(code);}},
+                discountRepository.findDiscountCodeStatement(username, code));
+        return !rows.isEmpty();
+    }
+
+    public static void insertToUsedCode(String username, String code) throws SQLException {
+
+        discountRepository.insert(discountRepository.insertUsedCodeStatement(
+                new HashMap<String, String>() {{ put("uid", username); put("code", code);}}
+        ));
     }
 }

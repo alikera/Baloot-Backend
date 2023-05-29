@@ -93,6 +93,7 @@ public class UserManager {
             cost += (commodity.getPrice() * buyList.get(id));
         }
         user.moveBuyToPurchased(cost * (1 - discountValue), discountCode);
+        // Using discount
     }
     public void addCommodityToUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, OutOfStockException, UserNotFoundException, CommodityExistenceException, SQLException {
         Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));

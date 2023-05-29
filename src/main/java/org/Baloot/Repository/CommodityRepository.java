@@ -73,7 +73,9 @@ public class CommodityRepository<T> extends Repository<T> {
         List<String> colNames = new ArrayList<>();
         colNames.add("name");
         String selectStatement = selectCategories();
-        List<HashMap<String, String>> categoryRow = select(cid, colNames, selectStatement);
+        List<HashMap<String, String>> categoryRow = select(new ArrayList<Object>() {{ add(cid); }},
+                colNames,
+                selectStatement);
 
         return extractValues(categoryRow);
     }

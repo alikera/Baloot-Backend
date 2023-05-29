@@ -147,7 +147,7 @@ public class UserController {
     public ResponseEntity<?> applyDiscount(@RequestParam (value = "code") String discountCode,
                                            @RequestParam (value = "username") String username) {
         try {
-            if (Baloot.getBaloot().getUserByUsername(username).isDiscountCodeUsed(discountCode)) {
+            if (Database.findDiscount(username, discountCode)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             } else {
                 double discountValue = Database.getDiscountFromCode(discountCode);
@@ -155,10 +155,10 @@ public class UserController {
             }
         } catch (DiscountCodeNotFoundException e) {
             return ResponseEntity.notFound().build();
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
     }
 

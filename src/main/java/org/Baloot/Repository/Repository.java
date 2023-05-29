@@ -28,21 +28,21 @@ public abstract class Repository<T> {
         }
     }
 
-    public List<HashMap<String, String>> select(Object uniqueCol, List<String> colNames, String statement) throws SQLException {
+    public List<HashMap<String, String>> select(List<Object> mustFill, List<String> colNames, String statement) throws SQLException {
         Connection con = ConnectionPool.getConnection();
         PreparedStatement prepStat = con.prepareStatement(statement);
         List<HashMap<String, String>> selectedRows = new ArrayList<>();
         try {
-            if (uniqueCol instanceof String) {
-                prepStat.setString(1, (String) uniqueCol);
-            } else if (uniqueCol instanceof Integer) {
-                prepStat.setInt(1, (Integer) uniqueCol);
-            } else {
-                throw new IllegalArgumentException("Unsupported data type for uniqueCol");
+            for (int i = 1; i < mustFill.size(); i++) {
+                if (mustFill.get(i) instanceof String) {
+                    prepStat.setString(i, (String) mustFill.get(i));
+                } else if (mustFill.get(i) instanceof Integer) {
+                    prepStat.setInt(i, (Integer) mustFill.get(i));
+                } else {
+                    throw new IllegalArgumentException("Unsupported data type for uniqueCol");
+                }
             }
-
             ResultSet result = prepStat.executeQuery();
-
             while (result.next()) {
                 HashMap<String, String> values = new HashMap<>();
                 for (String colName : colNames) {

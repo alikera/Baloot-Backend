@@ -29,13 +29,13 @@ public class HomeController {
         List<Commodity> commodities = Baloot.getBaloot().getCommodities();
         try {
             if(option.equals("category")) {
-                commodities = Database.getCommoditiesByCategory(search);
+                commodities = Database.getCommodities(search, "category", "cid");
                 System.out.println(commodities.size());
             }
             else if (option.equals("name")) {
-                commodities = Database.getCommoditiesByName(search);
+                commodities = Database.getCommodities(search, "commodity", "cid");
             } else if (option.equals("provider")) {
-                commodities = Database.getCommoditiesByProvider(search);
+                commodities = Database.getCommodities(search, "provider", "pid");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

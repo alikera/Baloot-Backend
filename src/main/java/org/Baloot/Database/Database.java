@@ -233,12 +233,12 @@ public class Database {
         return castToList(commodityRows);
     }
 
-    public static List<Commodity> getCommoditiesByName(String name) throws SQLException {
+    public static List<Commodity> getCommodities(String name, String tableName, String entity) throws SQLException {
         String finalName = name + '%';
         List<HashMap<String, String>> commodityRows = commodityRepository.select(
                 new ArrayList<Object>() {{ add(finalName); }},
                 commodityRepository.getColNames(),
-                commodityRepository.selectCommodities("commodity","cid")
+                commodityRepository.selectCommodities(tableName,entity)
         );
 
         return castToList(commodityRows);

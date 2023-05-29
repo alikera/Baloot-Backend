@@ -28,12 +28,19 @@ public abstract class Repository<T> {
         }
     }
 
-    public List<HashMap<String, String>> select(String uniqueCol, List<String> colNames, String statement) throws SQLException {
+    public List<HashMap<String, String>> select(Object uniqueCol, List<String> colNames, String statement) throws SQLException {
         Connection con = ConnectionPool.getConnection();
         PreparedStatement prepStat = con.prepareStatement(statement);
         List<HashMap<String, String>> selectedRows = new ArrayList<>();
         try {
-            prepStat.setString(1, uniqueCol);
+            if (uniqueCol instanceof String) {
+                prepStat.setString(1, (String) uniqueCol);
+            } else if (uniqueCol instanceof Integer) {
+                prepStat.setInt(1, (Integer) uniqueCol);
+            } else {
+                throw new IllegalArgumentException("Unsupported data type for uniqueCol");
+            }
+
             ResultSet result = prepStat.executeQuery();
 
             while (result.next()) {
@@ -53,4 +60,5 @@ public abstract class Repository<T> {
         }
         return selectedRows;
     }
+
 }

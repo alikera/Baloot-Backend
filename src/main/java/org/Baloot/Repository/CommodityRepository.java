@@ -58,22 +58,24 @@ public class CommodityRepository<T> extends Repository<T> {
         return "SELECT * FROM Commodity WHERE cid = ?";
     }
 
+    public String selectCategories(){ return "SELECT name FROM category WHERE cid = ?"; }
+    public List<String> extractValues(List<HashMap<String, String>> hashMapList) {
+        List<String> valuesList = new ArrayList<>();
+
+        for (HashMap<String, String> hashMap : hashMapList) {
+            valuesList.addAll(hashMap.values());
+        }
+
+        return valuesList;
+    }
 
     public List<String> getCategories(int cid) throws SQLException {
-        String statement = "SELECT name " +
-                "FROM category " +
-                "WHERE cid = " + cid;
-        Connection con = ConnectionPool.getConnection();
-        PreparedStatement prepStat = con.prepareStatement(statement);
-        ResultSet result = prepStat.executeQuery();
-        List<String> categories = new ArrayList<>();
-        while (result.next()) {
-            categories.add(result.getString("name"));
-        }
-        result.close();
-        prepStat.close();
-        con.close();
-        return categories;
+        List<String> colNames = new ArrayList<>();
+        colNames.add("name");
+        String selectStatement = selectCategories();
+        List<HashMap<String, String>> categoryRow = select(cid, colNames, selectStatement);
+
+        return extractValues(categoryRow);
     }
     @Override
     public List<String> getColNames() {

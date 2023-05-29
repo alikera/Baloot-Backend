@@ -130,7 +130,7 @@ public class Database {
         List<HashMap<String, String>> commodityRow = commodityRepository.select(
                 Integer.toString(commodityId),
                 commodityRepository.getColNames(),
-                commentRepository.selectOneStatement()
+                commodityRepository.selectOneStatement()
         );
         if (commodityRow.isEmpty()) {
             throw new CommodityNotFoundException("Commodity not found!");
@@ -145,13 +145,6 @@ public class Database {
                 Double.parseDouble(commodityRow.get(0).get("rating")),
                 Integer.parseInt(commodityRow.get(0).get("in_stock")),
                 commodityRow.get(0).get("image"));
-
-//        for (Commodity commodity : commodities) {
-//            if (commodity.getId() == commodityId) {
-//                return commodity;
-//            }
-//        }
-//        throw new CommodityNotFoundException("Couldn't find commodity with the given Id!");
     }
     public static Provider findByProviderId(int providerId) throws ProviderNotFoundException, SQLException {
         List<HashMap<String, String>> providerRow = providerRepository.select(

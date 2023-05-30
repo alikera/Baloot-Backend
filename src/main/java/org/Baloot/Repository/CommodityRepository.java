@@ -72,6 +72,11 @@ public class CommodityRepository<T> extends Repository<T> {
                 "SET  rating = ? " +
                 "WHERE cid = ?";
     }
+    public String modifyInStockStatement() {
+        return "UPDATE Commodity " +
+                "SET  in_stock = in_stock + ? " +
+                "WHERE cid = ?";
+    }
     @Override
     public String selectOneStatement() {
         return "SELECT * FROM Commodity WHERE cid = ?";

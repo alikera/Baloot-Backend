@@ -42,7 +42,7 @@ public class ProviderController {
         responseMap.put("providerDate", provider.getDate().year);
         responseMap.put("providerImage", provider.getImage());
         try {
-            HashMap<Integer, Integer> userBuyList = castToIntegerHashMap(Database.getUserBuyList(username));
+            HashMap<Integer, Integer> userBuyList = castToIntegerHashMap(Database.getUserList(username, "BuyList"));
             responseMap.put("cartCount", userBuyList.keySet().size());
             responseMap.put("buyList", userBuyList);
             return ResponseEntity.ok(responseMap);

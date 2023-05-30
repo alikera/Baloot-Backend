@@ -35,13 +35,17 @@ public class Database {
         Connection con = ConnectionPool.getConnection();
         Statement createTableStatement = con.createStatement();
         discountRepository.createTable(createTableStatement);
+        discountRepository.createWeakTable(createTableStatement);
+
         providerRepository.createTable(createTableStatement);
+
         commodityRepository.createTable(createTableStatement);
         commodityRepository.createWeakTable(createTableStatement);
         commodityRepository.createRatingTable(createTableStatement);
+
         userRepository.createTable(createTableStatement);
         userRepository.createWeakTable(createTableStatement, "BuyList");
-//        userRepository.createWeakTable(createTableStatement, "PurchasedList");
+        userRepository.createPurchasedListTable(createTableStatement);
 //        commentRepository.createTable(createTableStatement);
 
         System.out.println(_users.length);
@@ -86,6 +90,14 @@ public class Database {
         values.put("cid", commodityId);
         values.put("username", username);
         userRepository.insert(userRepository.removeFromBuyListStatement(values));
+    }
+    public static void insertToPurchasedList(String username, int commodityId, int quantity, Timestamp timestamp) throws SQLException {
+        HashMap<String, String> values = new HashMap<>();
+        values.put("cid", String.valueOf(commodityId));
+        values.put("username", username);
+        values.put("quantity", String.valueOf(quantity));
+        values.put("buyTime", timestamp.toString());
+        userRepository.insert(userRepository.insertPurchasedListStatement(values));
     }
     public static void insertUser(User user) throws SQLException {
         users.add(user);
@@ -159,7 +171,7 @@ public class Database {
 //    public static HashMap<Commodity, Integer> joinWithCommodity(){
 //
 //    }
-    public static HashMap<Commodity, Integer> getUserBuyList(String username) throws SQLException{
+    public static HashMap<Commodity, Integer> getUserList(String username, String type) throws SQLException{
         List<String> colNames = new ArrayList<>();
         colNames.add("cid");
         colNames.add("name");
@@ -169,12 +181,12 @@ public class Database {
         colNames.add("in_stock");
         colNames.add("image");
         colNames.add("quantity");
-        String selectStatement = userRepository.selectBuyListStatement();
-        List<HashMap<String, String>> buyListRow = userRepository.select(new ArrayList<Object>() {{ add(username); }},
+        String selectStatement = userRepository.selectListStatement(type);
+        List<HashMap<String, String>> listRow = userRepository.select(new ArrayList<Object>() {{ add(username); }},
                 colNames,
                 selectStatement);
 
-        return castHashMap(buyListRow);
+        return castHashMap(listRow);
     }
     public static Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException, SQLException {
         List<HashMap<String, String>> commodityRow = commodityRepository.select(
@@ -221,15 +233,17 @@ public class Database {
         if (discount.isEmpty()) {
             throw new DiscountCodeNotFoundException("Discount code " + code + " is not exist");
         }
-        return Double.parseDouble(discount.get(0).get("value"));
+        return Double.parseDouble(discount.get(0).get("value")) / 100;
     }
-    public static void increaseUserCredit(String username, double amount) throws SQLException {
-
+    public static void updateUserCredit(String username, double amount) throws SQLException {
+        String statement = userRepository.updateCreditStatement();
+        List<Object> values = new ArrayList<Object>() {{add(amount); add(username);}};
+        userRepository.update(statement, values);
     }
 
     public static boolean findDiscount(String username, String code) throws SQLException {
         List<HashMap<String, String>> rows = discountRepository.select(new ArrayList<Object>() {{ add(username); add(code);}},
-                new ArrayList<String>() {{ add(username); add(code);}},
+                new ArrayList<String>() {{ add("uid"); add("code");}},
                 discountRepository.findDiscountCodeStatement(username, code));
         return !rows.isEmpty();
     }
@@ -265,6 +279,12 @@ public class Database {
     public static void updateRating(String commodityId, double rating) throws SQLException {
         String statement = commodityRepository.updateRatingStatement();
         List<Object> values = new ArrayList<Object>() {{add(rating); add(commodityId);}};
+        commodityRepository.update(statement, values);
+    }
+
+    public static void modifyInStock(String commodityId, int count) throws SQLException {
+        String statement = commodityRepository.modifyInStockStatement();
+        List<Object> values = new ArrayList<Object>() {{add(count); add(Integer.parseInt(commodityId));}};
         commodityRepository.update(statement, values);
     }
 }

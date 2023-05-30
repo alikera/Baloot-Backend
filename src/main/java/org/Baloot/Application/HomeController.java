@@ -69,7 +69,7 @@ public class HomeController {
         responseMap.put("totalPages", totalPages);
 
         try {
-            HashMap<Integer, Integer> userBuylist = castToIntegerHashMap(Database.getUserBuyList(username));
+            HashMap<Integer, Integer> userBuylist = castToIntegerHashMap(Database.getUserList(username, "BuyList"));
             int cartCounter = userBuylist.keySet().size();
             responseMap.put("cartCount", cartCounter);
             responseMap.put("buylist", userBuylist);
@@ -107,7 +107,7 @@ public class HomeController {
             response.put("comments", comments);
             response.put("providerName", providerName);
             response.put("suggested", suggestedCommodities);
-            HashMap<Integer, Integer> userBuyList = castToIntegerHashMap(Database.getUserBuyList(username));
+            HashMap<Integer, Integer> userBuyList = castToIntegerHashMap(Database.getUserList(username, "BuyList"));
             response.put("cartCount", userBuyList.keySet().size());
             response.put("buyList", userBuyList);
             return ResponseEntity.ok(response);

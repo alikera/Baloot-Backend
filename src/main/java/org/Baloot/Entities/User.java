@@ -120,9 +120,6 @@ public class User {
     }
 
     public void moveBuyToPurchased(double cost, String discountCode) throws NotEnoughCreditException, SQLException {
-        if (credit < cost) {
-            throw new NotEnoughCreditException("Not Enough Credit Exception!");
-        }
         for (Integer key: buyList.keySet()) {
             purchasedList.add(key);
             purchasedCounts.add(buyList.get(key));
@@ -131,10 +128,9 @@ public class User {
         // DELETE USER BUY LIST
 
         buyList.clear();
-        credit -= cost;
         if (!Objects.equals(discountCode, "")) {
             usedDiscountCodes.add(discountCode);
-            Database.insertToUsedCode(username, discountCode);
+
         }
     }
 

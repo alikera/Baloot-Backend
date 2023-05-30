@@ -27,22 +27,20 @@ public class HomeController {
                                             @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "username") String username) {
 
         List<Commodity> commodities = Baloot.getBaloot().getCommodities();
-        if(option.equals("category")) {
-            commodities = Baloot.getBaloot().commodityManager.getCommoditiesByCategory(search);
-            System.out.println(commodities.size());
-        }
-        else if (option.equals("name")) {
-            commodities = Baloot.getBaloot().commodityManager.getCommoditiesByName(search);
-        } else if (option.equals("provider")) {
-            try {
-                commodities = Baloot.getBaloot().commodityManager.getCommoditiesByProvider(search);
-            }catch (ProviderNotFoundException e){
-
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                e.printStackTrace();
-                return ResponseEntity.status(408).body("Database Error");
+        try {
+            if(option.equals("category")) {
+                commodities = Database.getCommodities(search, "category", "cid");
+                System.out.println(commodities.size());
             }
+            else if (option.equals("name")) {
+                commodities = Database.getCommodities(search, "commodity", "cid");
+            } else if (option.equals("provider")) {
+                commodities = Database.getCommodities(search, "provider", "pid");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         }
         if(available){
             commodities = Baloot.getBaloot().commodityManager.getAvailableCommodities(commodities);

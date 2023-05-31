@@ -87,13 +87,6 @@ public class CommodityRepository<T> extends Repository<T> {
                 "JOIN " +tableName+ " w ON c."+entity+ "= w."+entity+") AS joined_table\n" +
                 "WHERE joined_table.name_2 LIKE ?";
     }
-    public String selectCommoditiesByProvider(String entity) {
-        return "SELECT *\n" +
-                "FROM (SELECT c.*, p.name AS provider_name\n" +
-                "FROM Commodity c\n" +
-                "JOIN Provider p ON p.pid = c.pid) AS joined_table\n" +
-                "WHERE joined_table." + entity + " LIKE ?";
-    }
     public String selectRatingStatement() { return "SELECT rate FROM rating WHERE cid = ?"; }
     public List<String> extractValues(List<HashMap<String, String>> hashMapList) {
         List<String> valuesList = new ArrayList<>();

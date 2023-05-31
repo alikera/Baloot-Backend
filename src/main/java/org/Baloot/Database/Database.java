@@ -221,17 +221,6 @@ public class Database {
 
         return castedList;
     }
-    public static List<Commodity> getCommoditiesByCategory(String category) throws SQLException {
-        String finalCategory = category + '%';
-
-        List<HashMap<String, String>> commodityRows = commodityRepository.select(
-                new ArrayList<Object>() {{ add(finalCategory); }},
-                commodityRepository.getColNames(),
-                commodityRepository.selectCommodities("category","cid")
-        );
-
-        return castToList(commodityRows);
-    }
 
     public static List<Commodity> getCommodities(String name, String tableName, String entity) throws SQLException {
         String finalName = name + '%';
@@ -243,16 +232,7 @@ public class Database {
 
         return castToList(commodityRows);
     }
-    public static List<Commodity> getCommoditiesByProvider(String providerName) throws SQLException {
-        String finalName = providerName + '%';
-        List<HashMap<String, String>> commodityRows = commodityRepository.select(
-                new ArrayList<Object>() {{ add(finalName); }},
-                commodityRepository.getColNames(),
-                commodityRepository.selectCommodities("provider", "pid")
-        );
 
-        return castToList(commodityRows);
-    }
 
     public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException, SQLException {
         List<HashMap<String, String>> discount = discountRepository.select(

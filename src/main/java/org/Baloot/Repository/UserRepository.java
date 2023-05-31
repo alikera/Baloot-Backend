@@ -73,18 +73,18 @@ public class UserRepository<T> extends Repository<T> {
         return null;
     }
 
-    public String selectBuyListStatement() {
+    public String selectListStatement(String tableName) {
         return "SELECT c.*, b.quantity\n" +
                 "FROM Commodity c\n" +
                 "JOIN (\n" +
                 "  SELECT cid, COUNT(*) AS quantity\n" +
-                "  FROM BuyList\n" +
+                "  FROM " + tableName + "\n" +
                 "  WHERE username = ?\n" +
                 "  GROUP BY cid\n" +
                 ") b ON c.cid = b.cid\n";
     }
 
-    public String increaseCreditStatement() {
+    public String updateCreditStatement() {
         return "UPDATE User " +
                 "SET credit = credit + ? " +
                 "WHERE username = ?";

@@ -33,8 +33,8 @@ public class DiscountRepository<T> extends Repository<T> {
                 "ON DUPLICATE KEY UPDATE code = code";
     }
     public String insertUsedCodeStatement(HashMap<String, String> values) {
-        return "INSERT INTO UsedCod(uid,code) " +
-                "VALUES('" + values.get("uid") + "' ," + values.get("code") + ")";
+        return "INSERT INTO UsedCode(uid,code) " +
+                "VALUES('" + values.get("uid") + "' ,'" + values.get("code") + "')";
     }
     public String findDiscountCodeStatement(String username, String code) {
         return "SELECT * FROM UsedCode WHERE uid = ? AND code = ?";

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,28 +50,27 @@ public class UserManager {
             Database.insertUser(user);
         }
     }
-    // TODO: bacham gayide shod
     public HashMap<Commodity, Integer> getUserBuyList(String username) throws UserNotFoundException, CommodityNotFoundException, SQLException {
         //        HashMap<Commodity, Integer> commodities = new HashMap<>();
 //        for (int commodityId: buyList.keySet()) {
 //            Commodity commodity = Database.findByCommodityId(commodityId);
 //            commodities.put(commodity, buyList.get(commodityId));
 //        }
-        return Database.getUserBuyList(username);
+        return Database.getUserList(username, "BuyList");
     }
 
     public HashMap<Commodity, Integer> getUserPurchasedList(String username) throws UserNotFoundException, CommodityNotFoundException, SQLException {
-        Database.getPurchasedList(username);
+        return Database.getUserList(username, "PurchasedList");
 
-        User user = Database.findByUsername(username);
-        List<Integer> purchasedListIds = user.getPurchasedList();
-        List<Integer> purchasedCounts = user.getPurchasedCounts();
-        HashMap<Commodity, Integer> commodities = new HashMap<>();
-        for (int i = 0; i < purchasedListIds.size(); i++) {
-            Commodity commodity = Database.findByCommodityId(purchasedListIds.get(i));
-            commodities.put(commodity, purchasedCounts.get(i));
-        }
-        return commodities;
+//        User user = Database.findByUsername(username);
+//        List<Integer> purchasedListIds = user.getPurchasedList();
+//        List<Integer> purchasedCounts = user.getPurchasedCounts();
+//        HashMap<Commodity, Integer> commodities = new HashMap<>();
+//        for (int i = 0; i < purchasedListIds.size(); i++) {
+//            Commodity commodity = Database.findByCommodityId(purchasedListIds.get(i));
+//            commodities.put(commodity, purchasedCounts.get(i));
+//        }
+//        return commodities;
     }
 
     public void addCredit(String username, String credit) throws UserNotFoundException, NegativeAmountException, SQLException {
@@ -78,41 +78,48 @@ public class UserManager {
         if (amount <= 0) {
             throw new NegativeAmountException();
         }
-        Database.increaseUserCredit(username, amount);
+        Database.updateUserCredit(username, amount);
     }
 
     public void finalizePayment(String username, String discountCode, double discountValue, Map<Integer, Integer> commodityCounts) throws UserNotFoundException, NotEnoughCreditException, CommodityNotFoundException, SQLException {
         User user = Database.findByUsername(username);
-//        user.updateBuyListQuantities(commodityCounts);
-        HashMap<Commodity, Integer> buyList = Database.getUserBuyList(username);
-        Set<Commodity> commoditiesId = buyList.keySet();
-        double cost = 0;
-
-        for (Commodity commodity: commoditiesId) {
-            cost += (commodity.getPrice() * buyList.get(commodity));
+        HashMap<Commodity, Integer> buyList = Database.getUserList(username, "BuyList");
+        double cost = calculateCost(buyList, discountValue);
+        if (user.getCredit() < cost) {
+            throw new NotEnoughCreditException("Not Enough Credit Exception!");
         }
-//        user.moveBuyToPurchased(cost * (1 - discountValue), discountCode);
-        // Using discount
+        if (!discountCode.equals("")) {
+            Database.insertToUsedCode(username, discountCode);
+        }
+        Database.updateUserCredit(username, -1 * cost);
+        moveBuyListToPurchasedList(username, buyList);
+    }
+    private double calculateCost(HashMap<Commodity, Integer> buyList, double discountValue) {
+        double cost = 0;
+        for (Commodity commodity: buyList.keySet()) {
+            cost += commodity.getPrice() * buyList.get(commodity);
+        }
+        return cost * (1 - discountValue);
+    }
+    private void moveBuyListToPurchasedList(String username, HashMap<Commodity, Integer> buyList) throws SQLException {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        for (Commodity commodity: buyList.keySet()) {
+            Database.insertToPurchasedList(username, commodity.getId(), buyList.get(commodity), timestamp);
+            Database.removeFromBuyList(username, String.valueOf(commodity.getId()));
+        }
     }
     public void addCommodityToUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, OutOfStockException, UserNotFoundException, CommodityExistenceException, SQLException {
-        Database.insertToBuyList(userId, commodityId);
-
         Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
         if (commodityFound.getInStock() == 0) {
             throw new OutOfStockException("Commodity out of stock!");
         }
-        User userFound = Database.findByUsername(userId);
-        userFound.addToBuyList(Integer.parseInt(commodityId));
-        commodityFound.decreaseInStock();
+        Database.insertToBuyList(userId, commodityId);
+        Database.modifyInStock(commodityId, -1);
     }
 
     public void removeCommodityFromUserBuyList(String userId, String commodityId) throws CommodityNotFoundException, UserNotFoundException, CommodityExistenceException, SQLException {
         Database.removeFromBuyList(userId, commodityId);
-
-        Commodity commodityFound = Database.findByCommodityId(Integer.parseInt(commodityId));
-        User userFound = Database.findByUsername(userId);
-        userFound.removeFromBuyList(Integer.parseInt(commodityId));
-        commodityFound.increaseInStock();
+        Database.modifyInStock(commodityId, 1);
     }
 
     public void login(String username, String password) throws UserNotFoundException, IncorrectPasswordException, SQLException {

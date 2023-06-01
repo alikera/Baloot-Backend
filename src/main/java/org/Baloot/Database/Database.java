@@ -173,6 +173,22 @@ public class Database {
         return castedMap;
     }
 
+    private static List<Commodity> castHashMapToListCommodity(List<HashMap<String, String>> originalMap) throws SQLException {
+        List<Commodity> commodities = new ArrayList<>();
+        for(HashMap<String, String> hashMap: originalMap) {
+            Commodity commodity = new Commodity(Integer.parseInt(hashMap.get("cid")),
+                    hashMap.get("name"),
+                    Integer.parseInt(hashMap.get("pid")),
+                    Double.parseDouble(hashMap.get("price")),
+                    commodityRepository.getCategories(Integer.parseInt(hashMap.get("cid"))),
+                    Double.parseDouble(hashMap.get("rating")),
+                    Integer.parseInt(hashMap.get("in_stock")),
+                    hashMap.get("image"));
+            commodities.add(commodity);
+        }
+        return commodities;
+    }
+
 //    public static HashMap<Commodity, Integer> joinWithCommodity(){
 //
 //    }
@@ -186,6 +202,17 @@ public class Database {
 
         return castHashMap(listRow);
     }
+
+    public static List<Commodity> getProviderCommodities(String providerId) throws SQLException{
+        List<String> colNames = commodityRepository.getColNames();
+        String selectStatement = providerRepository.selectCommodities();
+        List<HashMap<String, String>> rows = userRepository.select(new ArrayList<Object>() {{ add(Integer.parseInt(providerId)); }},
+                colNames,
+                selectStatement);
+
+        return castHashMapToListCommodity(rows);
+    }
+
     public static Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException, SQLException {
         List<HashMap<String, String>> commodityRow = commodityRepository.select(
                 new ArrayList<Object>() {{ add(commodityId); }},

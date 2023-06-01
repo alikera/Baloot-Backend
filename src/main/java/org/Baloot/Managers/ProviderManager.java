@@ -16,13 +16,8 @@ public class ProviderManager {
         Database.insertProvider(provider);
     }
 
-    public List<Commodity> getProvidersCommodities(String providerId) {
-        for (Provider provider : Database.getProviders()) {
-            if (provider.getId() == Integer.parseInt(providerId)) {
-                return provider.getMyCommodities();
-            }
-        }
-        return null;
+    public List<Commodity> getProvidersCommodities(String providerId) throws SQLException {
+        return Database.getProviderCommodities(providerId);
     }
 }
 

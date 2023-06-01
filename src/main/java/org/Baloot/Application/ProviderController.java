@@ -23,9 +23,10 @@ public class ProviderController {
     @RequestMapping(value = "/{providerId}", method = RequestMethod.GET)
     public ResponseEntity<?> getCommodities(@PathVariable String providerId,
                                             @RequestParam (value = "username") String username)  {
-        List<Commodity> commodities = Baloot.getBaloot().providerManager.getProvidersCommodities(providerId);
+        List<Commodity> commodities;
         Provider provider;
         try {
+            commodities = Baloot.getBaloot().providerManager.getProvidersCommodities(providerId);
             provider = Baloot.getBaloot().getProviderById(Integer.valueOf(providerId));
         }
         catch (ProviderNotFoundException e){

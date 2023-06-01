@@ -34,7 +34,9 @@ public class ProviderRepository<T> extends Repository<T> {
     public String selectOneStatement() {
         return "SELECT * FROM Provider WHERE pid = ?";
     }
-
+    public String selectCommodities() {
+        return "SELECT * FROM Commodity WHERE pid = ?";
+    }
     @Override
     public List<String> getColNames() {
         List<String> colNames = new ArrayList<>();

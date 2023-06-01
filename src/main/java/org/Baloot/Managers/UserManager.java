@@ -47,6 +47,7 @@ public class UserManager {
             }
         }
         catch (UserNotFoundException e){
+            user.hashPassword();
             Database.insertUser(user);
         }
     }

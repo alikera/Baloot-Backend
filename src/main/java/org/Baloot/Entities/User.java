@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.Baloot.Database.Database;
 import org.Baloot.Exception.CommodityExistenceException;
 import org.Baloot.Exception.NotEnoughCreditException;
-
 import java.sql.SQLException;
 import java.util.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class User {
     private String username;
@@ -64,5 +64,9 @@ public class User {
         attributes.put("credit", String.valueOf(credit));
 
         return attributes;
+    }
+
+    public void hashPassword() {
+        password = BCrypt.hashpw(password, "");
     }
 }

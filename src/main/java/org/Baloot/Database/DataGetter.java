@@ -41,7 +41,6 @@ public class DataGetter {
 
         String commentsData = getRequest(httpClient, getCommentsEndpoint);
         Comment[] comments = mapper.readValue(commentsData, Comment[].class);
-//        Comment[] comments = new Comment[1];
 
         String discountCodesData = getRequest(httpClient, getDiscountCodesEndpoint);
         DiscountCode[] discountCodes = mapper.readValue(discountCodesData, DiscountCode[].class);

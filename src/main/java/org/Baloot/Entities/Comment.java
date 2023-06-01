@@ -7,11 +7,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.*;
 
 public class Comment {
-//    private HashMap<String, Integer> votes;
+    private int likes;
+    private int dislikes;
     private static int count = 0;
     private int tid;
     private String userEmail;
-    private String username;
     private int commodityId;
     private String text;
     private Date date;
@@ -25,9 +25,13 @@ public class Comment {
         commodityId = _commodityId;
         text = _text;
         date = new Date(_date);
-//        votes = new HashMap<>();
         count++;
+        likes = 0;
+        dislikes = 0;
         tid = count;
+        System.out.println("ASASASASASSAS");
+        System.out.println(count);
+        System.out.println(text);
     }
     public int getId() {
         return tid;
@@ -49,9 +53,26 @@ public class Comment {
         return date.getAsString();
     }
 
-    public java.sql.Date getAsSqlDate() {
-        return date.getAsSqlDate();
+    public int getDislikes() {
+        return dislikes;
     }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikesAndDislikes(List<HashMap<String, String>> _votes){
+        likes = 0;
+        dislikes = 0;
+        for(HashMap<String, String> hashMap: _votes) {
+            if(Integer.parseInt(hashMap.get("status")) == -1){
+                dislikes += 1;
+            } else if (Integer.parseInt(hashMap.get("status")) == 1) {
+                likes += 1;
+            }
+        }
+    }
+
     public HashMap<String, String> getAttributes() {
         HashMap<String, String> attributes = new HashMap<>();
         attributes.put("tid", String.valueOf(tid));
@@ -63,44 +84,4 @@ public class Comment {
         return attributes;
     }
 
-
-    public int voteComment(String username, int vote) {
-        return 1;
-//        if (votes.containsKey(username)) {
-//            if (votes.get(username) == vote) {
-//                return 0;
-//            } else {
-//                votes.put(username, vote);
-//                return -1;
-//            }
-//        } else {
-//            votes.put(username, vote);
-//            return 1;
-//        }
-
-    }
-//
-//    public int getLikes() {
-//        int likesCounter = 0;
-//        for (int vote : votes.values()) {
-//            if (vote == 1) {
-//                likesCounter++;
-//            }
-//        }
-//        return likesCounter;
-//    }
-//
-//    public int getDislikes() {
-//        int dislikesCounter = 0;
-//        for (int vote : votes.values()) {
-//            if (vote == -1) {
-//                dislikesCounter++;
-//            }
-//        }
-//        return dislikesCounter;
-//    }
-
-    public void print() {
-        System.out.println(this.userEmail + " " + this.commodityId + " " + this.text + " " + this.date);
-    }
 }

@@ -81,7 +81,7 @@ public class CommodityRepository<T> extends Repository<T> {
 
     public String getSuggestedCommoditiesStatement() {
         return """
-                SELECT DISTINCT c2.cid, c2.name, c2.price, c2.rating, c2.in_stock, c2.image,
+                SELECT DISTINCT c2.cid, c2.name, c2.pid, c2.price, c2.rating, c2.inStock, c2.image,
                        IF(c1.name = c3.name, 11, 0) + c2.rating AS score
                 FROM Commodity c1
                          JOIN Category cat ON c1.cid = cat.cid
@@ -99,14 +99,20 @@ public class CommodityRepository<T> extends Repository<T> {
         return "SELECT * FROM Commodity WHERE cid = ?";
     }
 
+    public String selectSortedStatement() {
+        return "SELECT *" +
+                "FROM commodity" +
+                "ORDER BY ? ASC";
+    }
     public String selectCategories(){ return "SELECT name FROM category WHERE cid = ?"; }
     public String selectCidFromCategories() { return "SELECT * FROM category WHERE category = ?"; }
-    public String selectCommodities(String tableName, String entity) {
+    public String selectCommodities(String tableName, String entity, String sortBy) {
         return "SELECT *\n" +
                 "FROM (SELECT c.*, w.name AS name_2\n" +
                 "FROM Commodity c\n" +
-                "JOIN " +tableName+ " w ON c."+entity+ "= w."+entity+") AS joined_table\n" +
-                "WHERE joined_table.name_2 LIKE ?";
+                "JOIN " +tableName+ " w ON c."+entity+ "= w."+entity+") AS joined_table\n " +
+                "WHERE joined_table.name_2 LIKE ? AND inStock >= ?\n " +
+                "ORDER BY " + sortBy + " ASC";
     }
     public String selectRatingStatement() { return "SELECT rate FROM rating WHERE cid = ?"; }
     public List<String> extractValues(List<HashMap<String, String>> hashMapList) {

@@ -51,26 +51,11 @@ public class UserManager {
         }
     }
     public HashMap<Commodity, Integer> getUserBuyList(String username) throws UserNotFoundException, CommodityNotFoundException, SQLException {
-        //        HashMap<Commodity, Integer> commodities = new HashMap<>();
-//        for (int commodityId: buyList.keySet()) {
-//            Commodity commodity = Database.findByCommodityId(commodityId);
-//            commodities.put(commodity, buyList.get(commodityId));
-//        }
         return Database.getUserList(username, "BuyList");
     }
 
     public HashMap<Commodity, Integer> getUserPurchasedList(String username) throws UserNotFoundException, CommodityNotFoundException, SQLException {
         return Database.getUserList(username, "PurchasedList");
-
-//        User user = Database.findByUsername(username);
-//        List<Integer> purchasedListIds = user.getPurchasedList();
-//        List<Integer> purchasedCounts = user.getPurchasedCounts();
-//        HashMap<Commodity, Integer> commodities = new HashMap<>();
-//        for (int i = 0; i < purchasedListIds.size(); i++) {
-//            Commodity commodity = Database.findByCommodityId(purchasedListIds.get(i));
-//            commodities.put(commodity, purchasedCounts.get(i));
-//        }
-//        return commodities;
     }
 
     public void addCredit(String username, String credit) throws UserNotFoundException, NegativeAmountException, SQLException {

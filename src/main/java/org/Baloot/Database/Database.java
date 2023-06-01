@@ -2,10 +2,7 @@ package org.Baloot.Database;
 
 import org.Baloot.Entities.*;
 import org.Baloot.Entities.Date;
-import org.Baloot.Exception.CommodityNotFoundException;
-import org.Baloot.Exception.DiscountCodeNotFoundException;
-import org.Baloot.Exception.ProviderNotFoundException;
-import org.Baloot.Exception.UserNotFoundException;
+import org.Baloot.Exception.*;
 import org.Baloot.Repository.*;
 
 import java.sql.*;
@@ -14,17 +11,6 @@ import java.util.stream.Collectors;
 import java.lang.reflect.Field;
 
 public class Database {
-    private static List<User> users = new ArrayList<>();
-    private static List<Provider> providers = new ArrayList<>();
-    private static List<Commodity> commodities = new ArrayList<>();
-    private static List<Comment> comments = new ArrayList<>();
-//    static HashMap<String, Double> discountCodes = new HashMap<>();
-
-    public static List<User> getUsers() { return users; }
-    public static List<Provider> getProviders() { return providers; }
-    public static List<Commodity> getCommodities() { return commodities; }
-    public static List<Comment> getComments() { return comments; }
-
     static DiscountRepository<DiscountCode> discountRepository = new DiscountRepository<>();
     static ProviderRepository<Provider> providerRepository = new ProviderRepository<>();
     static UserRepository<User> userRepository = new UserRepository<>();
@@ -73,13 +59,6 @@ public class Database {
         for (Comment comment: _comments){
             insertComment(comment);
         }
-//        for (Commodity commodity : commodities){
-//            try {
-//                addToProviderCommodityList(commodity);
-//            }catch (ProviderNotFoundException e){
-//
-//            }
-//        }
     }
     public static void insertToBuyList(String username, String commodityId) throws SQLException {
         HashMap<String, String> values = new HashMap<>();
@@ -102,12 +81,10 @@ public class Database {
         userRepository.insert(userRepository.insertPurchasedListStatement(values));
     }
     public static void insertUser(User user) throws SQLException {
-        users.add(user);
         userRepository.insert(userRepository.insertStatement(user.getAttributes()));
     }
 
     public static void insertProvider(Provider provider) throws SQLException {
-        providers.add(provider);
         providerRepository.insert(providerRepository.insertStatement(provider.getAttributes()));
     }
 
@@ -120,26 +97,14 @@ public class Database {
         }
     }
     public static void insertCommodity(Commodity commodity) throws SQLException {
-        commodities.add(commodity);
         commodityRepository.insert(commodityRepository.insertStatement(commodity.getAttributes()));
         insertCategories(commodity);
-//        addToProviderCommodityList(commodity);
     }
 
     public static void insertComment(Comment comment) throws SQLException {
-        comments.add(comment);
         commentRepository.insert(commentRepository.insertStatement(comment.getAttributes()));
     }
 
-    public static void addToProviderCommodityList(Commodity commodity) throws ProviderNotFoundException {
-        for(Provider provider : providers){
-            if(provider.getId() == commodity.getProviderId()){
-                provider.addToCommodities(commodity);
-                return;
-            }
-        }
-        throw new ProviderNotFoundException("Couldn't find provider with the given Id!");
-    }
     public static User findByUsername(String username) throws UserNotFoundException, SQLException {
         List<HashMap<String, String>> userRow = userRepository.select(
                 new ArrayList<Object>() {{ add(username); }},
@@ -173,25 +138,6 @@ public class Database {
         return castedMap;
     }
 
-    private static List<Commodity> castHashMapToListCommodity(List<HashMap<String, String>> originalMap) throws SQLException {
-        List<Commodity> commodities = new ArrayList<>();
-        for(HashMap<String, String> hashMap: originalMap) {
-            Commodity commodity = new Commodity(Integer.parseInt(hashMap.get("cid")),
-                    hashMap.get("name"),
-                    Integer.parseInt(hashMap.get("pid")),
-                    Double.parseDouble(hashMap.get("price")),
-                    commodityRepository.getCategories(Integer.parseInt(hashMap.get("cid"))),
-                    Double.parseDouble(hashMap.get("rating")),
-                    Integer.parseInt(hashMap.get("in_stock")),
-                    hashMap.get("image"));
-            commodities.add(commodity);
-        }
-        return commodities;
-    }
-
-//    public static HashMap<Commodity, Integer> joinWithCommodity(){
-//
-//    }
     public static HashMap<Commodity, Integer> getUserList(String username, String type) throws SQLException{
         List<String> colNames = commodityRepository.getColNames();
         colNames.add("quantity");
@@ -203,14 +149,14 @@ public class Database {
         return castHashMap(listRow);
     }
 
-    public static List<Commodity> getProviderCommodities(String providerId) throws SQLException{
+    public static List<Commodity> getProviderCommodities(String providerId) throws Exception {
         List<String> colNames = commodityRepository.getColNames();
         String selectStatement = providerRepository.selectCommodities();
         List<HashMap<String, String>> rows = userRepository.select(new ArrayList<Object>() {{ add(Integer.parseInt(providerId)); }},
                 colNames,
                 selectStatement);
 
-        return castHashMapToListCommodity(rows);
+        return castToList(rows, Commodity.class);
     }
 
     public static Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException, SQLException {
@@ -232,6 +178,7 @@ public class Database {
                 Integer.parseInt(commodityRow.get(0).get("inStock")),
                 commodityRow.get(0).get("image"));
     }
+
     public static Provider findByProviderId(int providerId) throws ProviderNotFoundException, SQLException {
         List<HashMap<String, String>> providerRow = providerRepository.select(
                 new ArrayList<Object>() {{ add(providerId); }},
@@ -289,37 +236,67 @@ public class Database {
         }
     }
 
-    public static List<Commodity> getCommodities(String name, String tableName, String entity) throws Exception {
+    public static List<Commodity> getCommodities(String name, int available, String sortBy, String tableName, String entity) throws Exception {
         String finalName = name + '%';
         List<HashMap<String, String>> commodityRows = commodityRepository.select(
-                new ArrayList<Object>() {{ add(finalName); }},
+                new ArrayList<Object>() {{ add(finalName); add(available);}},
                 commodityRepository.getColNames(),
-                commodityRepository.selectCommodities(tableName, entity)
+                commodityRepository.selectCommodities(tableName, entity, sortBy)
         );
 
         return castToList(commodityRows, Commodity.class);
     }
-    public static List<Comment> getComments(int id) throws Exception {
+
+    public static List<Comment> getComments(int commodityId) throws Exception {
         List<HashMap<String, String>> commentRows = commentRepository.select(
-                new ArrayList<Object>() {{ add(id); }},
+                new ArrayList<Object>() {{ add(commodityId); }},
                 commentRepository.getColNames(),
                 commentRepository.selectOneStatement()
         );
 
-        return castToList(commentRows, Comment.class);
+        List<Comment> allComments = castToList(commentRows, Comment.class);
+        setLikesAndDislikes(allComments);
+//        setVotesOfComment(allComments);
+        return allComments;
     }
-    public static void insertVoteToComment(String userEmail, String tid, String status) throws SQLException {
 
+    public static void setLikesAndDislikes(List<Comment> allComments) throws SQLException {
+        for(Comment comment: allComments) {
+            List<HashMap<String, String>> rows = commentRepository.select(new ArrayList<Object>() {{
+                                                                              add(comment.getId());
+                                                                          }},
+                    new ArrayList<String>() {{
+                        add("userEmail"); add("status");
+                    }},
+                    commentRepository.selectVoteStatement());
+            comment.setLikesAndDislikes(rows);
+        }
+    }
+    public static int insertVoteToComment(String userEmail, String tid, String status) throws SQLException, InvalidVoteException {
+        if (!Objects.equals(status, "0") && !Objects.equals(status, "1") && !Objects.equals(status, "-1")) {
+            throw new InvalidVoteException("Invalid Vote");
+        }
+        List<HashMap<String, String>> rows = commentRepository.select(new ArrayList<Object>() {{
+                                                                          add(Integer.parseInt(tid)); add(userEmail);
+                                                                      }},
+                new ArrayList<String>() {{
+                    add("status");
+                }},
+                commentRepository.selectPrevVoteStatement());
+        int prevStatus = 1;
+        if(rows.size() != 0){
+            prevStatus = Integer.parseInt(rows.get(0).get("status"));
+        }
         commentRepository.insert(commentRepository.insertVoteComment(
                 new HashMap<String, String>() {{ put("userEmail", userEmail); put("tid", tid); put("status", status);}}
         ));
-    }
-
-    public static boolean getVotesOfComments(String userEmail, String tid, String status) throws SQLException {
-        List<HashMap<String, String>> rows = commentRepository.select(new ArrayList<Object>() {{ add(userEmail); add(Integer.parseInt(tid)); add(Integer.parseInt(status));}},
-                new ArrayList<String>() {{ add("userEmail"); add("tid"); add("status");}},
-                commentRepository.selectVoteStatement());
-        return !rows.isEmpty();
+        if(prevStatus == Integer.parseInt(status)){
+            return 0;
+        } else if (rows.size() == 0) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
 
     public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException, SQLException {
@@ -353,10 +330,6 @@ public class Database {
         ));
     }
 
-    public static void getPurchasedList(String username) {
-
-    }
-
     public static void insertRating(String commodityId, String username, String score) throws SQLException {
         HashMap<String, String> values = new HashMap<>() {{
             put("cid", commodityId);
@@ -386,11 +359,11 @@ public class Database {
         commodityRepository.update(statement, values);
     }
 
-    public static List<Commodity> getSuggestedCommodities(int id) throws SQLException {
+    public static List<Commodity> getSuggestedCommodities(int id) throws Exception {
         String statement = commodityRepository.getSuggestedCommoditiesStatement();
         List<String> colNames = commodityRepository.getColNames();
-        List<HashMap<String, String>> commodities = commodityRepository.select(new ArrayList<>() {{add(id);}},
+        List<HashMap<String, String>> commodities = commodityRepository.select(new ArrayList<>() {{add(id); add(id);}},
                 colNames, statement);
-        return castHashMapToListCommodity(commodities);
+        return castToList(commodities, Commodity.class);
     }
 }

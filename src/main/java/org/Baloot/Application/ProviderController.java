@@ -27,7 +27,7 @@ public class ProviderController {
         Provider provider;
         try {
             commodities = Baloot.getBaloot().providerManager.getProvidersCommodities(providerId);
-            provider = Baloot.getBaloot().getProviderById(Integer.valueOf(providerId));
+            provider = Database.findByProviderId(Integer.parseInt(providerId));
         }
         catch (ProviderNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -35,6 +35,8 @@ public class ProviderController {
             System.out.println(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(408).body("Database Error");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         System.out.println("jere");
         Map<String, Object> responseMap = new HashMap<>();

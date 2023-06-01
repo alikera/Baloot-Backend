@@ -43,16 +43,6 @@ public class Provider {
 
         return attributes;
     }
-    public double getAverageRatingCommodities() {
-        return myCommodities.stream()
-                .mapToDouble(Commodity::getRating) // Extract the scores as an IntStream
-                .average() // Calculate the average score
-                .orElse(0.0);
-    }
-
-    public void addToCommodities(Commodity commodity){
-        myCommodities.add(commodity);
-    }
     public Provider(@JsonProperty("id") int _id,
                     @JsonProperty("name") String _name,
                     @JsonProperty("registryDate") String _registryDate,
@@ -62,10 +52,6 @@ public class Provider {
         this.registryDate = new Date(_registryDate);
         myCommodities = new ArrayList<>();
         this.image = _image;
-    }
-
-    public void print() {
-        System.out.println(this.id + " " + this.name + " " + this.registryDate);
     }
 }
 

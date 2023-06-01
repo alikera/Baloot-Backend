@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class Commodity {
-//    private HashMap<String, Double> Ratings;
     private int cid;
     private String name;
     private int providerId;
@@ -51,22 +50,7 @@ public class Commodity {
 
     public String getImage(){return image;}
     public int getCountOfRatings(){ return 1; }
-    public void decreaseInStock(){
-        inStock--;
-    }
-    public void increaseInStock(){
-        inStock++;
-    }
 
-    private double calculateAverageOfRatings(){
-//        double sum = 0.0;
-//        for (Double value : Ratings.values()) {
-//            sum += value;
-//        }
-//
-//        return sum / Ratings.size();
-        return 1;
-    }
     public Commodity(){
 
     }
@@ -81,7 +65,6 @@ public class Commodity {
         categories = new HashSet<String>(_categories);
         rating = _rating;
         inStock = _inStock;
-//        Ratings = new HashMap<>();
         image = _image;
     }
 
@@ -97,42 +80,5 @@ public class Commodity {
         attributes.put("image", image);
 
         return attributes;
-    }
-
-    public boolean isInCategoryGiven(String category){
-        for(String cat : categories){
-            if(cat.equalsIgnoreCase(category)){
-                return true;
-            }
-        }
-        return false;
-    }
-//    public void rateCommodity(String username, int score) throws InvalidRatingException, SQLException {
-//        Ratings.put(username, (double) score);
-//        rating = calculateAverageOfRatings();
-//    }
-    public void print() {
-        System.out.println(this.cid + " " + this.name + " " + this.providerId + " " + this.price + " " + this.rating + " " + this.inStock);
-        for (String category : categories) {
-            System.out.println(category);
-        }
-    }
-
-    public ObjectNode toJson() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        JsonNode categoriesNode = mapper.valueToTree(categories);
-        JsonNodeFactory factory = JsonNodeFactory.instance;
-        ArrayNode arrayNode = factory.arrayNode();
-
-        ObjectNode node = mapper.createObjectNode();
-        node.put("id", this.cid);
-        node.put("name", this.name);
-        node.put("providerId", this.providerId);
-        node.put("price", this.price);
-        node.put("categories", categoriesNode);
-        node.put("rating", this.rating);
-        node.put("inStock", this.inStock);
-        return node;
     }
 }

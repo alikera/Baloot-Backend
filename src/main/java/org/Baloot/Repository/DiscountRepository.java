@@ -34,7 +34,7 @@ public class DiscountRepository<T> extends Repository<T> {
     }
     public String insertUsedCodeStatement(HashMap<String, String> values) {
         return "INSERT INTO UsedCode(uid,code) " +
-                "VALUES('" + values.get("uid") + "' ,'" + values.get("code") + "')";
+                "VALUES('" + Integer.parseInt(values.get("uid")) + "' ,'" + Integer.parseInt(values.get("code")) + ")";
     }
     public String findDiscountCodeStatement(String username, String code) {
         return "SELECT * FROM UsedCode WHERE uid = ? AND code = ?";

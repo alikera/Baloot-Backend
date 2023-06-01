@@ -12,11 +12,7 @@ public class ProviderManager {
     public ProviderManager() {
     }
 
-    public void addProvider(Provider provider) throws SQLException {
-        Database.insertProvider(provider);
-    }
-
-    public List<Commodity> getProvidersCommodities(String providerId) throws SQLException {
+    public List<Commodity> getProvidersCommodities(String providerId) throws Exception {
         return Database.getProviderCommodities(providerId);
     }
 }

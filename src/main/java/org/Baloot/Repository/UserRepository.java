@@ -15,7 +15,8 @@ public class UserRepository<T> extends Repository<T> {
     public void createTable(Statement createTableStatement) throws SQLException {
         createTableStatement.addBatch(
                 "CREATE TABLE IF NOT EXISTS User(username CHAR(50) PRIMARY KEY," +
-                        " password CHAR(50)," +
+                        " password CHAR(100)," +
+                        " salt CHAR(100) DEFAULT '0', " +
                         " email CHAR(50)," +
                         " birth_date DATE," +
                         " address TEXT," +
@@ -40,9 +41,9 @@ public class UserRepository<T> extends Repository<T> {
 
     @Override
     public String insertStatement(HashMap<String, String> values) {
-        return "INSERT INTO User(username,password,email,birth_date,address,credit)"
-                + " VALUES('" + values.get("username") + "','" + values.get("password") + "','" + values.get("email") +
-                "','" + java.sql.Date.valueOf(values.get("birthDate")) + "','" + values.get("address") + "','" + Double.parseDouble(values.get("credit")) + "')"
+        return "INSERT INTO User(username,password,salt,email,birth_date,address,credit)"
+                + " VALUES('" + values.get("username") + "','" + values.get("password") + "','" + values.get("salt") + "','"
+                + values.get("email") + "','" + java.sql.Date.valueOf(values.get("birthDate")) + "','" + values.get("address") + "','" + Double.parseDouble(values.get("credit")) + "')"
                 + "ON DUPLICATE KEY UPDATE username = username";
     }
 
@@ -95,6 +96,7 @@ public class UserRepository<T> extends Repository<T> {
         List<String> colNames = new ArrayList<>();
         colNames.add("username");
         colNames.add("password");
+        colNames.add("salt");
         colNames.add("email");
         colNames.add("birth_date");
         colNames.add("address");

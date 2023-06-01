@@ -11,16 +11,19 @@ import org.mindrot.jbcrypt.BCrypt;
 public class User {
     private String username;
     private String password;
+    private String salt = "";
     private String email;
     private Date birthDate;
     private String address;
     private double credit;
 
     public User(@JsonProperty("username") String _username, @JsonProperty("password") String _password,
-                @JsonProperty("email") String _email, @JsonProperty("birthDate") String _birthDate,
-                @JsonProperty("address") String _address, @JsonProperty("credit") double _credit) {
+                @JsonProperty("salt") String _salt, @JsonProperty("email") String _email,
+                @JsonProperty("birthDate") String _birthDate, @JsonProperty("address") String _address,
+                @JsonProperty("credit") double _credit) {
         username = _username;
         password = _password;
+        salt = _salt;
         email = _email;
         birthDate = new Date(_birthDate);
         address = _address;
@@ -34,22 +37,19 @@ public class User {
     public String getPassword() {
         return password;
     }
-
+    public String getSalt() { return salt; }
     public String getEmail() {
         return email;
     }
-
     public String getBirthDate() {
         return birthDate.getAsString();
     }
-
     public Date getDate(){
         return birthDate;
     }
     public String getAddress() {
         return address;
     }
-
     public double getCredit() {
         return credit;
     }
@@ -62,11 +62,13 @@ public class User {
         attributes.put("birthDate", birthDate.getAsSqlDate().toString());
         attributes.put("address", address);
         attributes.put("credit", String.valueOf(credit));
+        attributes.put("salt", salt);
 
         return attributes;
     }
 
     public void hashPassword() {
-        password = BCrypt.hashpw(password, "");
+        salt = BCrypt.gensalt();
+        password = BCrypt.hashpw(password, salt);
     }
 }

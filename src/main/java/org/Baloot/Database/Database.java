@@ -81,6 +81,7 @@ public class Database {
         userRepository.insert(userRepository.insertPurchasedListStatement(values));
     }
     public static void insertUser(User user) throws SQLException {
+        user.hashPassword();
         userRepository.insert(userRepository.insertStatement(user.getAttributes()));
     }
 
@@ -117,6 +118,7 @@ public class Database {
 
         return new User(userRow.get(0).get("username"),
                 userRow.get(0).get("password"),
+                userRow.get(0).get("salt"),
                 userRow.get(0).get("email"),
                 userRow.get(0).get("birth_date"), userRow.get(0).get("address"),
                 Double.parseDouble(userRow.get(0).get("credit")));

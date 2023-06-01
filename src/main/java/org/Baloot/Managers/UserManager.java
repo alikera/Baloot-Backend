@@ -4,6 +4,7 @@ import org.Baloot.Database.Database;
 import org.Baloot.Entities.Commodity;
 import org.Baloot.Entities.User;
 import org.Baloot.Exception.*;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.ResponseEntity;
 
 import javax.xml.crypto.Data;
@@ -29,7 +30,7 @@ public class UserManager {
     }
 
     public void registerNewUser(String username, String password, String email, String address, String date) throws SQLException, DuplicateUsernameException, DuplicateEmailException{
-        User newUser = new User(username, password, email, date, address, 0);
+        User newUser = new User(username, password, "", email, date, address, 0);
         try {
             addUser(newUser);
         }
@@ -122,7 +123,7 @@ public class UserManager {
 
     public void login(String username, String password) throws UserNotFoundException, IncorrectPasswordException, SQLException {
         User user = Database.findByUsername(username);
-        if (Objects.equals(password, user.getPassword())) {
+        if (Objects.equals(user.getPassword(), BCrypt.hashpw(password, user.getSalt()))) {
             setLoggedInUser(user);
             System.out.println("True");
         }

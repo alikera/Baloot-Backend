@@ -37,22 +37,10 @@ public class Baloot {
     public CommentManager commentManager;
     public ProviderManager providerManager;
 
-
-    public List<User> getUsers() {
-        return Database.getUsers();
-    }
     public User getUserByUsername(String username) throws UserNotFoundException, SQLException {
         return Database.findByUsername(username);
     }
-    public List<Provider> getProviders() {
-        return Database.getProviders();
-    }
-    public Provider getProviderById(Integer id) throws ProviderNotFoundException, SQLException {
-        return Database.findByProviderId(id);
-    }
-    public List<Commodity> getCommodities() {
-        return Database.getCommodities();
-    }
+
     public Commodity getCommodityById(Integer id) throws CommodityNotFoundException, SQLException {
         return Database.findByCommodityId(id);
     }

@@ -64,6 +64,8 @@ public abstract class Repository<T> {
                     prepStat.setString(i + 1, (String) mustFill.get(i));
                 } else if (mustFill.get(i) instanceof Integer) {
                     prepStat.setInt(i + 1, (Integer) mustFill.get(i));
+                } else if (mustFill.get(i) instanceof Double) {
+                    prepStat.setDouble(i + 1, (Double) mustFill.get(i));
                 } else {
                     throw new IllegalArgumentException("Unsupported data type for uniqueCol");
                 }

@@ -26,50 +26,25 @@ public class HomeController {
                                             @RequestParam(value = "available") Boolean available, @RequestParam(value = "sort") String sortBy,
                                             @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "username") String username) {
 
-        List<Commodity> commodities = null;
         try {
-            if(option.equals("category")) {
-                commodities = Database.getCommodities(search, "category", "cid");
-                System.out.println(commodities.size());
+            System.out.println(sortBy);
+            List<Commodity> commodities = Baloot.getBaloot().commodityManager.getCommodities(option,search,sortBy,available);
+            page = page -1;
+            int size = 12;
+            int totalItems = commodities.size();
+            int totalPages = (int) Math.ceil((double) totalItems / size);
+
+            if (page < 0 || page >= totalPages) {
+                return ResponseEntity.badRequest().build();
             }
-            else if (option.equals("name")) {
-                commodities = Database.getCommodities(search, "commodity", "cid");
-            } else if (option.equals("provider")) {
-                commodities = Database.getCommodities(search, "provider", "pid");
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(408).body("Database Error");
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+            int startIndex = page * size;
+            int endIndex = Math.min(startIndex + size, totalItems);
 
-        }
-        if(available){
-            commodities = Baloot.getBaloot().commodityManager.getAvailableCommodities(commodities);
-        }
-        if (Objects.equals(sortBy, "name")) {
-            Baloot.getBaloot().commodityManager.getSortedCommoditiesByName(commodities);
-        } else if (Objects.equals(sortBy, "price")) {
-            Baloot.getBaloot().commodityManager.getSortedCommoditiesByPrice(commodities);
-        }
-        page = page -1;
-        int size = 12;
-        int totalItems = commodities.size();
-        int totalPages = (int) Math.ceil((double) totalItems / size);
+            commodities = commodities.subList(startIndex, endIndex);
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put("commodities", commodities);
+            responseMap.put("totalPages", totalPages);
 
-        if (page < 0 || page >= totalPages) {
-            return ResponseEntity.badRequest().build();
-        }
-        int startIndex = page * size;
-        int endIndex = Math.min(startIndex + size, totalItems);
-
-        commodities = commodities.subList(startIndex, endIndex);
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("commodities", commodities);
-        responseMap.put("totalPages", totalPages);
-
-        try {
             HashMap<Integer, Integer> userBuylist = castToIntegerHashMap(Database.getUserList(username, "BuyList"));
             int cartCounter = userBuylist.keySet().size();
             responseMap.put("cartCount", cartCounter);
@@ -82,6 +57,8 @@ public class HomeController {
             System.out.println(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(408).body("Database Error");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -101,7 +78,7 @@ public class HomeController {
                 System.out.println(cc);
             }
             List<Comment> comments = Database.getComments(Integer.parseInt(id));
-            String providerName = Baloot.getBaloot().getProviderById(commodity.getProviderId()).getName();
+            String providerName = Database.findByProviderId(commodity.getProviderId()).getName();
             List<Commodity> suggestedCommodities = Baloot.getBaloot().commodityManager.getSuggestedCommodities(commodity);
             HashMap<String, Object> response = new HashMap<>();
             response.put("info", commodity);
@@ -137,7 +114,7 @@ public class HomeController {
             response.put("rating", Double.toString(rating));
             response.put("count", Integer.toString(count));
             return ResponseEntity.ok(response);
-        } catch (UserNotFoundException| CommodityNotFoundException e) {
+        } catch ( CommodityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (InvalidRatingException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -160,7 +137,7 @@ public class HomeController {
         try {
             Database.insertComment(comment);
 
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(408).body("Database Error");
@@ -175,10 +152,9 @@ public class HomeController {
             String username = body.get("username");
             String commentId = body.get("commentId");
             String vote = body.get("vote");
-            int status = Baloot.getBaloot().commentManager.voteComment(username, id, commentId, vote);
+//            int status = Baloot.getBaloot().commentManager.voteComment(username, id, commentId, vote);
+            int status = Database.insertVoteToComment(username,commentId,vote);
             return ResponseEntity.ok(status);
-        } catch (UserNotFoundException | CommodityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (InvalidVoteException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (SQLException e) {

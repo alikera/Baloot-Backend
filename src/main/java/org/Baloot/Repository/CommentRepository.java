@@ -26,11 +26,11 @@ public class CommentRepository<T> extends Repository<T> {
     }
     public void createWeakTable(Statement createTableStatement) throws SQLException {
         createTableStatement.addBatch(
-                "CREATE TABLE IF NOT EXISTS Votes(" +
+                "CREATE TABLE IF NOT EXISTS Vote(" +
                         "userEmail CHAR(50), " +
                         "tid BIGINT, " +
                         "status INT," +
-                        "PRIMARY KEY (userEmail, tid, status))"
+                        "PRIMARY KEY (userEmail, tid))"
         );
     }
     @Override
@@ -38,18 +38,22 @@ public class CommentRepository<T> extends Repository<T> {
         return "INSERT INTO Comment(tid,userEmail,commodityId,text,date)"
                 + " VALUES('" + values.get("tid") + "','" + values.get("userEmail") + "','" + values.get("commodityId") + "','" +
                                 values.get("text") + "','" + java.sql.Date.valueOf(values.get("date")) + "')"
-                + "ON DUPLICATE KEY UPDATE text = text";
+                + "ON DUPLICATE KEY UPDATE tid = tid";
     }
     public String insertVoteComment(HashMap<String, String> values) {
         return "INSERT INTO Vote(userEmail,tid,status) " +
-                "VALUES('" + values.get("userEmail") + "' ,'" + values.get("tid") + values.get("status") + "')";
+                "VALUES('" + values.get("userEmail") + "' ," + Integer.parseInt(values.get("tid")) + "," + Integer.parseInt(values.get("status")) + ")"
+                + "ON DUPLICATE KEY UPDATE status = " + Integer.parseInt(values.get("status"));
     }
     @Override
     public String selectOneStatement() {
         return "SELECT * FROM Comment WHERE commodityId = ?";
     }
     public String selectVoteStatement() {
-        return "SELECT * FROM Vote WHERE userEmail = ? AND tid = ?";
+        return "SELECT * FROM Vote WHERE tid = ?";
+    }
+    public String selectPrevVoteStatement() {
+        return "SELECT * FROM Vote WHERE tid = ? AND userEmail = ?";
     }
     @Override
     public List<String> getColNames() {

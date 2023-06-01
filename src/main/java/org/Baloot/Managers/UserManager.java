@@ -121,11 +121,11 @@ public class UserManager {
         Database.modifyInStock(commodityId, 1);
     }
 
-    public void login(String username, String password) throws UserNotFoundException, IncorrectPasswordException, SQLException {
-        User user = Database.findByUsername(username);
+    public String login(String userEmail, String password) throws UserNotFoundException, IncorrectPasswordException, SQLException {
+        User user = Database.findByUserEmail(userEmail);
         if (Objects.equals(user.getPassword(), BCrypt.hashpw(password, user.getSalt()))) {
             setLoggedInUser(user);
-            System.out.println("True");
+            return user.getUsername();
         }
         else {
             System.out.println("False");

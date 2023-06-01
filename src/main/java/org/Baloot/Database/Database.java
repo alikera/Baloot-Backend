@@ -124,6 +124,23 @@ public class Database {
                 Double.parseDouble(userRow.get(0).get("credit")));
     }
 
+    public static User findByUserEmail(String userEmail) throws UserNotFoundException, SQLException {
+        List<HashMap<String, String>> userRow = userRepository.select(
+                new ArrayList<Object>() {{ add(userEmail); }},
+                userRepository.getColNames(),
+                userRepository.selectOneStatement("email")
+        );
+        if (userRow.isEmpty()) {
+            throw new UserNotFoundException("User not found!");
+        }
+
+        return new User(userRow.get(0).get("username"),
+                userRow.get(0).get("password"),
+                userRow.get(0).get("salt"),
+                userRow.get(0).get("email"),
+                userRow.get(0).get("birth_date"), userRow.get(0).get("address"),
+                Double.parseDouble(userRow.get(0).get("credit")));
+    }
     public static boolean isEmailUsed(String email) throws SQLException {
         List<HashMap<String, String>> userRow = userRepository.select(
                 new ArrayList<Object>() {{ add(email); }},

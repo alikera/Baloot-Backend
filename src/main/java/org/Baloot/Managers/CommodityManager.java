@@ -117,28 +117,8 @@ public class CommodityManager {
         return filteredCommodities;
     }
 
-    public List<Commodity> getSuggestedCommodities(Commodity currentCommodity, Set<String> categories) {
-        List<CommodityScore> weightedCommodities = new ArrayList<>();
-        for (Commodity commodity : Database.getCommodities()) {
-            if (currentCommodity.getId() != commodity.getId()) {
-                double score = calculateScoreForSuggestingCommodities(commodity, categories);
-                weightedCommodities.add(new CommodityScore(commodity, score));
-            }
-        }
-        weightedCommodities.sort(Comparator.comparing(cs -> -cs.getScore()));
-        List<Commodity> filteredCommodities = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            filteredCommodities.add(weightedCommodities.get(i).getCommodity());
-        }
-
-        return filteredCommodities;
-    }
-    private double calculateScoreForSuggestingCommodities(Commodity commodity, Set<String> categories){
-        double score = commodity.getRating();
-        if(commodity.getCategories().equals(categories)){
-                score += 11;
-        }
-        return score;
+    public List<Commodity> getSuggestedCommodities(Commodity currentCommodity) throws SQLException {
+        return Database.getSuggestedCommodities(currentCommodity.getId());
     }
 
     public List<Comment> getCommentsOfCommodity(int id) {

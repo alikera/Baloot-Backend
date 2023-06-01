@@ -78,6 +78,22 @@ public class CommodityRepository<T> extends Repository<T> {
                 "SET  inStock = inStock + ? " +
                 "WHERE cid = ?";
     }
+
+    public String getSuggestedCommoditiesStatement() {
+        return """
+                SELECT DISTINCT c2.cid, c2.name, c2.price, c2.rating, c2.in_stock, c2.image,
+                       IF(c1.name = c3.name, 11, 0) + c2.rating AS score
+                FROM Commodity c1
+                         JOIN Category cat ON c1.cid = cat.cid
+                         JOIN Category cat2 ON cat.name = cat2.name
+                         JOIN Commodity c2 ON cat2.cid = c2.cid
+                         LEFT JOIN Category cat3 ON c2.cid = cat3.cid
+                         LEFT JOIN Commodity c3 ON cat3.cid = c1.cid
+                WHERE c1.cid = ? AND c2.cid != ?
+                ORDER BY score DESC
+                LIMIT 4;
+                """;
+    }
     @Override
     public String selectOneStatement() {
         return "SELECT * FROM Commodity WHERE cid = ?";

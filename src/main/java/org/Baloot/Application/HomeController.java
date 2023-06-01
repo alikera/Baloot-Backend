@@ -102,7 +102,7 @@ public class HomeController {
             }
             List<Comment> comments = Database.getComments(Integer.parseInt(id));
             String providerName = Baloot.getBaloot().getProviderById(commodity.getProviderId()).getName();
-            List<Commodity> suggestedCommodities = Baloot.getBaloot().commodityManager.getSuggestedCommodities(commodity, commodity.getCategories());
+            List<Commodity> suggestedCommodities = Baloot.getBaloot().commodityManager.getSuggestedCommodities(commodity);
             HashMap<String, Object> response = new HashMap<>();
             response.put("info", commodity);
             response.put("comments", comments);
@@ -114,6 +114,10 @@ public class HomeController {
             return ResponseEntity.ok(response);
         } catch (CommodityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

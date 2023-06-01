@@ -385,4 +385,12 @@ public class Database {
         List<Object> values = new ArrayList<Object>() {{add(count); add(Integer.parseInt(commodityId));}};
         commodityRepository.update(statement, values);
     }
+
+    public static List<Commodity> getSuggestedCommodities(int id) throws SQLException {
+        String statement = commodityRepository.getSuggestedCommoditiesStatement();
+        List<String> colNames = commodityRepository.getColNames();
+        List<HashMap<String, String>> commodities = commodityRepository.select(new ArrayList<>() {{add(id);}},
+                colNames, statement);
+        return castHashMapToListCommodity(commodities);
+    }
 }

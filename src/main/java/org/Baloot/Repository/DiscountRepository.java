@@ -40,8 +40,8 @@ public class DiscountRepository<T> extends Repository<T> {
         return "SELECT * FROM UsedCode WHERE uid = ? AND code = ?";
     }
     @Override
-    public String selectOneStatement() {
-        return "SELECT * FROM discount WHERE code = ?";
+    public String selectOneStatement(String field) {
+        return "SELECT * FROM discount WHERE " + field + " = ?";
     }
 
     @Override

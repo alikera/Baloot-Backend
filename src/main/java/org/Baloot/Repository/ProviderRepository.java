@@ -31,8 +31,8 @@ public class ProviderRepository<T> extends Repository<T> {
     }
 
     @Override
-    public String selectOneStatement() {
-        return "SELECT * FROM Provider WHERE pid = ?";
+    public String selectOneStatement(String field) {
+        return "SELECT * FROM Provider WHERE " + field + " = ?";
     }
     public String selectCommodities() {
         return "SELECT * FROM Commodity WHERE pid = ?";

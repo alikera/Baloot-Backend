@@ -109,7 +109,7 @@ public class Database {
         List<HashMap<String, String>> userRow = userRepository.select(
                 new ArrayList<Object>() {{ add(username); }},
                 userRepository.getColNames(),
-                userRepository.selectOneStatement()
+                userRepository.selectOneStatement("username")
         );
         if (userRow.isEmpty()) {
             throw new UserNotFoundException("User not found!");
@@ -120,6 +120,19 @@ public class Database {
                 userRow.get(0).get("email"),
                 userRow.get(0).get("birth_date"), userRow.get(0).get("address"),
                 Double.parseDouble(userRow.get(0).get("credit")));
+    }
+
+    public static boolean isEmailUsed(String email) throws SQLException {
+        List<HashMap<String, String>> userRow = userRepository.select(
+                new ArrayList<Object>() {{ add(email); }},
+                userRepository.getColNames(),
+                userRepository.selectOneStatement("email")
+        );
+        if (userRow.isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
     }
     public static HashMap<Commodity, Integer> castHashMap(List<HashMap<String, String>> originalMap) throws SQLException {
         HashMap<Commodity, Integer> castedMap = new HashMap<>();
@@ -163,7 +176,7 @@ public class Database {
         List<HashMap<String, String>> commodityRow = commodityRepository.select(
                 new ArrayList<Object>() {{ add(commodityId); }},
                 commodityRepository.getColNames(),
-                commodityRepository.selectOneStatement()
+                commodityRepository.selectOneStatement("cid")
         );
         if (commodityRow.isEmpty()) {
             throw new CommodityNotFoundException("Commodity not found!");
@@ -183,7 +196,7 @@ public class Database {
         List<HashMap<String, String>> providerRow = providerRepository.select(
                 new ArrayList<Object>() {{ add(providerId); }},
                 providerRepository.getColNames(),
-                providerRepository.selectOneStatement()
+                providerRepository.selectOneStatement("pid")
         );
         // TODO: Maybe Error in throwing(providerRow[0].isempty()
         if (providerRow.isEmpty()) {
@@ -251,7 +264,7 @@ public class Database {
         List<HashMap<String, String>> commentRows = commentRepository.select(
                 new ArrayList<Object>() {{ add(commodityId); }},
                 commentRepository.getColNames(),
-                commentRepository.selectOneStatement()
+                commentRepository.selectOneStatement("cid")
         );
 
         List<Comment> allComments = castToList(commentRows, Comment.class);
@@ -303,7 +316,7 @@ public class Database {
         List<HashMap<String, String>> discount = discountRepository.select(
                 new ArrayList<Object>() {{ add(code); }},
                 discountRepository.getColNames(),
-                discountRepository.selectOneStatement()
+                discountRepository.selectOneStatement("code")
         );
         if (discount.isEmpty()) {
             throw new DiscountCodeNotFoundException("Discount code " + code + " is not exist");

@@ -12,7 +12,7 @@ public abstract class Repository<T> {
     public abstract void createTable(Statement createTableStatement) throws SQLException;
 
     public abstract String insertStatement(HashMap<String, String> values);
-    public abstract String selectOneStatement();
+    public abstract String selectOneStatement(String field);
     public abstract List<String> getColNames();
 
     public void update(String statement, List<Object> mustFill) throws SQLException {

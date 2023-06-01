@@ -3,6 +3,7 @@ package org.Baloot.Application;
 import org.Baloot.Baloot;
 import org.Baloot.Entities.Date;
 import org.Baloot.Entities.User;
+import org.Baloot.Exception.DuplicateEmailException;
 import org.Baloot.Exception.DuplicateUsernameException;
 import org.Baloot.Exception.IncorrectPasswordException;
 import org.Baloot.Exception.UserNotFoundException;
@@ -51,11 +52,13 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.OK).build();
         }
         catch (DuplicateUsernameException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(410).body("Duplicate username");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(408).body("Database Error");
+        } catch (DuplicateEmailException e) {
+            return ResponseEntity.status(411).body("Duplicate email");
         }
     }
 }

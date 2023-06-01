@@ -65,8 +65,8 @@ public class UserRepository<T> extends Repository<T> {
     }
 
     @Override
-    public String selectOneStatement() {
-        return "SELECT * FROM User WHERE username = ?";
+    public String selectOneStatement(String field) {
+        return "SELECT * FROM User WHERE " + field +" = ?";
     }
 
     public String selectPurchasedListStatement() {

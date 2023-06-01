@@ -46,8 +46,8 @@ public class CommentRepository<T> extends Repository<T> {
                 + "ON DUPLICATE KEY UPDATE status = " + Integer.parseInt(values.get("status"));
     }
     @Override
-    public String selectOneStatement() {
-        return "SELECT * FROM Comment WHERE commodityId = ?";
+    public String selectOneStatement(String field) {
+        return "SELECT * FROM Comment WHERE " + field + " = ?";
     }
     public String selectVoteStatement() {
         return "SELECT * FROM Vote WHERE tid = ?";

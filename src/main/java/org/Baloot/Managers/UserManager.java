@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -27,7 +28,7 @@ public class UserManager {
     public UserManager(){
     }
 
-    public void registerNewUser(String username, String password, String email, String address, String date) throws SQLException, DuplicateUsernameException{
+    public void registerNewUser(String username, String password, String email, String address, String date) throws SQLException, DuplicateUsernameException, DuplicateEmailException{
         User newUser = new User(username, password, email, date, address, 0);
         try {
             addUser(newUser);
@@ -35,7 +36,7 @@ public class UserManager {
         catch (InvalidUsernameException e){
         }
     }
-    public void addUser(User user) throws InvalidUsernameException, DuplicateUsernameException, SQLException {
+    public void addUser(User user) throws SQLException, InvalidUsernameException, DuplicateUsernameException, DuplicateEmailException {
         Pattern pattern = Pattern.compile("[0-9a-zA-Z]+");
         Matcher matcher = pattern.matcher(user.getUsername());
         try {
@@ -46,9 +47,20 @@ public class UserManager {
                 throw new InvalidUsernameException("Invalid Username!");
             }
         }
-        catch (UserNotFoundException e){
+        catch (UserNotFoundException e) {
+            if (Database.isEmailUsed(user.getEmail())) {
+                throw new DuplicateEmailException("Email already exists");
+            }
             user.hashPassword();
-            Database.insertUser(user);
+            try {
+                Database.insertUser(user);
+            } catch (SQLIntegrityConstraintViolationException e1) {
+                if (e1.getMessage().contains("Duplicate entry email")) {
+                    System.out.println("Email already exists.");
+                } else {
+                    e1.printStackTrace();
+                }
+            }
         }
     }
     public HashMap<Commodity, Integer> getUserBuyList(String username) throws UserNotFoundException, CommodityNotFoundException, SQLException {

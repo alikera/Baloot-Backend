@@ -95,8 +95,8 @@ public class CommodityRepository<T> extends Repository<T> {
                 """;
     }
     @Override
-    public String selectOneStatement() {
-        return "SELECT * FROM Commodity WHERE cid = ?";
+    public String selectOneStatement(String filed) {
+        return "SELECT * FROM Commodity WHERE " + filed + " = ?";
     }
 
     public String selectSortedStatement() {

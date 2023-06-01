@@ -1,7 +1,7 @@
 package org.Baloot.Database;
 
-import org.Baloot.Baloot;
 import org.Baloot.Entities.*;
+import org.Baloot.Entities.Date;
 import org.Baloot.Exception.CommodityNotFoundException;
 import org.Baloot.Exception.DiscountCodeNotFoundException;
 import org.Baloot.Exception.ProviderNotFoundException;
@@ -11,6 +11,7 @@ import org.Baloot.Repository.*;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.lang.reflect.Field;
 
 public class Database {
     private static List<User> users = new ArrayList<>();
@@ -46,7 +47,8 @@ public class Database {
         userRepository.createTable(createTableStatement);
         userRepository.createWeakTable(createTableStatement, "BuyList");
         userRepository.createPurchasedListTable(createTableStatement);
-//        commentRepository.createTable(createTableStatement);
+        commentRepository.createTable(createTableStatement);
+        commentRepository.createWeakTable(createTableStatement);
 
         System.out.println(_users.length);
         createTableStatement.executeBatch();
@@ -68,9 +70,9 @@ public class Database {
         for (User user: _users){
             insertUser(user);
         }
-//        for (Comment comment: _comments){
-//            commentRepository.insert(comment);
-//        }
+        for (Comment comment: _comments){
+            insertComment(comment);
+        }
 //        for (Commodity commodity : commodities){
 //            try {
 //                addToProviderCommodityList(commodity);
@@ -124,7 +126,10 @@ public class Database {
 //        addToProviderCommodityList(commodity);
     }
 
-    public static void insertComment(Comment comment) { comments.add(comment); }
+    public static void insertComment(Comment comment) throws SQLException {
+        comments.add(comment);
+        commentRepository.insert(commentRepository.insertStatement(comment.getAttributes()));
+    }
 
     public static void addToProviderCommodityList(Commodity commodity) throws ProviderNotFoundException {
         for(Provider provider : providers){
@@ -160,7 +165,7 @@ public class Database {
                     Double.parseDouble(hashMap.get("price")),
                     commodityRepository.getCategories(Integer.parseInt(hashMap.get("cid"))),
                     Double.parseDouble(hashMap.get("rating")),
-                    Integer.parseInt(hashMap.get("in_stock")),
+                    Integer.parseInt(hashMap.get("inStock")),
                     hashMap.get("image"));
             castedMap.put(commodity,Integer.parseInt(hashMap.get("quantity")));
         }
@@ -171,7 +176,7 @@ public class Database {
 //    public static HashMap<Commodity, Integer> joinWithCommodity(){
 //
 //    }
-    public static HashMap<Commodity, Integer> getUserBuyList(String username, String type) throws SQLException{
+    public static HashMap<Commodity, Integer> getUserList(String username, String type) throws SQLException{
         List<String> colNames = commodityRepository.getColNames();
         colNames.add("quantity");
         String selectStatement = userRepository.selectListStatement(type);
@@ -197,7 +202,7 @@ public class Database {
                 Double.parseDouble(commodityRow.get(0).get("price")),
                 commodityRepository.getCategories(commodityId),
                 Double.parseDouble(commodityRow.get(0).get("rating")),
-                Integer.parseInt(commodityRow.get(0).get("in_stock")),
+                Integer.parseInt(commodityRow.get(0).get("inStock")),
                 commodityRow.get(0).get("image"));
     }
     public static Provider findByProviderId(int providerId) throws ProviderNotFoundException, SQLException {
@@ -217,34 +222,78 @@ public class Database {
                 providerRow.get(0).get("image"));
     }
 
-    public static List<Commodity> castToList(List<HashMap<String, String>> originalMap) throws SQLException {
-        List<Commodity> castedList = new ArrayList<>();
-        for(HashMap<String, String> hashMap: originalMap) {
-            Commodity commodity = new Commodity(Integer.parseInt(hashMap.get("cid")),
-                    hashMap.get("name"),
-                    Integer.parseInt(hashMap.get("pid")),
-                    Double.parseDouble(hashMap.get("price")),
-                    commodityRepository.getCategories(Integer.parseInt(hashMap.get("cid"))),
-                    Double.parseDouble(hashMap.get("rating")),
-                    Integer.parseInt(hashMap.get("in_stock")),
-                    hashMap.get("image"));
-            castedList.add(commodity);
+    public static <T> List<T> castToList(List<HashMap<String, String>> originalMap, Class<T> targetType) throws Exception {
+        List<T> castedList = new ArrayList<>();
+
+        for (HashMap<String, String> hashMap : originalMap) {
+            T instance = targetType.getDeclaredConstructor().newInstance();
+
+            for (Field field : targetType.getDeclaredFields()) {
+                String fieldName = field.getName();
+                String fieldValue = hashMap.get(fieldName);
+
+                if (fieldValue != null) {
+                    field.setAccessible(true);
+                    Object parsedValue = parseValue(field.getType(), fieldValue);
+                    field.set(instance, parsedValue);
+                }
+            }
+
+            castedList.add(instance);
         }
 
         return castedList;
     }
 
-    public static List<Commodity> getCommodities(String name, String tableName, String entity) throws SQLException {
+    private static Object parseValue(Class<?> fieldType, String fieldValue) {
+        if (fieldType == int.class || fieldType == Integer.class) {
+            return Integer.parseInt(fieldValue);
+        } else if (fieldType == double.class || fieldType == Double.class) {
+            return Double.parseDouble(fieldValue);
+        } else if (fieldType == long.class || fieldType == Long.class) {
+            return Long.parseLong(fieldValue);
+        } else if(fieldType == org.Baloot.Entities.Date.class){
+            Date date = new Date(fieldValue);
+            return date;
+        }
+        else {
+            // For other types, you can handle additional conversions or leave as-is
+            return fieldValue;
+        }
+    }
+
+    public static List<Commodity> getCommodities(String name, String tableName, String entity) throws Exception {
         String finalName = name + '%';
         List<HashMap<String, String>> commodityRows = commodityRepository.select(
                 new ArrayList<Object>() {{ add(finalName); }},
                 commodityRepository.getColNames(),
-                commodityRepository.selectCommodities(tableName,entity)
+                commodityRepository.selectCommodities(tableName, entity)
         );
 
-        return castToList(commodityRows);
+        return castToList(commodityRows, Commodity.class);
+    }
+    public static List<Comment> getComments(int id) throws Exception {
+        List<HashMap<String, String>> commentRows = commentRepository.select(
+                new ArrayList<Object>() {{ add(id); }},
+                commentRepository.getColNames(),
+                commentRepository.selectOneStatement()
+        );
+
+        return castToList(commentRows, Comment.class);
+    }
+    public static void insertVoteToComment(String userEmail, String tid, String status) throws SQLException {
+
+        commentRepository.insert(commentRepository.insertVoteComment(
+                new HashMap<String, String>() {{ put("userEmail", userEmail); put("tid", tid); put("status", status);}}
+        ));
     }
 
+    public static boolean getVotesOfComments(String userEmail, String tid, String status) throws SQLException {
+        List<HashMap<String, String>> rows = commentRepository.select(new ArrayList<Object>() {{ add(userEmail); add(Integer.parseInt(tid)); add(Integer.parseInt(status));}},
+                new ArrayList<String>() {{ add("userEmail"); add("tid"); add("status");}},
+                commentRepository.selectVoteStatement());
+        return !rows.isEmpty();
+    }
 
     public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException, SQLException {
         List<HashMap<String, String>> discount = discountRepository.select(

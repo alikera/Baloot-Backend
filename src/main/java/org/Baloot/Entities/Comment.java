@@ -7,26 +7,30 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.*;
 
 public class Comment {
-    HashMap<String, Integer> votes;
+//    private HashMap<String, Integer> votes;
     private static int count = 0;
-    private int id;
+    private int tid;
     private String userEmail;
     private String username;
     private int commodityId;
     private String text;
     private Date date;
+
+    public Comment(){
+
+    }
     public Comment(@JsonProperty("userEmail") String _userEmail, @JsonProperty("commodityId") int _commodityId,
                    @JsonProperty("text") String _text, @JsonProperty("date") String _date) {
         userEmail = _userEmail;
         commodityId = _commodityId;
         text = _text;
         date = new Date(_date);
-        votes = new HashMap<>();
+//        votes = new HashMap<>();
         count++;
-        id = count;
+        tid = count;
     }
     public int getId() {
-        return id;
+        return tid;
     }
 
     public String getUserEmail() {
@@ -50,8 +54,7 @@ public class Comment {
     }
     public HashMap<String, String> getAttributes() {
         HashMap<String, String> attributes = new HashMap<>();
-
-        attributes.put("id", String.valueOf(id));
+        attributes.put("tid", String.valueOf(tid));
         attributes.put("userEmail", userEmail);
         attributes.put("commodityId", String.valueOf(commodityId));
         attributes.put("text", text);
@@ -62,39 +65,40 @@ public class Comment {
 
 
     public int voteComment(String username, int vote) {
-        if (votes.containsKey(username)) {
-            if (votes.get(username) == vote) {
-                return 0;
-            } else {
-                votes.put(username, vote);
-                return -1;
-            }
-        } else {
-            votes.put(username, vote);
-            return 1;
-        }
+        return 1;
+//        if (votes.containsKey(username)) {
+//            if (votes.get(username) == vote) {
+//                return 0;
+//            } else {
+//                votes.put(username, vote);
+//                return -1;
+//            }
+//        } else {
+//            votes.put(username, vote);
+//            return 1;
+//        }
 
     }
-
-    public int getLikes() {
-        int likesCounter = 0;
-        for (int vote : votes.values()) {
-            if (vote == 1) {
-                likesCounter++;
-            }
-        }
-        return likesCounter;
-    }
-
-    public int getDislikes() {
-        int dislikesCounter = 0;
-        for (int vote : votes.values()) {
-            if (vote == -1) {
-                dislikesCounter++;
-            }
-        }
-        return dislikesCounter;
-    }
+//
+//    public int getLikes() {
+//        int likesCounter = 0;
+//        for (int vote : votes.values()) {
+//            if (vote == 1) {
+//                likesCounter++;
+//            }
+//        }
+//        return likesCounter;
+//    }
+//
+//    public int getDislikes() {
+//        int dislikesCounter = 0;
+//        for (int vote : votes.values()) {
+//            if (vote == -1) {
+//                dislikesCounter++;
+//            }
+//        }
+//        return dislikesCounter;
+//    }
 
     public void print() {
         System.out.println(this.userEmail + " " + this.commodityId + " " + this.text + " " + this.date);

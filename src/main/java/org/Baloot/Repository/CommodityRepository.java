@@ -20,7 +20,7 @@ public class CommodityRepository<T> extends Repository<T> {
                         "pid BIGINT, " +
                         "price DOUBLE, " +
                         "rating DOUBLE, " +
-                        "in_stock INT, " +
+                        "inStock INT, " +
                         "image TEXT," +
                         "FOREIGN KEY (pid) REFERENCES Provider(pid))"
         );
@@ -47,9 +47,9 @@ public class CommodityRepository<T> extends Repository<T> {
     }
     @Override
     public String insertStatement(HashMap<String, String> values) {
-        return "INSERT INTO Commodity(cid,name,pid,price,rating,in_stock,image)"
-                + " VALUES('" + Integer.parseInt(values.get("id")) + "','" + values.get("name") + "','"
-                + Integer.parseInt(values.get("providerId")) + "','" + values.get("price") + "','"
+        return "INSERT INTO Commodity(cid,name,pid,price,rating,inStock,image)"
+                + " VALUES('" + Integer.parseInt(values.get("cid")) + "','" + values.get("name") + "','"
+                + Integer.parseInt(values.get("pid")) + "','" + values.get("price") + "','"
                 + Double.parseDouble(values.get("rating")) + "','" + Integer.parseInt(values.get("inStock"))
                 +"','"+ values.get("image") + "')"
                 + "ON DUPLICATE KEY UPDATE cid = cid";
@@ -75,7 +75,7 @@ public class CommodityRepository<T> extends Repository<T> {
     }
     public String modifyInStockStatement() {
         return "UPDATE Commodity " +
-                "SET  in_stock = in_stock + ? " +
+                "SET  inStock = inStock + ? " +
                 "WHERE cid = ?";
     }
     @Override
@@ -121,7 +121,7 @@ public class CommodityRepository<T> extends Repository<T> {
         colNames.add("pid");
         colNames.add("price");
         colNames.add("rating");
-        colNames.add("in_stock");
+        colNames.add("inStock");
         colNames.add("image");
         return colNames;
     }

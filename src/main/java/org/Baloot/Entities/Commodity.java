@@ -13,8 +13,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class Commodity {
-    HashMap<String, Double> Ratings;
-    private int id;
+//    private HashMap<String, Double> Ratings;
+    private int cid;
     private String name;
     private int providerId;
     private double price;
@@ -24,7 +24,7 @@ public class Commodity {
     private String image;
 
     public int getId() {
-        return id;
+        return cid;
     }
 
     public String getName() {
@@ -50,7 +50,7 @@ public class Commodity {
     public double getRating() { return rating; }
 
     public String getImage(){return image;}
-    public int getCountOfRatings(){ return Ratings.size(); }
+    public int getCountOfRatings(){ return 1; }
     public void decreaseInStock(){
         inStock--;
     }
@@ -59,34 +59,38 @@ public class Commodity {
     }
 
     private double calculateAverageOfRatings(){
-        double sum = 0.0;
-        for (Double value : Ratings.values()) {
-            sum += value;
-        }
+//        double sum = 0.0;
+//        for (Double value : Ratings.values()) {
+//            sum += value;
+//        }
+//
+//        return sum / Ratings.size();
+        return 1;
+    }
+    public Commodity(){
 
-        return sum / Ratings.size();
     }
     public Commodity(@JsonProperty ("id") int _id, @JsonProperty ("name") String _name,
                      @JsonProperty ("providerId") int _providerId, @JsonProperty ("price") double _price,
                      @JsonProperty ("categories") List<String> _categories, @JsonProperty ("rating") double _rating,
                      @JsonProperty ("inStock") int _inStock,@JsonProperty("image") String _image) {
-        id = _id;
+        cid = _id;
         name = _name;
         providerId = _providerId;
         price = _price;
         categories = new HashSet<String>(_categories);
         rating = _rating;
         inStock = _inStock;
-        Ratings = new HashMap<>();
+//        Ratings = new HashMap<>();
         image = _image;
     }
 
     public HashMap<String, String> getAttributes() {
         HashMap<String, String> attributes = new HashMap<>();
 
-        attributes.put("id", String.valueOf(id));
+        attributes.put("cid", String.valueOf(cid));
         attributes.put("name", name);
-        attributes.put("providerId", String.valueOf(providerId));
+        attributes.put("pid", String.valueOf(providerId));
         attributes.put("price", String.valueOf(price));
         attributes.put("rating", String.valueOf(rating));
         attributes.put("inStock", String.valueOf(inStock));
@@ -103,12 +107,12 @@ public class Commodity {
         }
         return false;
     }
-    public void rateCommodity(String username, int score) throws InvalidRatingException, SQLException {
-        Ratings.put(username, (double) score);
-        rating = calculateAverageOfRatings();
-    }
+//    public void rateCommodity(String username, int score) throws InvalidRatingException, SQLException {
+//        Ratings.put(username, (double) score);
+//        rating = calculateAverageOfRatings();
+//    }
     public void print() {
-        System.out.println(this.id + " " + this.name + " " + this.providerId + " " + this.price + " " + this.rating + " " + this.inStock);
+        System.out.println(this.cid + " " + this.name + " " + this.providerId + " " + this.price + " " + this.rating + " " + this.inStock);
         for (String category : categories) {
             System.out.println(category);
         }
@@ -122,7 +126,7 @@ public class Commodity {
         ArrayNode arrayNode = factory.arrayNode();
 
         ObjectNode node = mapper.createObjectNode();
-        node.put("id", this.id);
+        node.put("id", this.cid);
         node.put("name", this.name);
         node.put("providerId", this.providerId);
         node.put("price", this.price);

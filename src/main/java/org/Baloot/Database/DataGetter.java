@@ -51,6 +51,8 @@ public class DataGetter {
         }catch (Exception e){
             System.out.println("XXXXXXXXXXXXXXXXX");
             System.out.println(e.getMessage());
+            System.out.println(e.getClass());
+
         }
     }
 

@@ -26,7 +26,7 @@ public class HomeController {
                                             @RequestParam(value = "available") Boolean available, @RequestParam(value = "sort") String sortBy,
                                             @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "username") String username) {
 
-        List<Commodity> commodities = Baloot.getBaloot().getCommodities();
+        List<Commodity> commodities = null;
         try {
             if(option.equals("category")) {
                 commodities = Database.getCommodities(search, "category", "cid");
@@ -41,6 +41,9 @@ public class HomeController {
             System.out.println(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(408).body("Database Error");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+
         }
         if(available){
             commodities = Baloot.getBaloot().commodityManager.getAvailableCommodities(commodities);
@@ -97,7 +100,7 @@ public class HomeController {
             for (String cc:commodity.getCategories()){
                 System.out.println(cc);
             }
-            List<Comment> comments = Baloot.getBaloot().commodityManager.getCommentsOfCommodity(Integer.parseInt(id));
+            List<Comment> comments = Database.getComments(Integer.parseInt(id));
             String providerName = Baloot.getBaloot().getProviderById(commodity.getProviderId()).getName();
             List<Commodity> suggestedCommodities = Baloot.getBaloot().commodityManager.getSuggestedCommodities(commodity, commodity.getCategories());
             HashMap<String, Object> response = new HashMap<>();
@@ -150,7 +153,14 @@ public class HomeController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String currDate = LocalDate.now().format(formatter);
         Comment comment = new Comment(username, Integer.parseInt(id), text, currDate);
-        Database.insertComment(comment);
+        try {
+            Database.insertComment(comment);
+
+        }catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(408).body("Database Error");
+        }
         return ResponseEntity.ok(comment);
     }
 

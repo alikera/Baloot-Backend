@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/provider")
 public class ProviderController {
     @RequestMapping(value = "/{providerId}", method = RequestMethod.GET)

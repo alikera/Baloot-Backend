@@ -21,6 +21,7 @@ public class Database {
                                          Comment[] _comments, DiscountCode[] _discountCodes) throws SQLException {
         Connection con = ConnectionPool.getConnection();
         Statement createTableStatement = con.createStatement();
+        setStartingIndexCommentId();
         discountRepository.createTable(createTableStatement);
         discountRepository.createWeakTable(createTableStatement);
 
@@ -59,6 +60,13 @@ public class Database {
         for (Comment comment: _comments){
             insertComment(comment);
         }
+    }
+    public static void setStartingIndexCommentId() throws SQLException {
+        List<HashMap<String, String>> maxId = commentRepository.select(new ArrayList<>(),
+                new ArrayList<>(){{add("max_tid");}},
+                commentRepository.selectMaxStatement());
+        Comment.count = Integer.parseInt(maxId.get(0).get("max_tid"));
+
     }
     public static void insertToBuyList(String username, String commodityId) throws SQLException {
         HashMap<String, String> values = new HashMap<>();
@@ -283,7 +291,7 @@ public class Database {
         List<HashMap<String, String>> commentRows = commentRepository.select(
                 new ArrayList<Object>() {{ add(commodityId); }},
                 commentRepository.getColNames(),
-                commentRepository.selectOneStatement("cid")
+                commentRepository.selectOneStatement("commodityId")
         );
 
         List<Comment> allComments = castToList(commentRows, Comment.class);
@@ -305,7 +313,7 @@ public class Database {
         }
     }
     public static int insertVoteToComment(String userEmail, String tid, String status) throws SQLException, InvalidVoteException {
-        if (!Objects.equals(status, "0") && !Objects.equals(status, "1") && !Objects.equals(status, "-1")) {
+        if (!Objects.equals(status, "1") && !Objects.equals(status, "-1")) {
             throw new InvalidVoteException("Invalid Vote");
         }
         List<HashMap<String, String>> rows = commentRepository.select(new ArrayList<Object>() {{
@@ -315,7 +323,7 @@ public class Database {
                     add("status");
                 }},
                 commentRepository.selectPrevVoteStatement());
-        int prevStatus = 1;
+        int prevStatus = 0;
         if(rows.size() != 0){
             prevStatus = Integer.parseInt(rows.get(0).get("status"));
         }

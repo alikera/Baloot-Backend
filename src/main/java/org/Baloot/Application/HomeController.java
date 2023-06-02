@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api")
 public class HomeController {
     @RequestMapping(value = "/", method = RequestMethod.GET)

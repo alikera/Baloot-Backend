@@ -40,6 +40,7 @@ public class CommentRepository<T> extends Repository<T> {
                                 values.get("text") + "','" + java.sql.Date.valueOf(values.get("date")) + "')"
                 + "ON DUPLICATE KEY UPDATE tid = tid";
     }
+    public String selectMaxStatement(){ return "SELECT MAX(tid) AS max_tid FROM comment"; }
     public String insertVoteComment(HashMap<String, String> values) {
         return "INSERT INTO Vote(userEmail,tid,status) " +
                 "VALUES('" + values.get("userEmail") + "' ," + Integer.parseInt(values.get("tid")) + "," + Integer.parseInt(values.get("status")) + ")"

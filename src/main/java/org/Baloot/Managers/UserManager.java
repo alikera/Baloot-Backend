@@ -52,7 +52,6 @@ public class UserManager {
             if (Database.isEmailUsed(user.getEmail())) {
                 throw new DuplicateEmailException("Email already exists");
             }
-            user.hashPassword();
             try {
                 Database.insertUser(user);
             } catch (SQLIntegrityConstraintViolationException e1) {

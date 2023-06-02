@@ -9,7 +9,7 @@ import java.util.*;
 public class Comment {
     private int likes;
     private int dislikes;
-    private static int count = 0;
+    public static int count = 0;
     private int tid;
     private String userEmail;
     private int commodityId;

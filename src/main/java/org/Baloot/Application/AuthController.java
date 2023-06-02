@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/auth")
 public class AuthController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -71,6 +70,7 @@ public class AuthController {
 
     private String generateJwtToken(String username) {
         String SECRET_KEY = "baloot2023";
+
         // Create claims for JWT payload
         Claims claims = Jwts.claims();
         claims.setSubject(username);
@@ -92,12 +92,7 @@ public class AuthController {
                 .signWith(key)
                 .compact();
     }
-    private static Key getKey() {
-        String SECRET_KEY = "baloot2023";
 
-        byte[] keyBytes = DatatypeConverter.parseBase64Binary(SECRET_KEY+SECRET_KEY+SECRET_KEY+SECRET_KEY+SECRET_KEY);
-        return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
-    }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<?> register(@RequestBody Map<String, String> body) {

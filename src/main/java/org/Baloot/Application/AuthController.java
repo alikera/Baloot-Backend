@@ -7,14 +7,18 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.xml.bind.DatatypeConverter;
 import org.Baloot.Baloot;
+import org.Baloot.Database.Database;
+import org.Baloot.Entities.User;
 import org.Baloot.Exception.DuplicateEmailException;
 import org.Baloot.Exception.DuplicateUsernameException;
 import org.Baloot.Exception.IncorrectPasswordException;
 import org.Baloot.Exception.UserNotFoundException;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -29,10 +33,13 @@ import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -125,22 +132,49 @@ public class AuthController {
             HttpClient client = HttpClientBuilder.create().build();
             HttpPost post = new HttpPost("https://github.com/login/oauth/access_token?client_id=" + clientID +
                     "&client_secret=" + clientSecret + "&code=" + code);
-
             post.setHeader("Accept", "application/json");
             HttpResponse response = client.execute(post);
 
-            // Handle the response
             if (response.getStatusLine().getStatusCode() == 200) {
                 HttpEntity entity = response.getEntity();
                 String responseString = EntityUtils.toString(entity, "UTF-8");
-                System.out.println("RESPONSE:");
-                System.out.println(responseString);
+
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode rootNode = mapper.readTree(responseString);
                 String accessToken = rootNode.get("access_token").asText();
                 System.out.println("Access token: " + accessToken);
+
+                HttpGet get = new HttpGet("https://api.github.com/user");
+                get.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+                response = client.execute(get);
+                entity = response.getEntity();
+                responseString = EntityUtils.toString(entity, "UTF-8");
+                System.out.println("RESPONSEE:");
+                System.out.println(responseString);
+
+                mapper = new ObjectMapper();
+                rootNode = mapper.readTree(responseString);
+                String username = rootNode.get("login").asText();
+                System.out.println("username: " + username);
+
+                String email = rootNode.get("email").asText();
+                System.out.println("email: " + email);
+
+                String name = rootNode.get("name").asText();
+                System.out.println("name: " + name);
+
+                String address = rootNode.get("location").asText();
+                System.out.println("address: " + address);
+
+                String birth_date = rootNode.get("created_at").asText();
+                birth_date = LocalDate.parse(birth_date, DateTimeFormatter.ISO_DATE_TIME).minusYears(18).format(DateTimeFormatter.ISO_DATE);
+                System.out.println("birth_date: " + birth_date);
+
+                User user = new User(username, null, null, email, birth_date, address, 0);
+                Database.insertUser(user);
+
                 HashMap<String, String> returnRes = new HashMap<>();
-                returnRes.put("Token", accessToken);
+                returnRes.put("token", generateJwtToken(username));
                 return ResponseEntity.status(200).body(returnRes);
             } else {
                 System.out.println("Error: " + response.getStatusLine().getStatusCode());
@@ -149,23 +183,9 @@ public class AuthController {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
     }
 }
-
-
-//        try {
-//            Baloot.getBaloot().userManager.registerNewUser(username, password, email, address, date);
-//            return ResponseEntity.status(HttpStatus.OK).build();
-//        }
-//        catch (DuplicateUsernameException e) {
-//            return ResponseEntity.status(410).body("Duplicate username");
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//            e.printStackTrace();
-//            return ResponseEntity.status(408).body("Database Error");
-//        } catch (DuplicateEmailException e) {
-//            return ResponseEntity.status(411).body("Duplicate email");
-//        }
 

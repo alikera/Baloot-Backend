@@ -107,7 +107,7 @@ public class Database {
     }
 
     public static User findByUsername(String username) throws UserNotFoundException, SQLException {
-        List<HashMap<String, String>> userRow = userRepository.executeSQL(
+        List<HashMap<String, String>> userRow = userRepository.select(
                 new ArrayList<Object>() {{ add(username); }},
                 userRepository.getColNames(),
                 userRepository.selectOneStatement("username")
@@ -125,7 +125,7 @@ public class Database {
     }
 
     public static User findByUserEmail(String userEmail) throws UserNotFoundException, SQLException {
-        List<HashMap<String, String>> userRow = userRepository.executeSQL(
+        List<HashMap<String, String>> userRow = userRepository.select(
                 new ArrayList<Object>() {{ add(userEmail); }},
                 userRepository.getColNames(),
                 userRepository.selectOneStatement("email")
@@ -142,7 +142,7 @@ public class Database {
                 Double.parseDouble(userRow.get(0).get("credit")));
     }
     public static boolean isEmailUsed(String email) throws SQLException {
-        List<HashMap<String, String>> userRow = userRepository.executeSQL(
+        List<HashMap<String, String>> userRow = userRepository.select(
                 new ArrayList<Object>() {{ add(email); }},
                 userRepository.getColNames(),
                 userRepository.selectOneStatement("email")
@@ -174,7 +174,7 @@ public class Database {
         List<String> colNames = commodityRepository.getColNames();
         colNames.add("quantity");
         String selectStatement = userRepository.selectListStatement(type);
-        List<HashMap<String, String>> listRow = userRepository.executeSQL(new ArrayList<Object>() {{ add(username); }},
+        List<HashMap<String, String>> listRow = userRepository.select(new ArrayList<Object>() {{ add(username); }},
                 colNames,
                 selectStatement);
 
@@ -184,7 +184,7 @@ public class Database {
     public static List<Commodity> getProviderCommodities(String providerId) throws Exception {
         List<String> colNames = commodityRepository.getColNames();
         String selectStatement = providerRepository.selectCommodities();
-        List<HashMap<String, String>> rows = userRepository.executeSQL(new ArrayList<Object>() {{ add(Integer.parseInt(providerId)); }},
+        List<HashMap<String, String>> rows = userRepository.select(new ArrayList<Object>() {{ add(Integer.parseInt(providerId)); }},
                 colNames,
                 selectStatement);
 
@@ -192,7 +192,7 @@ public class Database {
     }
 
     public static Commodity findByCommodityId(int commodityId) throws CommodityNotFoundException, SQLException {
-        List<HashMap<String, String>> commodityRow = commodityRepository.executeSQL(
+        List<HashMap<String, String>> commodityRow = commodityRepository.select(
                 new ArrayList<Object>() {{ add(commodityId); }},
                 commodityRepository.getColNames(),
                 commodityRepository.selectOneStatement("cid")
@@ -212,7 +212,7 @@ public class Database {
     }
 
     public static Provider findByProviderId(int providerId) throws ProviderNotFoundException, SQLException {
-        List<HashMap<String, String>> providerRow = providerRepository.executeSQL(
+        List<HashMap<String, String>> providerRow = providerRepository.select(
                 new ArrayList<Object>() {{ add(providerId); }},
                 providerRepository.getColNames(),
                 providerRepository.selectOneStatement("pid")
@@ -270,7 +270,7 @@ public class Database {
 
     public static List<Commodity> getCommodities(String name, int available, String sortBy, String tableName, String entity) throws Exception {
         String finalName = name + '%';
-        List<HashMap<String, String>> commodityRows = commodityRepository.executeSQL(
+        List<HashMap<String, String>> commodityRows = commodityRepository.select(
                 new ArrayList<Object>() {{ add(finalName); add(available);}},
                 commodityRepository.getColNames(),
                 commodityRepository.selectCommodities(tableName, entity, sortBy)
@@ -280,7 +280,7 @@ public class Database {
     }
 
     public static List<Comment> getComments(int commodityId) throws Exception {
-        List<HashMap<String, String>> commentRows = commentRepository.executeSQL(
+        List<HashMap<String, String>> commentRows = commentRepository.select(
                 new ArrayList<Object>() {{ add(commodityId); }},
                 commentRepository.getColNames(),
                 commentRepository.selectOneStatement("cid")
@@ -294,7 +294,7 @@ public class Database {
 
     public static void setLikesAndDislikes(List<Comment> allComments) throws SQLException {
         for(Comment comment: allComments) {
-            List<HashMap<String, String>> rows = commentRepository.executeSQL(new ArrayList<Object>() {{
+            List<HashMap<String, String>> rows = commentRepository.select(new ArrayList<Object>() {{
                                                                               add(comment.getId());
                                                                           }},
                     new ArrayList<String>() {{
@@ -308,7 +308,7 @@ public class Database {
         if (!Objects.equals(status, "0") && !Objects.equals(status, "1") && !Objects.equals(status, "-1")) {
             throw new InvalidVoteException("Invalid Vote");
         }
-        List<HashMap<String, String>> rows = commentRepository.executeSQL(new ArrayList<Object>() {{
+        List<HashMap<String, String>> rows = commentRepository.select(new ArrayList<Object>() {{
                                                                           add(Integer.parseInt(tid)); add(userEmail);
                                                                       }},
                 new ArrayList<String>() {{
@@ -332,7 +332,7 @@ public class Database {
     }
 
     public static double getDiscountFromCode(String code) throws DiscountCodeNotFoundException, SQLException {
-        List<HashMap<String, String>> discount = discountRepository.executeSQL(
+        List<HashMap<String, String>> discount = discountRepository.select(
                 new ArrayList<Object>() {{ add(code); }},
                 discountRepository.getColNames(),
                 discountRepository.selectOneStatement("code")
@@ -345,11 +345,11 @@ public class Database {
     public static void updateUserCredit(String username, double amount) throws SQLException {
         String statement = userRepository.updateCreditStatement();
         List<Object> values = new ArrayList<Object>() {{add(amount); add(username);}};
-        userRepository.executeSQL(values, new ArrayList<>(), statement);
+        userRepository.update(statement, values);
     }
 
     public static boolean findDiscount(String username, String code) throws SQLException {
-        List<HashMap<String, String>> rows = discountRepository.executeSQL(new ArrayList<Object>() {{ add(username); add(code);}},
+        List<HashMap<String, String>> rows = discountRepository.select(new ArrayList<Object>() {{ add(username); add(code);}},
                 new ArrayList<String>() {{ add("uid"); add("code");}},
                 discountRepository.findDiscountCodeStatement(username, code));
         return !rows.isEmpty();
@@ -373,7 +373,7 @@ public class Database {
     public static List<String> getRatings(String commodityId) throws SQLException {
         List<Object> values = new ArrayList<Object>() {{add(commodityId);}};
         List<String> colNames = new ArrayList<String>() {{add("rate");}};
-        List<HashMap<String, String>> ratings = commodityRepository.executeSQL(values, colNames, commodityRepository.selectRatingStatement());
+        List<HashMap<String, String>> ratings = commodityRepository.select(values, colNames, commodityRepository.selectRatingStatement());
         return ratings.stream()
                 .flatMap(map -> map.values().stream())
                 .collect(Collectors.toList());
@@ -382,19 +382,19 @@ public class Database {
     public static void updateRating(String commodityId, double rating) throws SQLException {
         String statement = commodityRepository.updateRatingStatement();
         List<Object> values = new ArrayList<Object>() {{add(rating); add(commodityId);}};
-        commodityRepository.executeSQL(values, new ArrayList<>(), statement);
+        commodityRepository.update(statement, values);
     }
 
     public static void modifyInStock(String commodityId, int count) throws SQLException {
         String statement = commodityRepository.modifyInStockStatement();
         List<Object> values = new ArrayList<Object>() {{add(count); add(Integer.parseInt(commodityId));}};
-        commodityRepository.executeSQL(values, new ArrayList<>(), statement);
+        commodityRepository.update(statement, values);
     }
 
     public static List<Commodity> getSuggestedCommodities(int id) throws Exception {
         String statement = commodityRepository.getSuggestedCommoditiesStatement();
         List<String> colNames = commodityRepository.getColNames();
-        List<HashMap<String, String>> commodities = commodityRepository.executeSQL(new ArrayList<>() {{add(id); add(id);}},
+        List<HashMap<String, String>> commodities = commodityRepository.select(new ArrayList<>() {{add(id); add(id);}},
                 colNames, statement);
         return castToList(commodities, Commodity.class);
     }

@@ -15,6 +15,31 @@ public abstract class Repository<T> {
     public abstract String selectOneStatement(String field);
     public abstract List<String> getColNames();
 
+    public void update(String statement, List<Object> mustFill) throws SQLException {
+        Connection con = ConnectionPool.getConnection();
+        PreparedStatement prepStat = con.prepareStatement(statement);
+        try {
+            for (int i = 0; i < mustFill.size(); i++) {
+                if (mustFill.get(i) instanceof String) {
+                    prepStat.setString(i + 1, (String) mustFill.get(i));
+                } else if (mustFill.get(i) instanceof Integer) {
+                    prepStat.setInt(i + 1, (Integer) mustFill.get(i));
+                } else if (mustFill.get(i) instanceof Double) {
+                    prepStat.setDouble(i + 1, (Double) mustFill.get(i));
+                } else {
+                    throw new IllegalArgumentException("Unsupported data type for uniqueCol");
+                }
+            }
+            prepStat.execute();
+            prepStat.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            prepStat.close();
+            con.close();
+        }
+    }
+
     public void insert(String insertStatement) throws SQLException {
         Connection con = ConnectionPool.getConnection();
         PreparedStatement st = con.prepareStatement(insertStatement);
@@ -30,7 +55,7 @@ public abstract class Repository<T> {
         }
     }
 
-    public List<HashMap<String, String>> executeSQL(List<Object> mustFill, List<String> colNames, String statement) throws SQLException {
+    public List<HashMap<String, String>> select(List<Object> mustFill, List<String> colNames, String statement) throws SQLException {
         Connection con = ConnectionPool.getConnection();
         PreparedStatement prepStat = con.prepareStatement(statement);
         List<HashMap<String, String>> selectedRows = new ArrayList<>();
